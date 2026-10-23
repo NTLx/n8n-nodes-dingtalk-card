@@ -1,0 +1,49 @@
+{
+  "name": "DingTalk Card \u2014 Error Notification (configure before use)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "error-trigger",
+      "name": "Workflow Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "createAndDeliver",
+        "inputMode": "json",
+        "requestBody": "={{ JSON.stringify({ cardTemplateId: 'REPLACE_WITH_PUBLISHED_TEMPLATE_ID', outTrackId: 'n8n-error-' + ($json.execution?.id || $execution.id), cardData: { cardParamMap: { title: 'n8n workflow failed', workflowName: String($json.workflow?.name || 'Unknown workflow'), message: 'A workflow failed. Review its execution in n8n.', executionUrl: String($json.execution?.url || '') } }, openSpaceId: 'dtv1.card//IM_GROUP.REPLACE_WITH_OPEN_CONVERSATION_ID', imGroupOpenSpaceModel: { supportForward: false }, imGroupOpenDeliverModel: { robotCode: 'REPLACE_WITH_ROBOT_CODE' }, userIdType: 1 }) }}"
+      },
+      "id": "send-card",
+      "name": "Send Error Card",
+      "type": "n8n-nodes-dingtalk-card.dingTalkCard",
+      "typeVersion": 1,
+      "position": [
+        280,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Workflow Error": {
+      "main": [
+        [
+          {
+            "node": "Send Error Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

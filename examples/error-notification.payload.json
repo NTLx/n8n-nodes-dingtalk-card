@@ -1,0 +1,16 @@
+{
+  "cardTemplateId": "REPLACE_WITH_PUBLISHED_TEMPLATE_ID",
+  "outTrackId": "n8n-error-REPLACE_WITH_EXECUTION_ID",
+  "cardData": {
+    "cardParamMap": {
+      "title": "n8n workflow failed",
+      "workflowName": "Example workflow",
+      "message": "Sanitized error summary",
+      "executionUrl": "https://n8n.example.invalid/execution/EXAMPLE"
+    }
+  },
+  "openSpaceId": "dtv1.card//IM_GROUP.REPLACE_WITH_OPEN_CONVERSATION_ID",
+  "imGroupOpenSpaceModel": { "supportForward": false },
+  "imGroupOpenDeliverModel": { "robotCode": "REPLACE_WITH_ROBOT_CODE" },
+  "userIdType": 1
+}
