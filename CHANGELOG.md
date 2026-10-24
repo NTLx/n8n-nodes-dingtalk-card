@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.1.0-beta.4
+
+Documentation and release pipeline only. The publish workflow uses npm Trusted Publishing with provenance and publishes under `beta`. It does not modify npm `latest`, which remains a one-time cleanup issue. No DingTalk node behavior changed.
+
 ## 0.1.0-beta.3
 
-Documentation and release pipeline only. The package README describes installation from the `beta` tag and reserves npm `latest` for a future stable release. The publish workflow removes the erroneous `latest` dist-tag through npm Trusted Publishing before publishing this prerelease with `--tag beta`. No DingTalk node behavior changed.
+GitHub prerelease only; npm publication did not occur. Both attempts to remove the accidental `latest` dist-tag through npm returned `E400 Dist-tag request rejected`, so publishing was skipped. No DingTalk node behavior changed.
 
 ## 0.1.0-beta.2
 

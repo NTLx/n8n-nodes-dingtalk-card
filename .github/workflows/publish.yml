@@ -31,10 +31,35 @@ jobs:
       - name: Verify prerelease tag and package version
         run: |
           node -e 'const p=require("./package.json"); if (!/^0\.1\.0-beta\.\d+$/.test(p.version) || `v${p.version}` !== process.env.GITHUB_REF_NAME) process.exit(1)'
-      - name: Remove the accidental stable tag
-        run: npm dist-tag rm n8n-nodes-dingtalk-card latest
       - name: Publish beta with provenance
         run: npm publish --access public --tag beta --provenance
       - name: Verify public npm dist-tags
         run: |
-          node -e 'const { execFileSync } = require("node:child_process"); const tags = JSON.parse(execFileSync("npm", ["view", "n8n-nodes-dingtalk-card", "dist-tags", "--json"], { encoding: "utf8" })); const version = require("./package.json").version; if (tags.beta !== version || Object.hasOwn(tags, "latest")) { console.error(JSON.stringify(tags)); process.exit(1); } console.log(JSON.stringify(tags));'
+          node -e 'const { execFileSync } = require("node:child_process"); const tags = JSON.parse(execFileSync("npm", ["view", "n8n-nodes-dingtalk-card", "dist-tags", "--json"], { encoding: "utf8" })); const version = require("./package.json").version; if (tags.beta !== version) { console.error(JSON.stringify(tags)); process.exit(1); } console.log(JSON.stringify(tags));'
+      - name: Verify published metadata and tarball
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const { execFileSync } = require('node:child_process');
+          const { mkdtempSync, readFileSync, existsSync } = require('node:fs');
+          const { tmpdir } = require('node:os');
+          const { join } = require('node:path');
+          const name = require('./package.json').name;
+          const version = require('./package.json').version;
+          const result = JSON.parse(execFileSync('npm', ['view', `${name}@${version}`, 'version', 'dist.tarball', 'dist.integrity', 'repository.url', '--json'], { encoding: 'utf8' }));
+          const metadata = Array.isArray(result) ? result[0] : result;
+          assert.equal(metadata.version, version);
+          assert.match(metadata['dist.tarball'], new RegExp(`^https://registry\\.npmjs\\.org/${name}/-/`));
+          assert.ok(metadata['dist.integrity']);
+          assert.equal(metadata['repository.url'], 'git+https://github.com/NTLx/n8n-nodes-dingtalk-card.git');
+          const destination = mkdtempSync(join(tmpdir(), 'published-dingtalk-card-'));
+          const packed = JSON.parse(execFileSync('npm', ['pack', `${name}@${version}`, '--json', '--pack-destination', destination], { encoding: 'utf8' }))[0];
+          execFileSync('tar', ['-xzf', join(destination, packed.filename), '-C', destination]);
+          const root = join(destination, 'package');
+          const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+          assert.equal(manifest.version, version);
+          assert.ok(existsSync(join(root, 'README.md')));
+          assert.ok(existsSync(join(root, 'dist/nodes/DingTalkCard/DingTalkCard.node.js')));
+          assert.ok(existsSync(join(root, 'dist/credentials/DingTalkCardApi.credentials.js')));
+          console.log(JSON.stringify({ version, tarball: metadata['dist.tarball'], integrity: metadata['dist.integrity'], files: packed.files.length }));
+          NODE
