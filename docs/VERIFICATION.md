@@ -1,19 +1,32 @@
 # Release verification record — 2026-10-24
 
-## v0.4.0-beta.1 publication and production preflight — 2026-10-25
+## v0.4.0-beta.1 publication and production preflight — 2026-10-25 (historical)
 
-The v0.4.0-beta.1 package is publicly published as a beta. This records release identity and a read-only production preflight; it does not claim a production upgrade or live DingTalk Presentation acceptance.
+The v0.4.0-beta.1 package is publicly published as a beta. This section records release identity and the read-only production preflight state at that time. Its production-upgrade and live-acceptance statements are superseded by the subsequent acceptance section below.
 
 - Tag `v0.4.0-beta.1` points to commit `3bb7e64c5a45aa78ba82ba1547c2e037e8f89655`. GitHub Actions publish run [40110742892](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40110742892) succeeded.
 - Public npm dist-tags are `beta -> 0.4.0-beta.1` and `latest -> 0.3.0`. Trusted Publisher/OIDC publication and provenance succeeded.
 - The canonical GitHub prerelease asset matches the public npm tarball: **54,776 bytes**, SHA-256 `d906cd7e69379841655cd2c562558cf75bff622e4284ca58e1b9680f232c8870`.
-- No live DingTalk Presentation template acceptance has occurred. The package ships no DingTalk templates.
+- At the time of this preflight, no live DingTalk Presentation template acceptance had occurred. The package ships no DingTalk templates.
 
 ### Connected-instance production preflight
 
-On 2026-10-25, connected production n8n and its runners were healthy on version **2.44.6**. The installed `n8n-nodes-dingtalk-card` remains **0.3.0**; its live node schema exposes `cardDataMode` values `form` and `json` only. The official `/api/v1/community-packages` route exists and requires authentication. No confirmed existing Public API credential with both `communityPackage:list` and `communityPackage:update` scopes was available on-host, and `N8N_COMMUNITY_PACKAGES` environment management is not configured.
+On 2026-10-25, connected production n8n and its runners were healthy on version **2.44.6**. At this preflight point the installed `n8n-nodes-dingtalk-card` was **0.3.0** and its live node schema exposed `cardDataMode` values `form` and `json` only. The official `/api/v1/community-packages` route existed and required authentication. No confirmed existing Public API credential with both `communityPackage:list` and `communityPackage:update` scopes was available on-host, and `N8N_COMMUNITY_PACKAGES` environment management was not configured.
 
-The existing DingTalk Card E2E workflow uses the earlier template-variable pattern; it is not evidence of v0.4 Presentation acceptance. Production upgrade and live template E2E therefore remain pending. No private IDs or secrets are recorded here.
+At that point the existing DingTalk Card E2E workflow used the earlier template-variable pattern; it was not evidence of v0.4 Presentation acceptance. Production upgrade and live template E2E were then pending. No private IDs or secrets are recorded here.
+
+## v0.4.0-beta.1 production install and connected-instance transport acceptance — 2026-10-25
+
+Production self-hosted n8n and runners were on **2.44.6**; healthz and readiness each returned HTTP 200. The package `n8n-nodes-dingtalk-card@0.4.0-beta.1` was installed through the supported Community Nodes UI lifecycle. The host package metadata confirmed `0.4.0-beta.1`. Live `get_node_types` exposed `cardDataMode='presentation'` and `presentationDescriptor`.
+
+Connected-instance live acceptance passed the following transport paths:
+
+- A valid status Presentation Update was applied to an existing test card; DingTalk Update returned success.
+- The existing draft E2E's Create & Deliver and Update steps were switched to Presentation mode. The run then completed its existing Streaming Update, Finalize, and final whole-body JSON Update; the complete live execution succeeded.
+
+This accepts the Presentation adapter mapping, DingTalk API transport, and compatibility with the legacy lifecycle on this connected instance. The E2E used the existing legacy public AI template solely for these purposes. That template does not satisfy the v0.4 `presentationVersion`/`presentationFamily`/`title`/`tone`/... variable contract documented in [PRESENTATION.md](PRESENTATION.md). Therefore no visual Presentation rendering or matching-template acceptance is claimed. Visual/template E2E remains pending until the user publishes a template matching that contract and runs it. The package ships no DingTalk templates.
+
+The preceding prepublication development verification remains historical and records local gates only; it makes no claim of production use at that earlier point. No real organization, group, card, credential, workflow, execution, or `outTrackId` identifiers are recorded.
 
 ## v0.3.0 stable release — 2026-10-24
 
