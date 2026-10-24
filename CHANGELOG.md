@@ -1,12 +1,12 @@
 # Changelog
 
-## 0.2.0-beta.1 candidate (unpublished)
+## 0.2.0-beta.1 (prerelease)
 
 Adds DingTalk Card Trigger using the shared credential and a self-contained Node 24 native WebSocket transport. Only subscribes to CALLBACK `/v1.0/card/instances/callback`. Validates secure endpoints before ticket construction, sanitizes all gateway/connection errors, handles SYSTEM ping/disconnect, reconnects with capped backoff, aborts pending gateway work and cancels sockets/timers on deactivation. A module-local Client ID lock rejects competing triggers; external processes/services remain the operator’s responsibility.
 
 Guided Create & Deliver gains explicit Enable Stream Callbacks opt-in (`callbackType:"STREAM"`); default/false omits the field. Robot Code fallback and all outbound operations are preserved. Card callbacks receive immediate empty 200/OK ACK before one normalized n8n item; downstream updates are asynchronous. No synchronous local-update ACK or HTTP callback support. Raw malformed data is preserved safely.
 
-Deliberately avoids the upstream `dingtalk-stream` SDK due verified ticket-bearing URL logging risk, without copying the SDK or patching global console. Adds lifecycle/protocol/secret regression tests, native TLS runtime checks and standalone packed registration checks. No live candidate E2E is claimed. This task creates no tag, GitHub release or npm publication.
+Deliberately avoids the upstream `dingtalk-stream` SDK due verified ticket-bearing URL logging risk, without copying the SDK or patching global console. Adds lifecycle/protocol/secret regression tests, native TLS runtime checks and standalone packed registration checks. Inbound callback live E2E remains pending; no live callback acceptance is claimed. Released through the existing Trusted Publisher/OIDC process with provenance and no npm token. While no stable version exists, both beta and latest track this prerelease. Final public artifact and attestation verification is recorded in the GitHub prerelease notes.
 
 ## 0.1.0-beta.6
 

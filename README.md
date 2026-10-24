@@ -2,9 +2,9 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**0.2.0-beta.1 candidate — not tagged, released or published.** Adds DingTalk Card Trigger and explicit Stream callback opt-in. New inbound behavior has local mocked and Node 24 TLS-fixture coverage; live callback E2E remains pending. The earlier outbound group lifecycle passed a connected n8n 2.44.x / DingTalk enterprise-app E2E on 2026-10-24. That result does not certify this new transport, all templates, targets or runtime/UI behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
+**0.2.0-beta.1 prerelease.** Adds DingTalk Card Trigger and explicit Stream callback opt-in. New inbound behavior has local mocked and Node 24 TLS-fixture coverage; live callback E2E remains pending. The earlier outbound group lifecycle passed a connected n8n 2.44.x / DingTalk enterprise-app E2E on 2026-10-24. That result does not certify this new transport, all templates, targets or runtime/UI behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
 
-The published outbound beta can be installed using `n8n-nodes-dingtalk-card@beta`; that tag does not install this unpublished candidate. While no stable release exists, publishing synchronizes both `beta` and `latest` to this beta so n8n Community Nodes Update does not downgrade installations. `latest` does not currently indicate a stable release. Once a stable release exists, beta publishing must leave `latest` tracking stable; the existing workflow checks public versions before synchronization. Beta.3 is a GitHub prerelease only and was not published to npm.
+Install this prerelease using `n8n-nodes-dingtalk-card@0.2.0-beta.1` or `n8n-nodes-dingtalk-card@beta`. While no stable release exists, publishing synchronizes both `beta` and `latest` to this beta so n8n Community Nodes Update does not downgrade installations. `latest` does not currently indicate a stable release. Once a stable release exists, beta publishing must leave `latest` tracking stable; the existing workflow checks public versions before synchronization. Beta.3 is a GitHub prerelease only and was not published to npm.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -12,14 +12,14 @@ It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingT
 
 Requires Node.js 24+ and a compatible n8n installation. Development compiles and loads the node against `n8n-workflow` 2.44.2 (the dependency of current stable n8n 2.44.6); full runtime/UI compatibility is not yet certified. CI uses Node 24. Current stable n8n 2.44.6 declares Node >=24; this takes precedence over older starter guidance mentioning Node 22.
 
-Install the previously published outbound beta in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Use the `beta` tag explicitly. npm installation does not certify live DingTalk behavior. The tested live scope is documented below; n8n verification remains pending.
+Install this prerelease in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Use the `beta` tag explicitly. npm installation does not certify live DingTalk behavior. The tested live scope is documented below; n8n verification remains pending.
 
-To build this candidate from main and install its local artifact on a disposable self-hosted n8n instance:
+To build this prerelease from its tag and install its local artifact on a disposable self-hosted n8n instance:
 
 ```sh
 git clone https://github.com/NTLx/n8n-nodes-dingtalk-card.git
 cd n8n-nodes-dingtalk-card
-git checkout main
+git checkout v0.2.0-beta.1
 npm ci
 npm run build
 npm test
@@ -50,7 +50,7 @@ The credential test acquires an app token only. It does not send a card or prove
 | Streaming Update | PUT one frame with `key`, `content`, `guid`, `isFull`, `isFinalize`, `isError` |
 | Finalize | PUT a terminal streaming frame: success sets `isFinalize=true,isError=false`; failure sets `isError=true,isFinalize=false` |
 
-**Form** input provides guided fields. Card Data has its own Form/JSON selector; the JSON form is the full `{"cardParamMap":{"title":"Example"}}` object. All map values must be **strings**; serialize arrays/objects as strings according to your template variable types. **JSON** input accepts the official request body for advanced delivery/space models, `privateData`, `cardUpdateOptions`, `userIdType`, or `callbackType: "STREAM"`. Fields pass through; you are responsible for model/space consistency. This candidate provides no HTTP callback listener or guided HTTP mode.
+**Form** input provides guided fields. Card Data has its own Form/JSON selector; the JSON form is the full `{"cardParamMap":{"title":"Example"}}` object. All map values must be **strings**; serialize arrays/objects as strings according to your template variable types. **JSON** input accepts the official request body for advanced delivery/space models, `privateData`, `cardUpdateOptions`, `userIdType`, or `callbackType: "STREAM"`. Fields pass through; you are responsible for model/space consistency. This prerelease provides no HTTP callback listener or guided HTTP mode.
 
 `outTrackId` uniquely identifies the card within DingTalk's app context and is always returned. Create generates a UUID when missing/empty; all subsequent operations require the same ID. To make repeated executions/retries refer to the same card, supply a deterministic ID yourself, e.g. `={{ 'n8n-error-' + $json.execution.id }}`. A repeated create with the same ID is not a general update/upsert: use Update. Store the create output before later lifecycle operations.
 
@@ -94,7 +94,7 @@ In the real connected-instance test on 2026-10-24, Create & Deliver and Update s
 
 [Importable Error Trigger workflow](examples/error-notification.workflow.json) sends a public-data error card using the JSON input escape hatch. It uses placeholders for template, group and robot IDs; choose your credential after importing. Set it as another workflow's **Error Workflow**, activate/configure it as required by your n8n version, and test with a deliberate failure on a disposable workflow. An Error Trigger does not behave like a normal manual trigger. This example is a fixture, not a live-tested integration.
 
-The corresponding [API payload](examples/error-notification.payload.json) is usable independently. Publish a template exposing string variables `title`, `workflowName`, `message` and `executionUrl`. Review and redact error messages before sending; workflow errors and execution URLs can contain sensitive information. To later stream status, preserve `outTrackId` and call Streaming Update followed by Finalize. For button/form actions back into n8n, use the candidate Stream trigger described above.
+The corresponding [API payload](examples/error-notification.payload.json) is usable independently. Publish a template exposing string variables `title`, `workflowName`, `message` and `executionUrl`. Review and redact error messages before sending; workflow errors and execution URLs can contain sensitive information. To later stream status, preserve `outTrackId` and call Streaming Update followed by Finalize. For button/form actions back into n8n, use the Stream trigger described above.
 
 ## Security and retries
 
@@ -125,7 +125,7 @@ See [verification record](docs/VERIFICATION.md) for exact local/CI gates, depend
 ## Roadmap
 
 - **v0.1.0-beta.1:** enterprise app credential/auth; Create & Deliver, Update, Streaming Update, Finalize; Form/JSON input; actionable errors; mocked tests/build/lint/docs/examples/CI. **Not real-DingTalk-E2E certified. No inbound interaction trigger.**
-- **v0.2.0-beta.1 candidate:** narrowly scoped native Stream card trigger, immediate ACK and explicit STREAM opt-in. Live callback delivery, n8n activation/deactivation/restart and asynchronous update E2E remain acceptance gates. Synchronous local-update ACKs and durable deduplication are deferred.
+- **v0.2.0-beta.1 prerelease:** narrowly scoped native Stream card trigger, immediate ACK and explicit STREAM opt-in. Live callback delivery, n8n activation/deactivation/restart and asynchronous update E2E remain acceptance gates. Synchronous local-update ACKs and durable deduplication are deferred.
 - **v0.3.0:** richer template/space helpers, normalized errors, idempotency/retry behavior, compatibility/E2E fixtures and examples.
 - **v1.0.0:** only after real DingTalk enterprise app + interactive-card E2E and current stable n8n runtime compatibility are verified, with mature npm installation/release documentation. Prove group/DM creation, rendered variables, merge updates, streaming, success/error finalization, interactions and failure recovery before declaring stable.
 
