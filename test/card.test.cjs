@@ -566,3 +566,39 @@ test('error workflow fixture matches registered operation and constructs a usabl
 	assert.equal(request.body.outTrackId, 'n8n-error-123');
 	assert.equal(request.body.cardData.cardParamMap.workflowName, 'Example');
 });
+
+test('guided STREAM callback opt-in includes STREAM only when enabled and retains robot fallback', async () => {
+	const field = new DingTalkCard().description.properties.find(
+		(p) => p.name === 'enableStreamCallbacks',
+	);
+	assert.equal(field.default, false);
+	for (const enabled of [undefined, false, true]) {
+		for (const target of ['group', 'robot']) {
+			const seen = [];
+			const c = context(
+				[
+					{
+						operation: 'createAndDeliver',
+						inputMode: 'form',
+						outTrackId: 'track',
+						cardTemplateId: 'tpl',
+						cardDataMode: 'form',
+						target,
+						spaceId: 'destination',
+						...(enabled === undefined ? {} : { enableStreamCallbacks: enabled }),
+					},
+				],
+				mockApi(seen),
+			);
+			c.getCredentials = async () => ({ appKey: 'fixture-client', appSecret: 'fixture-secret' });
+			await new DingTalkCard().execute.call(c);
+			const body = seen.find((o) => o.url.endsWith('/createAndDeliver')).body;
+			assert.equal(Object.hasOwn(body, 'callbackType'), enabled === true);
+			if (enabled) assert.equal(body.callbackType, 'STREAM');
+			assert.equal(
+				body[target === 'group' ? 'imGroupOpenDeliverModel' : 'imRobotOpenDeliverModel'].robotCode,
+				'fixture-client',
+			);
+		}
+	}
+});

@@ -81,6 +81,15 @@ const properties: INodeProperties[] = [
 			'External card identifier. Leave empty only when creating to generate a UUID. Reuse the output identifier for updates.',
 	},
 	{
+		displayName: 'Enable Stream Callbacks',
+		name: 'enableStreamCallbacks',
+		type: 'boolean',
+		default: false,
+		displayOptions: { show: { inputMode: ['form'], operation: ['createAndDeliver'] } },
+		description:
+			'Whether to route interactions to a DingTalk Card Trigger using the same Client ID. Acknowledgements are immediate; updates are asynchronous.',
+	},
+	{
 		displayName: 'Card Template ID',
 		name: 'cardTemplateId',
 		type: 'string',
@@ -332,6 +341,8 @@ export class DingTalkCard implements INodeType {
 									);
 						if (operation === 'createAndDeliver') {
 							body.cardTemplateId = this.getNodeParameter('cardTemplateId', i);
+							if (this.getNodeParameter('enableStreamCallbacks', i, false))
+								body.callbackType = 'STREAM';
 							const group = this.getNodeParameter('target', i) === 'group';
 							const spaceId = this.getNodeParameter('spaceId', i) as string;
 							const robotCodeOverride = this.getNodeParameter('robotCode', i, '') as string;

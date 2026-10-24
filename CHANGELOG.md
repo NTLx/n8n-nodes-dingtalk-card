@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0-beta.1 candidate (unpublished)
+
+Adds DingTalk Card Trigger using the shared credential and a self-contained Node 24 native WebSocket transport. Only subscribes to CALLBACK `/v1.0/card/instances/callback`. Validates secure endpoints before ticket construction, sanitizes all gateway/connection errors, handles SYSTEM ping/disconnect, reconnects with capped backoff, aborts pending gateway work and cancels sockets/timers on deactivation. A module-local Client ID lock rejects competing triggers; external processes/services remain the operator’s responsibility.
+
+Guided Create & Deliver gains explicit Enable Stream Callbacks opt-in (`callbackType:"STREAM"`); default/false omits the field. Robot Code fallback and all outbound operations are preserved. Card callbacks receive immediate empty 200/OK ACK before one normalized n8n item; downstream updates are asynchronous. No synchronous local-update ACK or HTTP callback support. Raw malformed data is preserved safely.
+
+Deliberately avoids the upstream `dingtalk-stream` SDK due verified ticket-bearing URL logging risk, without copying the SDK or patching global console. Adds lifecycle/protocol/secret regression tests, native TLS runtime checks and standalone packed registration checks. No live candidate E2E is claimed. This task creates no tag, GitHub release or npm publication.
+
 ## 0.1.0-beta.6
 
 Streaming Update and Finalize now default the guided Streaming Key to `msgContent` for the public AI template `02fcf2f4-5e02-4a85-b672-46d1f715543e.schema`. Custom keys remain overrideable; saved explicit keys and whole-body JSON are unchanged. Generic Finalize only sends a terminal streaming frame; follow with Update setting `flowStatus: "3"` for this template's visual completion. No generic flowStatus behavior was added.

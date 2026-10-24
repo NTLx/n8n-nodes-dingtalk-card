@@ -1,0 +1,37 @@
+{
+	"name": "DingTalk Card interaction — asynchronous update",
+	"active": false,
+	"nodes": [
+		{
+			"id": "card-interaction-trigger",
+			"name": "DingTalk Card Trigger",
+			"type": "n8n-nodes-dingtalk-card.dingTalkCardTrigger",
+			"typeVersion": 1,
+			"position": [0, 0],
+			"parameters": {}
+		},
+		{
+			"id": "card-interaction-update",
+			"name": "Update card after receipt ACK",
+			"type": "n8n-nodes-dingtalk-card.dingTalkCard",
+			"typeVersion": 1,
+			"position": [320, 0],
+			"parameters": {
+				"operation": "update",
+				"inputMode": "form",
+				"outTrackId": "={{ $json.outTrackId }}",
+				"cardDataMode": "form",
+				"cardParameters": {
+					"parameters": [{ "name": "status", "value": "Interaction received" }]
+				},
+				"updateByKey": true
+			}
+		}
+	],
+	"connections": {
+		"DingTalk Card Trigger": {
+			"main": [[{ "node": "Update card after receipt ACK", "type": "main", "index": 0 }]]
+		}
+	},
+	"settings": { "executionOrder": "v1" }
+}
