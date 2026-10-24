@@ -2,7 +2,7 @@
 
 ## 0.1.0-beta.4
 
-Documentation and release pipeline only. The publish workflow uses npm Trusted Publishing with provenance and publishes under `beta`. It does not modify npm `latest`, which remains a one-time cleanup issue. No DingTalk node behavior changed.
+Documentation and release pipeline only. Published to npm through GitHub Actions Trusted Publishing with provenance under `beta`. Public tags are `beta -> 0.1.0-beta.4` and `latest -> 0.1.0-beta.2`; the latter remains a one-time cleanup issue. No DingTalk node behavior changed.
 
 ## 0.1.0-beta.3
 
