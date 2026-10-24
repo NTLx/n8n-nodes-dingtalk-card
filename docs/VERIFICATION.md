@@ -116,6 +116,8 @@ Acceptance ran against the connected self-hosted production n8n **2.44.5** insta
 
 Before package acceptance, an unrelated external task-runner routing incident caused JavaScript Code executions to hang. Resetting the `n8n_service` and `n8n_runners` sessions restored execution. A disposable Manual → JavaScript Code → Python Code probe succeeded as execution **4487**; probes were then archived. This was an environment incident, not a DingTalk Card defect.
 
+After candidate load and the `n8n_service` restart, a fresh disposable Manual Trigger → JavaScript Code probe completed successfully as execution **4503**, confirming external JavaScript task-runner execution remained operational; the probe workflow was then archived.
+
 Live DingTalk executions on the candidate:
 
 - **4489 passed** Group Create & Deliver → Update → Streaming Update → Finalize → final Update. It mixed legacy String values and new JSON Value Mode structured parameters; every card operation returned `success=true`, with the same `outTrackId` propagated throughout.
