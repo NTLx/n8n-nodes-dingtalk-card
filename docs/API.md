@@ -1,5 +1,9 @@
 # API contracts checked 2026-10-24
 
+## Presentation Card Data Mode (v0.4.0 development)
+
+For Form input on Create & Deliver or Update, Card Data Mode `Presentation` accepts the v1 descriptor documented in [PRESENTATION.md](PRESENTATION.md) and produces existing `cardData.cardParamMap` string values. It is opt-in; Card Data Form/JSON and whole-body Input Mode JSON contracts are unchanged. This mode is a stateless adapter and does not ship templates, render components, route actions, or enforce status transitions.
+
 Primary documentation was fetched from current DingTalk documentation pages and their published backing content at `https://icms-document.oss-cn-beijing.aliyuncs.com/zh-CN/dingtalk/{namespace}/topics/{slug}.html`. The backing URL is how the current documentation frontend renders the body; it is not an application endpoint. That documentation check did not make authenticated calls; the later connected-instance live E2E is recorded below.
 
 | Purpose | Method and path on `https://api.dingtalk.com` | Verified contract |

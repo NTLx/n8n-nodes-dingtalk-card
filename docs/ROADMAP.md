@@ -4,6 +4,8 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap starts from the published **v0.3.0** stable state, with **v0.3.0-beta.1** retained as its prerelease. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
+The repository package version is **0.4.0-beta.1**, an unpublished development candidate for the v0.4.0 milestone. The v0.4.0 Presentation Contract & Template Kit is implemented and verified locally, but remains unreleased. No v0.4.0 live DingTalk acceptance, npm publication, or release provenance is claimed. Beta release preparation remains separate.
+
 ## Vision and product principle
 
 Before 1.0, make DingTalk a polished presentation surface and a lightweight interaction/control surface for n8n automation. Notifications, status, reports, tasks, and deterministic actions should appear as rich interactive cards. Escalate to AI/ChatGPT only when understanding, generation, reasoning, or agent behavior is genuinely needed.
@@ -45,22 +47,24 @@ Descriptors produced with model assistance may be considered only after determin
 
 **Compatibility and migration:** Preserve existing Form/JSON behavior, callback opt-in, output fields, and saved workflow behavior. Same-ID Create semantics remain explicitly non-guaranteed.
 
-### v0.4.0 — Presentation Contract & Template Kit
+### v0.4.0 — Presentation Contract & Template Kit (implemented locally; unreleased)
 
 **Objective:** Define how workflows describe useful card presentations independently of a particular template.
 
-**Main deliverables:**
+**Main deliverables (implemented):**
 
-- Stable high-level presentation schema and example payloads/templates.
+- Versioned presentation schema, example payloads, and a template variable contract.
 - Alert, Status, Digest, Action, and Report card families.
 - Design tokens and visual hierarchy guidance, with card state transitions.
 - Low-level raw JSON mode retained for expert API use.
 
-**Acceptance gates:** Schema validation is deterministic; examples map clearly to documented DingTalk templates; required and optional values and state transitions are documented. Do not label a component supported until current official platform behavior is verified.
+The implementation is a deterministic stateless adapter to the existing Form-mode `cardData.cardParamMap` boundary. It does not ship DingTalk templates or claim verified component support. Status transition descriptions are workflow guidance only.
+
+**Acceptance gates:** Local schema validation, family examples, mapping, compatibility, and workflow-only state guidance are documented and locally verified. Live template rendering and component behavior are not accepted or claimed. Do not label a component supported until current official platform behavior is verified.
 
 **Non-goals / deferrals:** No arbitrary UI or HTML, no automatic template authoring, and no A2UI runtime in this milestone.
 
-**Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted.
+**Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. The milestone remains unreleased pending release work/evidence.
 
 ### v0.5.0 — Interaction Contract & Normalized Trigger
 

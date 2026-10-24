@@ -1,0 +1,4 @@
+{
+  "descriptor": {"version":"1","family":"action","title":"Review deployment","tone":"warning","label":"Open deployment details","description":"Display metadata only; configure workflow behavior separately."},
+  "cardData": {"cardParamMap":{"presentationVersion":"1","presentationFamily":"action","title":"Review deployment","tone":"warning","label":"Open deployment details","description":"Display metadata only; configure workflow behavior separately."}}
+}

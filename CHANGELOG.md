@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0-beta.1 (development candidate; unpublished)
+
+Adds opt-in Presentation Card Data Mode for Create & Deliver and Update. Version 1 descriptors cover alert, status, digest, action presentation metadata, and report families, with deterministic validation and mapping to string-valued `cardParamMap` entries. Includes template variable contract documentation and examples. Status transitions are guidance only; Action does not route or execute. No DingTalk templates are shipped, and no live template acceptance, npm publication, tag, or release is claimed. Release preparation is separate. v0.5 callback/action normalization and v0.6 renderer/A2UI work remain deferred.
+
 ## 0.3.0 (stable)
 
 Promotes the published v0.3.0-beta.1 package to stable without adding node behavior. Includes guided Form String/JSON card parameter values, sanitized normalized outbound `errorDetails`, stable caller-controlled `outTrackId` recovery guidance, and the existing Stream callback behavior. Reusing an ID does not guarantee Create deduplication or upsert.

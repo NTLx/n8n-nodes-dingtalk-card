@@ -1,0 +1,4 @@
+{
+  "descriptor": {"version":"1","family":"digest","title":"Engineering digest","tone":"neutral","items":[{"title":"Build passed","summary":"Main branch","tone":"success"},{"title":"Deploy pending","tone":"warning"}]},
+  "cardData": {"cardParamMap":{"presentationVersion":"1","presentationFamily":"digest","title":"Engineering digest","tone":"neutral","items":"[{\"title\":\"Build passed\",\"summary\":\"Main branch\",\"tone\":\"success\"},{\"title\":\"Deploy pending\",\"tone\":\"warning\"}]"}}
+}

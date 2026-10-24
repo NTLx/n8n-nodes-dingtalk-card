@@ -1,6 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { buildRequest, formCardData, jsonObject } = require('../dist/nodes/DingTalkCard/payload');
+const { presentationCardData } = require('../dist/nodes/DingTalkCard/presentation');
 const { createClient, checkBusinessResponse } = require('../dist/nodes/DingTalkCard/transport');
 const { DingTalkCard } = require('../dist/nodes/DingTalkCard/DingTalkCard.node');
 const { DingTalkCardApi } = require('../dist/credentials/DingTalkCardApi.credentials');
@@ -152,6 +153,49 @@ test('Form JSON mode serializes object, array, and scalar values once', () => {
 			},
 		},
 	);
+});
+const presentations = {
+	alert: { version: '1', family: 'alert', title: 'Disk full', tone: 'danger', source: 'monitor', occurredAt: 'now' },
+	status: { version: '1', family: 'status', title: 'Backup', tone: 'info', state: 'running', details: 'Uploading' },
+	digest: { version: '1', family: 'digest', title: 'Daily', tone: 'neutral', items: [{ title: 'Build', summary: 'Passed', tone: 'success' }] },
+	action: { version: '1', family: 'action', title: 'Review', tone: 'warning', label: 'Open details', description: 'Display only' },
+	report: { version: '1', family: 'report', title: 'Report', tone: 'success', sections: [{ heading: 'Uptime', body: '99.9%' }] },
+};
+test('presentation maps all five families into string-valued cardParamMap deterministically', () => {
+	for (const [family, descriptor] of Object.entries(presentations)) {
+		const first = presentationCardData(descriptor);
+		assert.deepEqual(first, presentationCardData(JSON.parse(JSON.stringify(descriptor))));
+		assert.equal(first.cardParamMap.presentationVersion, '1');
+		assert.equal(first.cardParamMap.presentationFamily, family);
+		assert.equal(first.cardParamMap.title, descriptor.title);
+		assert.equal(first.cardParamMap.tone, descriptor.tone);
+		assert.ok(Object.values(first.cardParamMap).every((value) => typeof value === 'string'));
+	}
+	assert.equal(presentationCardData(presentations.digest).cardParamMap.items, '[{"title":"Build","summary":"Passed","tone":"success"}]');
+	assert.equal(presentationCardData(presentations.report).cardParamMap.sections, '[{"heading":"Uptime","body":"99.9%"}]');
+});
+test('presentation rejects unsupported versions and families, unknown fields and wrong types', () => {
+	for (const descriptor of [
+		{ ...presentations.alert, version: '2' },
+		{ ...presentations.alert, family: 'unknown' },
+		{ ...presentations.alert, surprise: true },
+		{ ...presentations.alert, title: 4 },
+		{ ...presentations.alert, tone: 'red' },
+		{ ...presentations.digest, items: [{ title: 'x', extra: 1 }] },
+		{ ...presentations.report, sections: [{ heading: 'x', body: 'y', html: '<b>' }] },
+	]) assert.throws(() => presentationCardData(descriptor));
+	assert.throws(() => presentationCardData({ ...presentations.status, state: 'paused' }), /state/);
+});
+test('presentation rejects missing required fields and malformed or oversized collections', () => {
+	for (const descriptor of [
+		{ ...presentations.alert, title: undefined },
+		{ ...presentations.status, state: undefined },
+		{ ...presentations.action, label: undefined },
+		{ ...presentations.digest, items: [] },
+		{ ...presentations.digest, items: Array(21).fill({ title: 'x' }) },
+		{ ...presentations.digest, items: 'not an array' },
+		{ ...presentations.report, sections: [] },
+	]) assert.throws(() => presentationCardData(descriptor));
 });
 test('malformed Form JSON identifies its parameter without echoing its value', () => {
 	const supplied = '{"private-sentinel":';
@@ -634,6 +678,27 @@ test('Form value mode defaults to String and guided JSON parameters reach create
 		assert.deepEqual(JSON.parse(JSON.stringify(write.body.cardData)), {
 			cardParamMap: { object: '{"key":1}', legacy: '[1,2]' },
 		});
+	}
+});
+test('Presentation mode maps descriptor through existing Create and Update request path', async () => {
+	for (const operation of ['createAndDeliver', 'update']) {
+		const seen = [];
+		const params = {
+			operation,
+			inputMode: 'form',
+			outTrackId: 'track',
+			cardDataMode: 'presentation',
+			presentationDescriptor: JSON.stringify(presentations.status),
+			...(operation === 'createAndDeliver'
+				? { cardTemplateId: 'tpl', target: 'group', spaceId: 'destination' }
+				: { updateByKey: true }),
+		};
+		await new DingTalkCard().execute.call(context([params], mockApi(seen)));
+		const write = seen.find((request) => !request.url.endsWith('/accessToken'));
+		assert.deepEqual(
+			JSON.parse(JSON.stringify(write.body.cardData)),
+			JSON.parse(JSON.stringify(presentationCardData(presentations.status))),
+		);
 	}
 });
 test('defaulted Robot Code does not leak credential values in failures', async () => {

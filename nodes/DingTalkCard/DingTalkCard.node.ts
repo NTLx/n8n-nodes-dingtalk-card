@@ -11,6 +11,7 @@ import type {
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { buildRequest, formCardData, jsonObject, type Operation } from './payload';
+import { presentationCardData } from './presentation';
 import { CardError, createClient, type CardErrorDetails, type Json } from './transport';
 
 const operations = ['createAndDeliver', 'update'];
@@ -62,6 +63,17 @@ const properties: INodeProperties[] = [
 		description: 'Use guided fields or supply the official API request body',
 	},
 	{
+		displayName: 'Presentation Descriptor',
+		name: 'presentationDescriptor',
+		type: 'json',
+		default: '{}',
+		required: true,
+		displayOptions: {
+			show: { inputMode: ['form'], operation: operations, cardDataMode: ['presentation'] },
+		},
+		description: 'Versioned presentation descriptor mapped to the documented template variables',
+	},
+	{
 		displayName: 'Request Body',
 		name: 'requestBody',
 		type: 'json',
@@ -107,6 +119,7 @@ const properties: INodeProperties[] = [
 		options: [
 			{ name: 'Form', value: 'form' },
 			{ name: 'JSON', value: 'json' },
+			{ name: 'Presentation', value: 'presentation' },
 		],
 		displayOptions: { show: { inputMode: ['form'], operation: operations } },
 	},
@@ -340,9 +353,13 @@ export class DingTalkCard implements INodeType {
 				else {
 					body.outTrackId = this.getNodeParameter('outTrackId', i);
 					if (operations.includes(operation)) {
-						body.cardData =
-							this.getNodeParameter('cardDataMode', i) === 'json'
-								? jsonObject(this.getNodeParameter('cardData', i), 'Card Data')
+						const cardDataMode = this.getNodeParameter('cardDataMode', i);
+						body.cardData = cardDataMode === 'json'
+							? jsonObject(this.getNodeParameter('cardData', i), 'Card Data')
+							: cardDataMode === 'presentation'
+								? presentationCardData(
+										jsonObject(this.getNodeParameter('presentationDescriptor', i), 'Presentation Descriptor'),
+									)
 								: formCardData(
 										this.getNodeParameter('cardParameters.parameters', i, []) as Array<{
 											name: string;
