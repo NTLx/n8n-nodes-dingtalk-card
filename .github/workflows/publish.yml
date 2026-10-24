@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   publish:
-    if: github.ref == 'refs/tags/v0.3.0' || startsWith(github.ref, 'refs/tags/v0.1.0-beta.') || startsWith(github.ref, 'refs/tags/v0.2.0-beta.') || startsWith(github.ref, 'refs/tags/v0.3.0-beta.')
+    if: github.ref == 'refs/tags/v0.3.0' || startsWith(github.ref, 'refs/tags/v0.1.0-beta.') || startsWith(github.ref, 'refs/tags/v0.2.0-beta.') || startsWith(github.ref, 'refs/tags/v0.3.0-beta.') || startsWith(github.ref, 'refs/tags/v0.4.0-beta.')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -29,8 +29,7 @@ jobs:
       - run: npm run verify:package
       - run: npm audit --omit=dev --audit-level=high
       - name: Verify tag and package version
-        run: |
-          node -e 'const p=require("./package.json"); const tag=process.env.GITHUB_REF_NAME; const valid=p.version === "0.3.0" ? tag === "v0.3.0" : /^0\.(?:1|2|3)\.0-beta\.\d+$/.test(p.version) && `v${p.version}` === tag; if (!valid) process.exit(1)'
+        run: node scripts/verify-release-ref.cjs
       - name: Publish stable with provenance
         if: github.ref == 'refs/tags/v0.3.0'
         run: npm publish --access public --tag latest --provenance
