@@ -1,5 +1,9 @@
 # Release verification record — 2026-10-24
 
+## v0.4.0-beta.2 real Mac DingTalk visual acceptance — 2026-10-25
+
+Real Mac DingTalk visual acceptance passed with the user's published AI-card template when `flowStatus=3` was supplied. All 13 Presentation contract fields and the summary rendered. The Presentation adapter supplies the fixed public `flowStatus: "3"` compatibility field while retaining the 13 contract variables. No private template IDs or group/card identifiers are recorded.
+
 ## v0.4.0-beta.1 publication and production preflight — 2026-10-25 (historical)
 
 The v0.4.0-beta.1 package is publicly published as a beta. This section records release identity and the read-only production preflight state at that time. Its production-upgrade and live-acceptance statements are superseded by the subsequent acceptance section below.

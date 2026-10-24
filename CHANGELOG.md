@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0-beta.2 (prerelease)
+
+Adds the fixed AI-host compatibility value `flowStatus: "3"` to Presentation `cardParamMap`, preserving all 13 Presentation contract fields. Real Mac DingTalk visual acceptance passed with the user-published AI-card template when `flowStatus=3` was supplied: all 13 Presentation fields and the summary rendered. No private template, group, or card identifiers are recorded. The package ships no DingTalk templates. npm `latest` remains stable at `0.3.0`.
+
 ## 0.4.0-beta.1 (published beta)
 
 Adds opt-in Presentation Card Data Mode for Create & Deliver and Update. Version 1 descriptors cover alert, status, digest, action presentation metadata, and report families, with deterministic validation and mapping to string-valued `cardParamMap` entries. Includes template variable contract documentation and examples. Status transitions are guidance only; Action does not route or execute. On self-hosted production n8n/runners 2.44.6, supported UI install, loaded schema, valid status Presentation Update, and full Presentation-mode Create & Deliver/Streaming Update/Finalize/final whole-body JSON Update transport lifecycle passed, including legacy lifecycle compatibility. The legacy public AI template used does not satisfy the v0.4 template variable contract; visual Presentation rendering/template acceptance remains pending a user-published matching template. No DingTalk templates are shipped. The public beta is published as `beta -> 0.4.0-beta.1`; npm `latest` remains `0.3.0`. The release and production acceptance evidence are recorded in [verification](docs/VERIFICATION.md#v040-beta1-production-install-and-connected-instance-transport-acceptance-2026-10-25). v0.5 callback/action normalization and v0.6 renderer/A2UI work remain deferred.
