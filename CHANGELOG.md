@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0-beta.1 (release candidate; not published)
+## 0.3.0-beta.1 (published beta prerelease)
 
 Guided Create & Deliver and Update Form card parameters add String/JSON value mode. String remains the default, including for saved workflows without the new field; JSON values serialize to the strings required by `cardParamMap`. Whole-body JSON behavior is preserved.
 
@@ -8,7 +8,7 @@ The outbound node adds sanitized, normalized `errorDetails` while preserving exi
 
 Documents stable caller-controlled `outTrackId` recovery guidance and adds a packaged synthetic branching fixture. Reusing an ID does not guarantee Create deduplication/upsert; verify before replay, and use Update for an existing card. Existing v0.2 Stream callback behavior is preserved.
 
-This is an unpublished, untagged prerelease candidate, not a stable release. The documented outbound live acceptance passed on connected self-hosted n8n 2.44.5; this supports the v0.3 outbound beta scope only and does not establish stable/v1.0 readiness. See [verification](docs/VERIFICATION.md#v030-beta1-connected-instance-live-acceptance--2026-10-24) for evidence and limits.
+Published as a beta prerelease from tag `v0.3.0-beta.1`; this is not a stable release. Connected-instance acceptance and post-release lifecycle smoke passed on self-hosted production n8n 2.44.5. This supports the documented v0.3 beta scope only and does not establish stable/v1.0 readiness. See [verification](docs/VERIFICATION.md#v030-beta1-post-release-verification--2026-10-24) for publication evidence and limits.
 
 ## 0.2.0-beta.1 (prerelease)
 

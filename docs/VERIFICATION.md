@@ -1,10 +1,10 @@
 # Beta verification record — 2026-10-24
 
-## v0.3.0-beta.1 release candidate — local verification
+## v0.3.0-beta.1 release preparation — local verification (historical)
 
 This source-only candidate combines the three completed v0.3 slices: additive Form card parameter String/JSON modes with legacy and whole-body JSON compatibility; sanitized normalized outbound `errorDetails` with conservative retryability/`mayHaveSucceeded` metadata and unchanged one-time invalid-token replay; and stable caller-controlled `outTrackId` recovery guidance with a packaged synthetic branch fixture. Existing v0.2 Stream behavior is preserved. No node runtime behavior beyond those already-implemented v0.3 outbound slices is changed in this release preparation.
 
-Version metadata is `0.3.0-beta.1`. The candidate remains untagged and unpublished. Local candidate gates and packed artifact details are recorded after they run below; connected-instance acceptance is recorded separately below. This is not a stable release.
+Version metadata is `0.3.0-beta.1`. At the time of these local gates the candidate was untagged and unpublished; publication and production evidence are recorded in the post-release section below. This is not a stable release.
 
 Candidate gates passed locally on Node **26.12.1 / npm 12.2.1**:
 
@@ -16,7 +16,7 @@ Candidate gates passed locally on Node **26.12.1 / npm 12.2.1**:
 - Publish workflow YAML parsed successfully. The exact `0.3.0-beta.1` version/tag pair passes its strict version expression; OIDC permission, provenance publish command, and stable-version `latest` guard remain present.
 - `git diff --check`: passed. The release-preparation diff contains no node/transport/trigger runtime changes; the only script/test assertion adjustment pins package verification to the candidate version.
 
-No tag, GitHub release, npm publication or n8n installation was performed. Live v0.3 DingTalk E2E and current installed n8n runtime/UI acceptance remain blockers for broader release confidence.
+This historical local-gate run did not create a tag, GitHub release, npm publication or n8n installation. Later live and publication results are recorded below; current stable n8n runtime/UI compatibility and stable/v1.0 readiness remain unverified.
 
 ## Baseline and provenance
 
@@ -106,7 +106,7 @@ The clean install reports existing development-toolchain advisories (**19 high, 
 
 ## Limits and next acceptance
 
-Current source candidate: `0.3.0-beta.1` (not published); the latest published prerelease remains `0.2.0-beta.1`. No stable release is implied. Earlier gate records above are historical. Mocked tests and tarball class loading complement the connected-instance live result but do not expand its tested scope. The v0.3 stable-ID recovery fixture uses synthetic values and placeholders; it is locally validated, not a live execution.
+The `0.3.0-beta.1` beta is published; no stable release is implied. Earlier gate records above are historical. Mocked tests and tarball class loading complement the connected-instance live result but do not expand its tested scope. The v0.3 stable-ID recovery fixture uses synthetic values and placeholders; it is locally validated, not a live execution.
 
 The post-release request-button callback E2E below passed; broader live Stream acceptance remains open before stable v0.2.0. The transport uses gateway credential authentication and immediate receipt ACK, with normalized button/form data; durable deduplication is deferred and workflows must make side effects idempotent. Before v1.0.0, verify the remaining group/DM delivery, rendering, error states and failure recovery cases, plus current-stable n8n runtime/UI compatibility. Resolve/reassess upstream development advisories before stable publication.
 
@@ -127,7 +127,24 @@ Live DingTalk executions on the candidate:
 - **4493 passed** the lifecycle with final Update in whole-body JSON mode, verifying request-body passthrough without duplicating the robot AppKey into the workflow.
 - **4494 passed** Create & Deliver for a callback-enabled interaction card with `enableStreamCallbacks`. No button click was performed, so callback delivery was not revalidated in v0.3. The earlier v0.2 real callback E2E remains the inbound-trigger evidence; trigger code was unchanged in v0.3.
 
-Remaining limits: Robot Direct Message was not rerun because this acceptance did not introduce a staff `userId`. Whole-body JSON Create & Deliver was not rerun because it would require explicitly duplicating robotCode/AppKey into the workflow; whole-body JSON Update was tested. Same-`outTrackId` Create deduplication/upsert is intentionally neither claimed nor tested. This evidence supports the stated v0.3 outbound beta scope; it does not establish stable/v1.0 readiness. The candidate remains unpublished and untagged.
+Remaining limits: Robot Direct Message was not rerun because this acceptance did not introduce a staff `userId`. Whole-body JSON Create & Deliver was not rerun because it would require explicitly duplicating robotCode/AppKey into the workflow; whole-body JSON Update was tested. Same-`outTrackId` Create deduplication/upsert is intentionally neither claimed nor tested. This evidence supports the stated v0.3 outbound beta scope; it does not establish stable/v1.0 readiness. Final publication and smoke results follow.
+
+## v0.3.0-beta.1 post-release verification — 2026-10-24
+
+### Public release identity
+
+- Tag `v0.3.0-beta.1` still points to release commit `30f751a5d86961561ecebae1af80953942e77105`; tag CI run [40098428907](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40098428907) succeeded.
+- npm Trusted Publisher/OIDC run [40098512847](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40098512847), attempt 1, succeeded with provenance, 56 tests, package verification and production audit. npm `beta` and `latest` both resolve to `0.3.0-beta.1`; no stable version exists. npm `gitHead` matches the release commit.
+- Public provenance identifies `refs/tags/v0.3.0-beta.1`, the exact release commit, `.github/workflows/publish.yml`, and run 40098512847 attempt 1.
+- The GitHub release asset now matches the public npm tarball byte-for-byte. The earlier GitHub archive differed only at the compressed archive-byte level; extracted content, file lists and tar metadata were identical before replacement. Canonical `n8n-nodes-dingtalk-card-0.3.0-beta.1.tgz`: **37,375 bytes**; SHA-256 `cc1463e9b686b4ec6923c919c33699724adf306dfe55ed43c71c29d52cf805ce`; SHA-1 `053793052108a340f7cb75cf2b7747c4a14802ba`; SHA-512 `c6d7b8c5d1ff62a627fa05d81c8a4536464df30c93d0115291dfdf9b7c98dba8ffc8ccaa406d2469e579e7b9972b955a990dc6dc47eb2eaedce383fccc190e37`; npm integrity `sha512-xte4xdH/YqYn+gXYHIpFNkZN8wyT0BFSkd/fm3yY26j/yMyqQG0kaeV557mXK5VamQ3G3EfrLq7c44P8zBkONw==`. The release contains one intended `.tgz` asset.
+
+### Production install and lifecycle smoke
+
+The production n8n community-node manifest and installed package are exact `0.3.0-beta.1` from public npm. Only `n8n_service` was restarted. Health and readiness each passed twice consecutively; DB and runners were unchanged. The loaded node schema includes v0.3 Value Mode. Install-time production n8n dependency resolution reported 6 audit vulnerabilities and an `isolated-vm` install-script trust notice. These install-tree findings are distinct from the package release production audit, which reported **0 vulnerabilities**; no causality is inferred.
+
+Post-release live lifecycle smoke execution **4526** succeeded across Create & Deliver, Update, Streaming Update, Finalize and final Update, with `success=true` and the same caller-provided `outTrackId` throughout. After the smoke there were no active running, waiting or new executions.
+
+Remaining limits are unchanged: Robot Direct Message was not rerun; whole-body JSON Create & Deliver was not rerun; no same-ID Create deduplication/upsert behavior is claimed; and a v0.3 callback click was not rerun. Earlier v0.2 callback evidence remains scoped to its documented path. This is beta evidence only, not stable/v1.0 certification.
 
 ## v0.2.0-beta.1 prerelease — local verification and remaining live acceptance
 
