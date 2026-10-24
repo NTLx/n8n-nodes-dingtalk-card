@@ -1,5 +1,23 @@
 # Beta verification record — 2026-10-24
 
+## v0.3.0-beta.1 release candidate — local verification
+
+This source-only candidate combines the three completed v0.3 slices: additive Form card parameter String/JSON modes with legacy and whole-body JSON compatibility; sanitized normalized outbound `errorDetails` with conservative retryability/`mayHaveSucceeded` metadata and unchanged one-time invalid-token replay; and stable caller-controlled `outTrackId` recovery guidance with a packaged synthetic branch fixture. Existing v0.2 Stream behavior is preserved. No node runtime behavior beyond those already-implemented v0.3 outbound slices is changed in this release preparation.
+
+Version metadata is `0.3.0-beta.1`. The candidate has not been tagged, published or installed. Local candidate gates and packed artifact details are recorded after they run below. Real v0.3 DingTalk E2E and acceptance in an installed current n8n runtime/UI remain pending; this is not a stable release.
+
+Candidate gates passed locally on Node **26.12.1 / npm 12.2.1**:
+
+- Clean `npm ci`: exit 0; 588 packages installed. npm reports 23 total development-tree advisories (19 high, 4 moderate), deprecations, and five blocked install scripts; these existing install notices did not alter the dependency manifest or lockfile.
+- `npm run lint`, `npm run typecheck`, and `npm run build`: exit 0.
+- `npm test`: **56 passed, 0 failed, 0 skipped**.
+- `npm run verify:package`: exit 0; **18 allowlisted files** and standalone class registration passed. Inspection of the actual packed tarball confirms manifest version `0.3.0-beta.1` and inclusion of `examples/stable-create-and-deliver.retry.json`.
+- `npm audit --omit=dev --audit-level=high`: exit 0; **0 production vulnerabilities**.
+- Publish workflow YAML parsed successfully. The exact `0.3.0-beta.1` version/tag pair passes its strict version expression; OIDC permission, provenance publish command, and stable-version `latest` guard remain present.
+- `git diff --check`: passed. The release-preparation diff contains no node/transport/trigger runtime changes; the only script/test assertion adjustment pins package verification to the candidate version.
+
+No tag, GitHub release, npm publication or n8n installation was performed. Live v0.3 DingTalk E2E and current installed n8n runtime/UI acceptance remain blockers for broader release confidence.
+
 ## Baseline and provenance
 
 - Repository: `NTLx/n8n-nodes-dingtalk-card`; remote `git@github.com:NTLx/n8n-nodes-dingtalk-card.git`.
@@ -88,7 +106,7 @@ The clean install reports existing development-toolchain advisories (**19 high, 
 
 ## Limits and next acceptance
 
-Current prerelease: `0.2.0-beta.1`; no stable release is implied. Earlier gate records above are historical. Mocked tests and tarball class loading complement the connected-instance live result but do not expand its tested scope. The new payload recipe uses public template data and placeholders; it is locally validated, not a separate live execution.
+Current source candidate: `0.3.0-beta.1` (not published); the latest published prerelease remains `0.2.0-beta.1`. No stable release is implied. Earlier gate records above are historical. Mocked tests and tarball class loading complement the connected-instance live result but do not expand its tested scope. The v0.3 stable-ID recovery fixture uses synthetic values and placeholders; it is locally validated, not a live execution.
 
 The post-release request-button callback E2E below passed; broader live Stream acceptance remains open before stable v0.2.0. The transport uses gateway credential authentication and immediate receipt ACK, with normalized button/form data; durable deduplication is deferred and workflows must make side effects idempotent. Before v1.0.0, verify the remaining group/DM delivery, rendering, error states and failure recovery cases, plus current-stable n8n runtime/UI compatibility. Resolve/reassess upstream development advisories before stable publication.
 

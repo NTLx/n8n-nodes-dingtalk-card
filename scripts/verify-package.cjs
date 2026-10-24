@@ -25,7 +25,7 @@ execFileSync('tar', ['-xzf', join(destination, pack.filename), '-C', destination
 const root = join(destination, 'package');
 const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 assert.equal(manifest.name, 'n8n-nodes-dingtalk-card');
-assert.equal(manifest.version, '0.2.0-beta.1');
+assert.equal(manifest.version, '0.3.0-beta.1');
 assert.ok(manifest.keywords.includes('n8n-community-node-package'));
 assert.ok(
 	pack.files.some(({ path }) => path === 'README.md'),

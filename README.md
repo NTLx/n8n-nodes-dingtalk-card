@@ -2,9 +2,9 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**0.2.0-beta.1 prerelease.** Adds DingTalk Card Trigger and explicit Stream callback opt-in. A real request-button callback E2E passed on the connected self-hosted n8n 2.44.x instance on 2026-10-24; see the [tested callback path](docs/VERIFICATION.md#post-release-button-callback-live-e2e--2026-10-24). The earlier outbound group lifecycle passed a connected n8n 2.44.x / DingTalk enterprise-app E2E on 2026-10-24. These results validate the tested paths, not all templates, targets or runtime/UI behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
+**0.3.0-beta.1 release candidate (not published).** Adds guided Form String/JSON card parameter values, additive sanitized normalized outbound error details, and stable-ID recovery guidance with a packaged fixture; existing v0.2 Stream behavior is preserved. Real v0.3 DingTalk E2E and acceptance in an installed current n8n runtime/UI remain pending. The v0.2.0-beta.1 callback and outbound lifecycle E2Es cover only their documented paths. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
 
-Install this prerelease using `n8n-nodes-dingtalk-card@0.2.0-beta.1` or `n8n-nodes-dingtalk-card@beta`. While no stable release exists, publishing synchronizes both `beta` and `latest` to this beta so n8n Community Nodes Update does not downgrade installations. `latest` does not currently indicate a stable release. Once a stable release exists, beta publishing must leave `latest` tracking stable; the existing workflow checks public versions before synchronization. Beta.3 is a GitHub prerelease only and was not published to npm.
+This candidate has not been published or tagged. The latest published prerelease remains `n8n-nodes-dingtalk-card@0.2.0-beta.1`; this source candidate is not available through npm yet. The existing OIDC workflow publishes beta versions with provenance and synchronizes `latest` only while no stable package version exists; once stable exists, beta must leave `latest` tracking stable. Historical beta.3 was a GitHub prerelease only and was not published to npm.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -12,9 +12,9 @@ It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingT
 
 Requires Node.js 24+ and a compatible n8n installation. Development compiles and loads the node against `n8n-workflow` 2.44.2 (the dependency of current stable n8n 2.44.6); full runtime/UI compatibility is not yet certified. CI uses Node 24. Current stable n8n 2.44.6 declares Node >=24; this takes precedence over older starter guidance mentioning Node 22.
 
-Install this prerelease in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Use the `beta` tag explicitly. npm installation does not certify live DingTalk behavior. The tested live scope is documented below; n8n verification remains pending.
+The `0.3.0-beta.1` candidate is not available from npm yet. The previously published prerelease can be installed in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@0.2.0-beta.1` (or `@beta` while that tag still points to it). Community-node installation requires an Owner or Admin account and may be disabled by instance policy. npm installation does not certify live DingTalk behavior. The tested live scope is documented below; v0.3 and current installed n8n runtime/UI acceptance remain pending.
 
-To build this prerelease from its tag and install its local artifact on a disposable self-hosted n8n instance:
+To rebuild the previously published v0.2.0-beta.1 artifact from its tag:
 
 ```sh
 git clone https://github.com/NTLx/n8n-nodes-dingtalk-card.git
@@ -130,7 +130,7 @@ See [verification record](docs/VERIFICATION.md) for exact local/CI gates, depend
 
 - **v0.1.0-beta.1:** enterprise app credential/auth; Create & Deliver, Update, Streaming Update, Finalize; Form/JSON input; actionable errors; mocked tests/build/lint/docs/examples/CI. **Not real-DingTalk-E2E certified. No inbound interaction trigger.**
 - **v0.2.0-beta.1 prerelease:** narrowly scoped native Stream card trigger, immediate ACK and explicit STREAM opt-in. The real request-button callback and asynchronous Update path passed; broader template/form, reconnect, deactivation/restart and failure-mode acceptance remains open. Synchronous local-update ACKs and durable deduplication are deferred.
-- **v0.3.0:** richer template/space helpers, normalized errors, idempotency/retry behavior, compatibility/E2E fixtures and examples.
+- **v0.3.0-beta.1 candidate:** Form String/JSON card parameter values, normalized outbound errors, and stable-ID recovery guidance/fixture. Real DingTalk E2E and installed current n8n runtime/UI acceptance remain pending.
 - **v1.0.0:** only after real DingTalk enterprise app + interactive-card E2E and current stable n8n runtime compatibility are verified, with mature npm installation/release documentation. Prove group/DM creation, rendered variables, merge updates, streaming, success/error finalization, interactions and failure recovery before declaring stable.
 
 MIT licensed. Please remove identifiers, card data and credentials before filing an issue.

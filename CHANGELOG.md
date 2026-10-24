@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0-beta.1 (release candidate; not published)
+
+Guided Create & Deliver and Update Form card parameters add String/JSON value mode. String remains the default, including for saved workflows without the new field; JSON values serialize to the strings required by `cardParamMap`. Whole-body JSON behavior is preserved.
+
+The outbound node adds sanitized, normalized `errorDetails` while preserving existing output fields and the `error` string. Retryability is conservative: ambiguous writes and partial delivery may have succeeded and are not retryable; the existing single invalid-token refresh/replay remains unchanged.
+
+Documents stable caller-controlled `outTrackId` recovery guidance and adds a packaged synthetic branching fixture. Reusing an ID does not guarantee Create deduplication/upsert; verify before replay, and use Update for an existing card. Existing v0.2 Stream callback behavior is preserved.
+
+This is an unpublished prerelease candidate, not a stable release. Real v0.3 DingTalk E2E and acceptance in an installed current n8n runtime/UI remain pending.
+
 ## 0.2.0-beta.1 (prerelease)
 
 Adds DingTalk Card Trigger using the shared credential and a self-contained Node 24 native WebSocket transport. Only subscribes to CALLBACK `/v1.0/card/instances/callback`. Validates secure endpoints before ticket construction, sanitizes all gateway/connection errors, handles SYSTEM ping/disconnect, reconnects with capped backoff, aborts pending gateway work and cancels sockets/timers on deactivation. A module-local Client ID lock rejects competing triggers; external processes/services remain the operator’s responsibility.
