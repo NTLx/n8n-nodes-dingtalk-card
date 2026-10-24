@@ -31,4 +31,10 @@ jobs:
       - name: Verify prerelease tag and package version
         run: |
           node -e 'const p=require("./package.json"); if (!/^0\.1\.0-beta\.\d+$/.test(p.version) || `v${p.version}` !== process.env.GITHUB_REF_NAME) process.exit(1)'
-      - run: npm publish --access public --tag beta
+      - name: Remove the accidental stable tag
+        run: npm dist-tag rm n8n-nodes-dingtalk-card latest
+      - name: Publish beta with provenance
+        run: npm publish --access public --tag beta --provenance
+      - name: Verify public npm dist-tags
+        run: |
+          node -e 'const { execFileSync } = require("node:child_process"); const tags = JSON.parse(execFileSync("npm", ["view", "n8n-nodes-dingtalk-card", "dist-tags", "--json"], { encoding: "utf8" })); const version = require("./package.json").version; if (tags.beta !== version || Object.hasOwn(tags, "latest")) { console.error(JSON.stringify(tags)); process.exit(1); } console.log(JSON.stringify(tags));'

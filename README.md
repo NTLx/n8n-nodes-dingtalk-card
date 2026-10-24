@@ -2,7 +2,7 @@
 
 Focused n8n community node for **DingTalk Card Platform / interactive-card outbound lifecycle**.
 
-**Beta: not real-DingTalk-E2E certified.** Version `0.1.0-beta.2` is published on npm. Local mocked tests cannot certify enterprise app permissions, template rendering or actual delivery. This project is not n8n-verified. This project is not affiliated with DingTalk or n8n.
+**Beta: not real-DingTalk-E2E certified.** Install the current prerelease from npm using the `beta` tag. This package is not a stable release; the npm `latest` tag is reserved for a future stable release. Local mocked tests cannot certify enterprise app permissions, template rendering or actual delivery. This project is not n8n-verified. This project is not affiliated with DingTalk or n8n.
 
 It provides one **DingTalk Card** node and one **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -10,21 +10,21 @@ It provides one **DingTalk Card** node and one **DingTalk Card API** enterprise 
 
 Requires Node.js 24+ and a compatible n8n installation. Development compiles and loads the node against `n8n-workflow` 2.44.2 (the dependency of current stable n8n 2.44.6); full runtime/UI compatibility is not yet certified. CI uses Node 24. Current stable n8n 2.44.6 declares Node >=24; this takes precedence over older starter guidance mentioning Node 22.
 
-Install this beta in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Use the `beta` tag explicitly; as of 2026-10-24, npm's `latest` tag also points to `0.1.0-beta.2` and does not indicate a stable release. npm installation does not certify live DingTalk behavior. Real DingTalk E2E and n8n verification remain pending.
+Install this beta in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Use the `beta` tag explicitly; `latest` is reserved for a future stable release. npm installation does not certify live DingTalk behavior. Real DingTalk E2E and n8n verification remain pending.
 
 To install the tagged GitHub prerelease manually on a disposable self-hosted n8n instance:
 
 ```sh
 git clone https://github.com/NTLx/n8n-nodes-dingtalk-card.git
 cd n8n-nodes-dingtalk-card
-git checkout v0.1.0-beta.2
+git checkout v0.1.0-beta.3
 npm ci
 npm run build
 npm test
 npm pack
 # Install the resulting tgz in your self-hosted n8n community-node directory:
 cd ~/.n8n/nodes
-npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.1.0-beta.2.tgz
+npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.1.0-beta.3.tgz
 ```
 
 Create the community-node directory/package.json if needed, run as the n8n service account, and restart n8n after installation. Container users must install into a persistent volume accessible to n8n. For development use `npm run dev` with the official CLI; follow its prerequisites for your n8n version.
