@@ -1,12 +1,12 @@
 # Changelog
 
-## 0.3.0 (stable release preparation)
+## 0.3.0 (stable)
 
 Promotes the published v0.3.0-beta.1 package to stable without adding node behavior. Includes guided Form String/JSON card parameter values, sanitized normalized outbound `errorDetails`, stable caller-controlled `outTrackId` recovery guidance, and the existing Stream callback behavior. Reusing an ID does not guarantee Create deduplication or upsert.
 
-Stable live acceptance on connected n8n 2.44.5 passed for Robot Direct Message and whole-body JSON Create & Deliver through Update, Streaming Update, Finalize and final JSON Update. Repeated Create using one caller-controlled `outTrackId` was accepted in the tested path; no deduplication or delivery guarantee is implied. A v0.3 interaction-card button click reached DingTalk Card Trigger through a Stream callback and its downstream asynchronous Update succeeded. The temporary test listener was unpublished after the test. Earlier user-performed Community Nodes UI uninstall/reinstall restored package, manifest and installed-version consistency; stable Update-button verification is scheduled after stable publication.
+Stable live acceptance on connected n8n 2.44.5 passed for Robot Direct Message and whole-body JSON Create & Deliver through Update, Streaming Update, Finalize and final JSON Update. Repeated Create using one caller-controlled `outTrackId` was accepted in the tested path; no deduplication or delivery guarantee is implied. A v0.3 interaction-card button click reached DingTalk Card Trigger through a Stream callback and its downstream asynchronous Update succeeded. The temporary test listener was unpublished after the test. Earlier user-performed Community Nodes UI uninstall/reinstall restored package, manifest and installed-version consistency. npm update-discovery reports stable `0.3.0` as latest for an installed `0.3.0-beta.1`; this does not claim that the n8n UI Update button was clicked or observed. Stable upgrade remains a user-operated supported Community Nodes UI action.
 
-This release closes the v0.3.0 stable acceptance scope. It does not certify v1.0, other templates or form interactions, reconnect/failure behavior, or stable n8n versions beyond the tested instance. See [verification](docs/VERIFICATION.md#v030-stable-release-preparation--2026-10-24).
+This release closes the v0.3.0 stable acceptance scope. It does not certify v1.0, other templates or form interactions, reconnect/failure behavior, or stable n8n versions beyond the tested instance. See [verification](docs/VERIFICATION.md#v030-stable-release-2026-10-24) for publication, provenance and canonical asset evidence.
 
 ## 0.2.0-beta.1 (prerelease)
 

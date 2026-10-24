@@ -2,9 +2,9 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**v0.3.0 is prepared for stable release; it becomes the stable release when published.** It adds guided Form String/JSON card parameter values, additive sanitized normalized outbound error details, and stable-ID recovery guidance with a packaged fixture; existing v0.2 Stream behavior is preserved. Connected-instance acceptance on self-hosted production n8n 2.44.5 closes the documented v0.3 stable scope; this does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
+**v0.3.0 is the stable release.** It adds guided Form String/JSON card parameter values, additive sanitized normalized outbound error details, and stable-ID recovery guidance with a packaged fixture; existing v0.2 Stream behavior is preserved. Connected-instance acceptance on self-hosted production n8n 2.44.5 closes the documented v0.3 stable scope; this does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
 
-The published beta remains `v0.3.0-beta.1` until stable publication. The OIDC workflow supports exact prerelease and stable tags with provenance: beta uses the `beta` dist-tag, and stable `v0.3.0` uses `latest`. After a stable version exists, beta publication leaves `latest` unchanged.
+The published beta remains available as `v0.3.0-beta.1` under npm's `beta` dist-tag; npm `latest` resolves to stable `0.3.0`. The stable package was published through GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -12,7 +12,7 @@ It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingT
 
 Requires Node.js 24+ and a compatible n8n installation. Development compiles and loads the node against `n8n-workflow` 2.44.2 (the dependency of current stable n8n 2.44.6); full runtime/UI compatibility is not yet certified. CI uses Node 24. Current stable n8n 2.44.6 declares Node >=24; this takes precedence over older starter guidance mentioning Node 22.
 
-Install the package in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@0.3.0` after stable publication (or `@latest`). Community-node installation requires an Owner or Admin account and may be disabled by instance policy. npm installation does not certify live DingTalk behavior. The tested live scope and remaining limits are documented below; stable Update-button verification is scheduled after publication; v1.0 readiness is not certified.
+Install or upgrade the package in self-hosted n8n through the supported **Settings > Community Nodes** UI. A stable upgrade is a user-operated UI action; no direct internal database or Community Nodes directory mutation is part of the supported path. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. npm installation does not certify live DingTalk behavior. The tested live scope and remaining limits are documented below; v1.0 readiness is not certified.
 
 To rebuild the previously published v0.2.0-beta.1 artifact from its tag:
 
@@ -124,7 +124,7 @@ Uses the official [n8n node CLI](https://docs.n8n.io/connect/create-nodes/build-
 
 Programmatic execution is intentional: shared token handling, strict 2xx/partial-delivery failure checks, generated identifier propagation and sanitized item-level errors are implemented once, separated from pure payload builders. The current custom credential-test context in `n8n-workflow` exposes only the legacy `request` helper; that single call has a documented lint exception and sanitized error boundary. Main execution uses `httpRequest`. Pure helper errors are converted to `NodeOperationError` at the execution boundary.
 
-See [verification record](docs/VERIFICATION.md) for exact local/CI gates, dependency findings and limitations. GitHub prereleases are conditional on all non-live gates passing. No stable release is implied.
+See [verification record](docs/VERIFICATION.md) for release identity, public artifact digests, provenance, update-discovery evidence, exact local/CI gates, dependency findings and limitations.
 
 ## Roadmap
 
@@ -132,6 +132,6 @@ The direction is **Interactive-first, AI-when-needed**: use DingTalk cards for p
 
 The durable architecture, scope boundaries, controlled A2UI contract, and anti-drift decision rules are in the [design baseline](docs/DESIGN.md); the roadmap is subordinate to it.
 
-Historical milestones: **v0.1.0-beta.1** introduced outbound Card Platform lifecycle operations; **v0.2.0-beta.1** added the narrow Stream callback trigger and explicit callback opt-in, with one real request-button path verified; **v0.3.0-beta.1** added Form String/JSON values, normalized outbound error details and stable-ID recovery guidance. v0.3.0 stable acceptance evidence and limits are recorded in [verification](docs/VERIFICATION.md#v030-stable-release-preparation--2026-10-24).
+Historical milestones: **v0.1.0-beta.1** introduced outbound Card Platform lifecycle operations; **v0.2.0-beta.1** added the narrow Stream callback trigger and explicit callback opt-in, with one real request-button path verified; **v0.3.0-beta.1** added Form String/JSON values, normalized outbound error details and stable-ID recovery guidance, and **v0.3.0** is its stable release. Stable acceptance evidence and limits are recorded in [verification](docs/VERIFICATION.md#v030-stable-release-2026-10-24).
 
 MIT licensed. Please remove identifiers, card data and credentials before filing an issue.

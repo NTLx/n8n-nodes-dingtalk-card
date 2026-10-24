@@ -2,7 +2,7 @@
 
 This roadmap is subordinate to the project's [design baseline](DESIGN.md), which governs architecture, scope, non-goals, and acceptance boundaries. Roadmap items may sequence work within those boundaries but cannot override them; resolve conflicts by updating the proposal to fit the baseline or deliberately revising the baseline first.
 
-This roadmap starts from the published **v0.3.0-beta.1** state and records **v0.3.0 stable release preparation**. v0.3.0 becomes stable once published; until then, the beta remains the latest public package version. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
+This roadmap starts from the published **v0.3.0** stable state, with **v0.3.0-beta.1** retained as its prerelease. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
 ## Vision and product principle
 
@@ -27,7 +27,7 @@ Descriptors produced with model assistance may be considered only after determin
 
 ## Milestones
 
-### v0.3.0 — stable release (acceptance closed; publication pending)
+### v0.3.0 — stable release (released)
 
 **Objective:** Close acceptance for the existing beta surface, remove the prerelease qualifier, and establish a reliable stable baseline. No major new product surface.
 
@@ -39,7 +39,7 @@ Descriptors produced with model assistance may be considered only after determin
 - Characterize repeated Create behavior with the same `outTrackId`; do not promise deduplication or upsert.
 - Regression coverage for existing v0.1/v0.2/v0.3 behavior and n8n UI install/update lifecycle acceptance.
 
-**Acceptance gates (closed for this stable release preparation):** Scoped live and local evidence is recorded in [verification](VERIFICATION.md#v030-stable-release-preparation--2026-10-24). Robot Direct Message and whole-body JSON lifecycles passed; a real v0.3 button callback reached the trigger and asynchronous Update succeeded; repeated Create with one caller-controlled `outTrackId` was accepted in the tested path without implying deduplication/upsert. A user-performed Community Nodes UI uninstall/reinstall restored package/manifest/installed-version consistency. Stable post-publication Update-button verification remains a separate follow-up.
+**Acceptance gates (closed):** Scoped live and local evidence, release provenance, canonical artifact digest and npm update-discovery evidence are recorded in [verification](VERIFICATION.md#v030-stable-release-2026-10-24). Robot Direct Message and whole-body JSON lifecycles passed; a real v0.3 button callback reached the trigger and asynchronous Update succeeded; repeated Create with one caller-controlled `outTrackId` was accepted in the tested path without implying deduplication/upsert. A user-performed Community Nodes UI uninstall/reinstall restored package/manifest/installed-version consistency. Stable upgrade remains a user-operated supported Community Nodes UI action; the isolated update-discovery check does not claim the UI button was clicked or observed.
 
 **Non-goals / deferrals:** No new card families, generalized interaction schema, A2UI renderer, business workflow suite, or broad DingTalk API coverage.
 
