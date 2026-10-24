@@ -1,4 +1,24 @@
-# Beta verification record — 2026-10-24
+# Release verification record — 2026-10-24
+
+## v0.3.0 stable release preparation — 2026-10-24
+
+Package metadata is prepared as `0.3.0`. Stable acceptance for the existing v0.3 scope is closed pending publication. The earlier beta-era records below are historical; this section records the final stable-preparation evidence and supersedes their open/remaining v0.3 acceptance statements.
+
+On the connected n8n **2.44.5** instance, the following live paths passed:
+
+- Robot Direct Message Create & Deliver → Update → Streaming Update → Finalize → final JSON Update.
+- Whole-body JSON Create & Deliver → Update → Streaming Update → Finalize → final JSON Update.
+- Repeated Create using the same caller-controlled `outTrackId` was accepted in the tested path, and both runs completed their lifecycle successfully. This does not establish deduplication, upsert, idempotency, or absence of duplicate delivery.
+- A newly sent v0.3 interaction card received a real button click through the DingTalk Stream callback. DingTalk Card Trigger emitted the callback and downstream asynchronous Update succeeded; the temporary test listener was then unpublished.
+- A user-performed n8n Community Nodes UI uninstall/reinstall of `0.3.0-beta.1` restored DB/manifest/installed-package version consistency. This is supported lifecycle evidence; no internal database or Community Nodes directory was directly mutated for product acceptance.
+
+The separate stable post-publication Community Nodes Update-button verification remains pending until the stable package exists. v0.3.0 becomes stable when published. This evidence closes the v0.3.0 acceptance scope; it does not certify v1.0 or untested DingTalk templates, form interactions, reconnect and failure modes, or other n8n versions. No tag, GitHub release, or npm publication is part of this preparation.
+
+Local release gates passed on **Node 26.12.1 / npm 12.2.1**: clean `npm ci`; lint; typecheck; build; **56 tests passed / 0 failed / 0 skipped**; `verify:package` including standalone extracted class registration (**20 allowlisted files**); `npm audit --omit=dev --audit-level=high` (**0 production vulnerabilities**); and `git diff --check`. The clean install reports the existing development-tree advisories (**19 high, 4 moderate**), deprecations and five blocked install scripts; install completed successfully. These development advisories are outside the production package audit and were not changed as part of this release preparation.
+
+`npm pack --ignore-scripts --json` produced `n8n-nodes-dingtalk-card-0.3.0.tgz` with **20 files** (48,024 compressed bytes): package metadata, README, changelog, license, compiled nodes/credential and icons, API/design/roadmap/verification docs, and five examples. The packed manifest version is `0.3.0`; no tests, source files, or unrelated repository files are included. Package verification and this tarball inspection are local; public registry metadata, provenance and tarball checks run in the publish workflow after a separately authorized publication.
+
+The GitHub CI workflow runs the same install/lint/typecheck/build/test/package/audit gates on Node 24 for branch pushes, pull requests and tags. The npm workflow remains manually dispatched and grants only `id-token: write` for Trusted Publisher/OIDC provenance; no npm token or secret is added. Stable `v0.3.0` publishes with `latest`; beta versions publish with `beta` and may synchronize `latest` only while npm reports no stable version. Tag/version checks are exact. No tag, GitHub release, publish dispatch or npm publication was created in this preparation.
 
 ## v0.3.0-beta.1 release preparation — local verification (historical)
 

@@ -1,14 +1,12 @@
 # Changelog
 
-## 0.3.0-beta.1 (published beta prerelease)
+## 0.3.0 (stable release preparation)
 
-Guided Create & Deliver and Update Form card parameters add String/JSON value mode. String remains the default, including for saved workflows without the new field; JSON values serialize to the strings required by `cardParamMap`. Whole-body JSON behavior is preserved.
+Promotes the published v0.3.0-beta.1 package to stable without adding node behavior. Includes guided Form String/JSON card parameter values, sanitized normalized outbound `errorDetails`, stable caller-controlled `outTrackId` recovery guidance, and the existing Stream callback behavior. Reusing an ID does not guarantee Create deduplication or upsert.
 
-The outbound node adds sanitized, normalized `errorDetails` while preserving existing output fields and the `error` string. Retryability is conservative: ambiguous writes and partial delivery may have succeeded and are not retryable; the existing single invalid-token refresh/replay remains unchanged.
+Stable live acceptance on connected n8n 2.44.5 passed for Robot Direct Message and whole-body JSON Create & Deliver through Update, Streaming Update, Finalize and final JSON Update. Repeated Create using one caller-controlled `outTrackId` was accepted in the tested path; no deduplication or delivery guarantee is implied. A v0.3 interaction-card button click reached DingTalk Card Trigger through a Stream callback and its downstream asynchronous Update succeeded. The temporary test listener was unpublished after the test. Earlier user-performed Community Nodes UI uninstall/reinstall restored package, manifest and installed-version consistency; stable Update-button verification is scheduled after stable publication.
 
-Documents stable caller-controlled `outTrackId` recovery guidance and adds a packaged synthetic branching fixture. Reusing an ID does not guarantee Create deduplication/upsert; verify before replay, and use Update for an existing card. Existing v0.2 Stream callback behavior is preserved.
-
-Published as a beta prerelease from tag `v0.3.0-beta.1`; this is not a stable release. Connected-instance acceptance and post-release lifecycle smoke passed on self-hosted production n8n 2.44.5. This supports the documented v0.3 beta scope only and does not establish stable/v1.0 readiness. See [verification](docs/VERIFICATION.md#v030-beta1-post-release-verification--2026-10-24) for publication evidence and limits.
+This release closes the v0.3.0 stable acceptance scope. It does not certify v1.0, other templates or form interactions, reconnect/failure behavior, or stable n8n versions beyond the tested instance. See [verification](docs/VERIFICATION.md#v030-stable-release-preparation--2026-10-24).
 
 ## 0.2.0-beta.1 (prerelease)
 

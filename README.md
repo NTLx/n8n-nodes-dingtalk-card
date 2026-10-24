@@ -2,9 +2,9 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**0.3.0-beta.1 is a published beta prerelease, not a stable release.** It adds guided Form String/JSON card parameter values, additive sanitized normalized outbound error details, and stable-ID recovery guidance with a packaged fixture; existing v0.2 Stream behavior is preserved. Connected-instance acceptance and post-release lifecycle smoke passed on self-hosted production n8n 2.44.5; this is limited beta evidence, not stable/v1.0 certification. The v0.2.0-beta.1 callback and outbound lifecycle E2Es cover only their documented paths. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
+**v0.3.0 is prepared for stable release; it becomes the stable release when published.** It adds guided Form String/JSON card parameter values, additive sanitized normalized outbound error details, and stable-ID recovery guidance with a packaged fixture; existing v0.2 Stream behavior is preserved. Connected-instance acceptance on self-hosted production n8n 2.44.5 closes the documented v0.3 stable scope; this does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
 
-The `v0.3.0-beta.1` tag points to commit `30f751a5d86961561ecebae1af80953942e77105`. npm `beta` and `latest` both point to `0.3.0-beta.1`; no stable package version exists. The OIDC publication includes public provenance. The existing workflow synchronizes `latest` only while no stable package version exists; once stable exists, beta must leave `latest` tracking stable. Historical beta.3 was a GitHub prerelease only and was not published to npm.
+The published beta remains `v0.3.0-beta.1` until stable publication. The OIDC workflow supports exact prerelease and stable tags with provenance: beta uses the `beta` dist-tag, and stable `v0.3.0` uses `latest`. After a stable version exists, beta publication leaves `latest` unchanged.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -12,7 +12,7 @@ It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingT
 
 Requires Node.js 24+ and a compatible n8n installation. Development compiles and loads the node against `n8n-workflow` 2.44.2 (the dependency of current stable n8n 2.44.6); full runtime/UI compatibility is not yet certified. CI uses Node 24. Current stable n8n 2.44.6 declares Node >=24; this takes precedence over older starter guidance mentioning Node 22.
 
-Install the beta in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@0.3.0-beta.1` (or `@beta` while that tag still points to it). Community-node installation requires an Owner or Admin account and may be disabled by instance policy. npm installation does not certify live DingTalk behavior. The tested live scope and remaining limits are documented below; current stable n8n runtime/UI compatibility and stable/v1.0 readiness are not certified.
+Install the package in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@0.3.0` after stable publication (or `@latest`). Community-node installation requires an Owner or Admin account and may be disabled by instance policy. npm installation does not certify live DingTalk behavior. The tested live scope and remaining limits are documented below; stable Update-button verification is scheduled after publication; v1.0 readiness is not certified.
 
 To rebuild the previously published v0.2.0-beta.1 artifact from its tag:
 
@@ -128,9 +128,10 @@ See [verification record](docs/VERIFICATION.md) for exact local/CI gates, depend
 
 ## Roadmap
 
-- **v0.1.0-beta.1:** enterprise app credential/auth; Create & Deliver, Update, Streaming Update, Finalize; Form/JSON input; actionable errors; mocked tests/build/lint/docs/examples/CI. **Not real-DingTalk-E2E certified. No inbound interaction trigger.**
-- **v0.2.0-beta.1 prerelease:** narrowly scoped native Stream card trigger, immediate ACK and explicit STREAM opt-in. The real request-button callback and asynchronous Update path passed; broader template/form, reconnect, deactivation/restart and failure-mode acceptance remains open. Synchronous local-update ACKs and durable deduplication are deferred.
-- **v0.3.0-beta.1 beta:** Form String/JSON card parameter values, normalized outbound errors, and stable-ID recovery guidance/fixture. The documented outbound lifecycle and post-release lifecycle smoke passed live acceptance on connected production n8n 2.44.5. Remaining limits and stable/v1.0 acceptance criteria are in [verification](docs/VERIFICATION.md#v030-beta1-post-release-verification--2026-10-24).
-- **v1.0.0:** only after real DingTalk enterprise app + interactive-card E2E and current stable n8n runtime compatibility are verified, with mature npm installation/release documentation. Prove group/DM creation, rendered variables, merge updates, streaming, success/error finalization, interactions and failure recovery before declaring stable.
+The direction is **Interactive-first, AI-when-needed**: use DingTalk cards for presentation and lightweight control of n8n automation, routing deterministic actions through n8n without an LLM. The version milestones, acceptance gates, non-goals and compatibility notes are in the [product and engineering roadmap](docs/ROADMAP.md).
+
+The durable architecture, scope boundaries, controlled A2UI contract, and anti-drift decision rules are in the [design baseline](docs/DESIGN.md); the roadmap is subordinate to it.
+
+Historical milestones: **v0.1.0-beta.1** introduced outbound Card Platform lifecycle operations; **v0.2.0-beta.1** added the narrow Stream callback trigger and explicit callback opt-in, with one real request-button path verified; **v0.3.0-beta.1** added Form String/JSON values, normalized outbound error details and stable-ID recovery guidance. v0.3.0 stable acceptance evidence and limits are recorded in [verification](docs/VERIFICATION.md#v030-stable-release-preparation--2026-10-24).
 
 MIT licensed. Please remove identifiers, card data and credentials before filing an issue.

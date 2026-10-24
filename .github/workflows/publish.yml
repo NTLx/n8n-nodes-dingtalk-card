@@ -1,4 +1,4 @@
-name: Publish beta to npm
+name: Publish to npm
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   publish:
-    if: startsWith(github.ref, 'refs/tags/v0.1.0-beta.') || startsWith(github.ref, 'refs/tags/v0.2.0-beta.') || startsWith(github.ref, 'refs/tags/v0.3.0-beta.')
+    if: github.ref == 'refs/tags/v0.3.0' || startsWith(github.ref, 'refs/tags/v0.1.0-beta.') || startsWith(github.ref, 'refs/tags/v0.2.0-beta.') || startsWith(github.ref, 'refs/tags/v0.3.0-beta.')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,15 +28,20 @@ jobs:
       - run: npm test
       - run: npm run verify:package
       - run: npm audit --omit=dev --audit-level=high
-      - name: Verify prerelease tag and package version
+      - name: Verify tag and package version
         run: |
-          node -e 'const p=require("./package.json"); if (!/^0\.(?:1|2|3)\.0-beta\.\d+$/.test(p.version) || `v${p.version}` !== process.env.GITHUB_REF_NAME) process.exit(1)'
+          node -e 'const p=require("./package.json"); const tag=process.env.GITHUB_REF_NAME; const valid=p.version === "0.3.0" ? tag === "v0.3.0" : /^0\.(?:1|2|3)\.0-beta\.\d+$/.test(p.version) && `v${p.version}` === tag; if (!valid) process.exit(1)'
+      - name: Publish stable with provenance
+        if: github.ref == 'refs/tags/v0.3.0'
+        run: npm publish --access public --tag latest --provenance
       - name: Publish beta with provenance
+        if: github.ref != 'refs/tags/v0.3.0'
         run: npm publish --access public --tag beta --provenance
-      # Temporary n8n Community Nodes compatibility: Update resolves npm latest.
-      # TODO(first stable): latest must track stable; beta must never rewrite it.
+      # Before the first stable version, keep latest useful for n8n Community Nodes Update.
+      # Once stable exists, beta never changes latest.
       - name: Synchronize latest while no stable release exists
         id: sync_latest
+        if: github.ref != 'refs/tags/v0.3.0'
         run: |
           node <<'NODE'
           const assert = require('node:assert/strict');
@@ -58,6 +63,7 @@ jobs:
       - name: Verify public npm dist-tags
         env:
           SYNCHRONIZE_LATEST: ${{ steps.sync_latest.outputs.synchronized }}
+          IS_STABLE: ${{ github.ref == 'refs/tags/v0.3.0' }}
         run: |
           node <<'NODE'
           const { execFileSync } = require('node:child_process');
@@ -66,17 +72,30 @@ jobs:
           const deadline = Date.now() + 5 * 60 * 1000;
           const wait = new Int32Array(new SharedArrayBuffer(4));
           const synchronizeLatest = process.env.SYNCHRONIZE_LATEST === 'true';
+          const isStable = process.env.IS_STABLE === 'true';
+          const compareStable = (left, right) => {
+            const a = left.split('.').map(Number);
+            const b = right.split('.').map(Number);
+            for (let index = 0; index < 3; index++) {
+              if (a[index] !== b[index]) return a[index] - b[index];
+            }
+            return 0;
+          };
           let last = 'no registry response';
           while (Date.now() < deadline) {
             try {
               const remaining = deadline - Date.now();
+              const versionOutput = execFileSync('npm', ['view', '--prefer-online', '--registry=https://registry.npmjs.org/', name, 'versions', '--json'], { encoding: 'utf8', timeout: Math.min(30_000, remaining) });
+              const publicVersions = JSON.parse(versionOutput);
+              const stableVersions = (Array.isArray(publicVersions) ? publicVersions : [publicVersions]).filter((value) => typeof value === 'string' && /^\d+\.\d+\.\d+$/.test(value));
+              const latestStable = stableVersions.sort(compareStable).at(-1);
               const output = execFileSync('npm', ['view', '--prefer-online', '--registry=https://registry.npmjs.org/', name, 'dist-tags', '--json'], { encoding: 'utf8', timeout: Math.min(30_000, remaining) });
               const result = JSON.parse(output);
               const tags = Array.isArray(result) ? result[0] : result;
               last = JSON.stringify({ beta: tags?.beta, latest: tags?.latest });
               console.log(`Observed public dist-tags: ${last}`);
-              if (tags?.beta === version && (!synchronizeLatest || tags?.latest === version)) {
-                console.log(`Verified ${name} beta -> ${version}${synchronizeLatest ? ` and latest -> ${version}` : "; latest reserved for stable"}`);
+              if ((isStable ? tags?.latest === version : tags?.beta === version) && (isStable || !synchronizeLatest || tags?.latest === version) && (!latestStable || tags?.latest === latestStable)) {
+                console.log(`Verified ${name} ${isStable ? 'latest' : 'beta'} -> ${version}${!isStable && synchronizeLatest ? ` and latest -> ${version}` : ''}`);
                 process.exit(0);
               }
             } catch (error) {
