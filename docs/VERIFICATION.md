@@ -72,10 +72,22 @@ The initial standalone pack inspection failed because lifecycle build output pre
 
 No live DingTalk or n8n UI validation is claimed. This remains a beta, not a stable release.
 
+## Connected-instance live E2E — 2026-10-24
+
+A real connected n8n **2.44.x** instance/runtime and DingTalk enterprise app completed group **Create & Deliver → Update → Streaming Update → Finalize → Update(FINISHED)** with public default AI template `02fcf2f4-5e02-4a85-b672-46d1f715543e.schema` and blank guided Robot Code fallback. Create & Deliver and Update succeeded initially. The first Streaming Update used key `content` and failed with HTTP 500. After changing to `msgContent`, setting INPUTING (`flowStatus: "2"`), using **1-second waits**, sending the terminal streaming frame and then Update with FINISHED (`flowStatus: "3"`), the full lifecycle succeeded.
+
+The current DingTalk-Real-AI SDK contract was independently inspected at commit `6f42d37ab22b0d872450148efe01c7b4b82d1e78` ([source](https://github.com/DingTalk-Real-AI/dingtalk-channel-sdk-python/blob/6f42d37ab22b0d872450148efe01c7b4b82d1e78/SPEC.zh-CN.md#5-ai-卡片协议五步)). It corroborates the public template/key/states and approximately 500ms spacing around frames (with 800ms streaming throttling). The reusable payload recipe uses the successful 1-second pacing. Generic Finalize remains a terminal-frame helper; the subsequent template-specific FINISHED Update is required for visual completion.
+
+Only this real group/public-template path is established. This is not certification of all templates, direct-message delivery, error finalization, quotas, failure recovery or all n8n runtime/UI behavior. No workflow/execution IDs, private org/group/robot/user identifiers or secrets are included. Earlier verification entries describe their historical scope and predate this live result.
+
+## Beta.6 release gates — 2026-10-24
+
+The scoped change updates the shared guided streaming/finalize key default and help text, regression coverage, public lifecycle documentation/example, and manifest/lockfile/changelog metadata. The existing OIDC publishing workflow and stable-version dist-tag guard are unchanged. Local gates passed on Node **26.12.1** / npm **12.2.1**: clean `npm ci`, lint, typecheck, build, **30 tests passed / 0 failed / 0 skipped**, `verify:package`, standalone `npm pack --ignore-scripts --json` inspection (**14 allowlisted files**, beta.6 manifest, registered class loading, icons and `msgContent` default), production audit (**0 vulnerabilities**), and `git diff --check`. The packed node also completed all five payload-recipe steps against mocked HTTP, checking blank Robot Code fallback, INPUTING, streaming key, terminal-only Finalize and FINISHED merge update. No separate live run was performed for this example.
+
+The clean install reports existing development-toolchain advisories (**19 high, 4 moderate**), deprecations and npm 12 blocked dependency install-script notices; it exits successfully. CI on Node 24 must pass for the pushed release commit before tag/prerelease creation. The unchanged OIDC publishing job repeats release gates before publication. Post-publication CI, public dist-tags, metadata/tarball/integrity and signed provenance evidence belongs in the GitHub prerelease notes so it identifies the immutable published artifact.
+
 ## Limits and next acceptance
 
-No DingTalk secrets, live enterprise account, card template, destination or n8n instance was provided or used. Mocked execution and tarball class loading do not establish real HTTP behavior, rendering, quotas, host UI loading or full current-stable n8n runtime compatibility. The exported workflow's graph, parameters and expression payload are checked locally, not executed on a live n8n instance.
+Current release target: `0.1.0-beta.6`; no stable `v0.1.0` release is implied. Mocked tests and tarball class loading complement the connected-instance live result but do not expand its tested scope. The new payload recipe uses public template data and placeholders; it is locally validated, not a separate live execution.
 
-The original **0.1.0-beta.1** baseline was a GitHub prerelease only. The current release target is `0.1.0-beta.5`; real DingTalk E2E and full current-stable n8n runtime compatibility remain unverified. No stable `v0.1.0` release has been made.
-
-Before v0.2.0, implement and verify inbound interaction/callback authentication, acknowledgment timing, button/form mapping and duplicate delivery handling using current official mechanisms. Before v1.0.0, verify real enterprise app group/DM delivery, template rendering, update merging, streaming/completed/error states and failure recovery, plus current-stable n8n runtime/UI compatibility. Finish npm installation/release documentation and resolve/reassess upstream development advisories before stable publication.
+Before v0.2.0, implement and verify inbound interaction/callback authentication, acknowledgment timing, button/form mapping and duplicate delivery handling using current official mechanisms. Before v1.0.0, verify the remaining group/DM delivery, rendering, error states and failure recovery cases, plus current-stable n8n runtime/UI compatibility. Resolve/reassess upstream development advisories before stable publication.

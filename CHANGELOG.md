@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-beta.6
+
+Streaming Update and Finalize now default the guided Streaming Key to `msgContent` for the public AI template `02fcf2f4-5e02-4a85-b672-46d1f715543e.schema`. Custom keys remain overrideable; saved explicit keys and whole-body JSON are unchanged. Generic Finalize only sends a terminal streaming frame; follow with Update setting `flowStatus: "3"` for this template's visual completion. No generic flowStatus behavior was added.
+
+Documented the real connected-instance live E2E on 2026-10-24 (n8n 2.44.x, DingTalk enterprise app, group delivery, blank Robot Code fallback). Initial streaming with `content` returned HTTP 500; the full lifecycle succeeded with `msgContent`, INPUTING, 1-second waits, terminal finalize and FINISHED update. Added a placeholder-only lifecycle payload recipe, state/spacing guidance and default/override regression coverage.
+
+Remains a prerelease. The existing Trusted Publisher/OIDC pipeline publishes with provenance and synchronizes `beta` and `latest` while no stable version exists; after a stable release exists, beta must not rewrite `latest`. No npm token or stable release.
+
 ## 0.1.0-beta.5
 
 Guided (Form) Create & Deliver now defaults missing, empty or whitespace-only Robot Code to the bound DingTalk Card API credential's Client ID / AppKey at execution time for the application's own enterprise robot. Applies to group and direct-message targets; explicit overrides are preserved unchanged. Robot Code is optional in the UI, with the default documented. Whole-body JSON and other operations are unchanged. Regression tests cover default/override behavior and sanitized failures.

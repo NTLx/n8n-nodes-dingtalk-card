@@ -2,7 +2,9 @@
 
 Focused n8n community node for **DingTalk Card Platform / interactive-card outbound lifecycle**.
 
-**Beta: not real-DingTalk-E2E certified.** As of 2026-10-24, this release is `0.1.0-beta.5`, distributed under the npm `beta` tag; before beta.5, stale `latest -> 0.1.0-beta.2` caused n8n Community Nodes Update to downgrade beta.4 installations. Beta.5 publishing synchronizes `latest` to the published beta as a temporary n8n compatibility measure while no stable release exists. Install the current prerelease using `n8n-nodes-dingtalk-card@beta`; `latest` currently does not indicate a stable release. **TODO / transition:** once the first stable release exists, `latest` must track stable and beta publishing must stop rewriting it; the workflow guards against rewriting `latest` when any stable version exists. Version `0.1.0-beta.3` is a GitHub prerelease only and was not published to npm. Local mocked tests cannot certify enterprise app permissions, template rendering or actual delivery. This project is not n8n-verified. This project is not affiliated with DingTalk or n8n.
+**Beta with a real connected-instance live E2E on 2026-10-24.** Version `0.1.0-beta.6` includes the public AI template streaming-key default fix. On n8n 2.44.x with a DingTalk enterprise app, real group delivery and the full Create & Deliver → Update → Streaming Update → Finalize → Update(FINISHED) lifecycle succeeded using the public template below and blank Robot Code fallback. This validates that tested path, not all templates, delivery targets or runtime/UI behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
+
+Install using `n8n-nodes-dingtalk-card@beta`. While no stable release exists, publishing synchronizes both `beta` and `latest` to this beta so n8n Community Nodes Update does not downgrade installations. `latest` does not currently indicate a stable release. Once a stable release exists, beta publishing must leave `latest` tracking stable; the existing workflow checks public versions before synchronization. Beta.3 is a GitHub prerelease only and was not published to npm.
 
 It provides one **DingTalk Card** node and one **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -10,21 +12,21 @@ It provides one **DingTalk Card** node and one **DingTalk Card API** enterprise 
 
 Requires Node.js 24+ and a compatible n8n installation. Development compiles and loads the node against `n8n-workflow` 2.44.2 (the dependency of current stable n8n 2.44.6); full runtime/UI compatibility is not yet certified. CI uses Node 24. Current stable n8n 2.44.6 declares Node >=24; this takes precedence over older starter guidance mentioning Node 22.
 
-Install this beta in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Use the `beta` tag explicitly. npm installation does not certify live DingTalk behavior. Real DingTalk E2E and n8n verification remain pending.
+Install this beta in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Use the `beta` tag explicitly. npm installation does not certify live DingTalk behavior. The tested live scope is documented below; n8n verification remains pending.
 
 To install the tagged GitHub prerelease manually on a disposable self-hosted n8n instance:
 
 ```sh
 git clone https://github.com/NTLx/n8n-nodes-dingtalk-card.git
 cd n8n-nodes-dingtalk-card
-git checkout v0.1.0-beta.5
+git checkout v0.1.0-beta.6
 npm ci
 npm run build
 npm test
 npm pack
 # Install the resulting tgz in your self-hosted n8n community-node directory:
 cd ~/.n8n/nodes
-npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.1.0-beta.5.tgz
+npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.1.0-beta.6.tgz
 ```
 
 Create the community-node directory/package.json if needed, run as the n8n service account, and restart n8n after installation. Container users must install into a persistent volume accessible to n8n. For development use `npm run dev` with the official CLI; follow its prerequisites for your n8n version.
@@ -57,6 +59,22 @@ Streaming `guid` identifies one request for API idempotency. Empty/missing gener
 Finalize requires the streaming key and content. With Is Full enabled, provide the **complete final content**; empty content overwrites the value. Use an empty incremental final frame only if appropriate for a plain-text component. Error is a documented terminal state, so Finalize never sets both terminal flags. This helper does not impose template-specific `flowStatus` variables or guarantee completion if the API is unreachable. Wire your workflow failure path to Finalize with **Is Error** enabled and monitor finalization failures.
 
 Outputs contain `operation`, `outTrackId`, optional `guid`, `success` and the raw successful DingTalk body in `raw`; n8n paired-item linkage is preserved. Business failures, including partial per-space delivery failures in HTTP 2xx, raise an item-indexed n8n error. Continue On Fail returns `success:false`, the identifiers and a sanitized `error` string, then processes later items. Raw server error messages are deliberately omitted because they may contain private payloads or authentication data. Check permissions, template publication, space IDs and robot membership using the API code and identifier.
+
+## Public AI template lifecycle
+
+The public default AI template is `02fcf2f4-5e02-4a85-b672-46d1f715543e.schema`. Its streaming variable is **`msgContent`**, now the Form default for both Streaming Update and Finalize. Override Streaming Key for custom templates; saved workflows with an explicit `content` key retain it and must be edited for this public template. Whole-body JSON still requires an explicit `key`.
+
+1. Create & Deliver with the public template and a new `outTrackId`. Guided group delivery may leave Robot Code blank to use the bound credential's Client ID / AppKey.
+2. Update the same card with string parameters `flowStatus: "2"` (INPUTING) and `msgContent` before streaming.
+3. Streaming Update with `key: "msgContent"` and full Markdown snapshots (`isFull: true`).
+4. Finalize with the same key and complete final content. Generic Finalize **only sends the terminal streaming frame**; it does not change `flowStatus`.
+5. Update with `flowStatus: "3"` (FINISHED) and final `msgContent`, merging by key, for the public template's visual completion.
+
+The [DingTalk-Real-AI SDK contract](https://github.com/DingTalk-Real-AI/dingtalk-channel-sdk-python/blob/6f42d37ab22b0d872450148efe01c7b4b82d1e78/SPEC.zh-CN.md#5-ai-卡片协议五步) recommends about 500ms spacing around delivery/streaming/terminal frames and throttles streaming updates to at least 800ms. The successful connected-instance live E2E used **1-second waits** between lifecycle writes. The node adds no automatic delay; use Wait nodes or your harness scheduler.
+
+[Reusable lifecycle payload](examples/public-ai-lifecycle.payload.json) lists guided node parameters and waits for a harness or manual workflow construction. Replace the destination and tracking placeholders, bind a DingTalk Card API credential to every node, and run steps sequentially. It is a payload recipe, not an importable n8n workflow. Use a new tracking ID for each new card; retain frame GUIDs only when deliberately replaying the same frame. No credentials are included.
+
+In the real connected-instance test on 2026-10-24, Create & Deliver and Update succeeded first; the initial Streaming Update using `content` failed with HTTP 500. With `msgContent`, INPUTING, 1-second waits, a terminal frame and FINISHED update, the full lifecycle succeeded. See [verification scope](docs/VERIFICATION.md#connected-instance-live-e2e--2026-10-24).
 
 ## Error notification example
 

@@ -422,6 +422,31 @@ test('defaulted Robot Code does not leak credential values in failures', async (
 			});
 	}
 });
+test('streaming key defaults to msgContent for stream/finalize and remains overrideable', async () => {
+	const field = new DingTalkCard().description.properties.find((p) => p.name === 'key');
+	assert.equal(field.default, 'msgContent');
+	assert.deepEqual(field.displayOptions.show.operation, ['stream', 'finalize']);
+	for (const operation of ['stream', 'finalize']) {
+		for (const key of [field.default, 'content']) {
+			const seen = [];
+			await new DingTalkCard().execute.call(
+				context(
+					[{ operation, inputMode: 'form', outTrackId: 't', key, content: 'Done' }],
+					mockApi(seen),
+				),
+			);
+			assert.deepEqual(seen[1].body, {
+				outTrackId: 't',
+				key,
+				content: 'Done',
+				guid: seen[1].body.guid,
+				isFull: true,
+				isError: false,
+				isFinalize: operation === 'finalize',
+			});
+		}
+	}
+});
 test('execute JSON update/stream/finalize and guided update/stream use expected payloads', async () => {
 	for (const op of ['update', 'stream', 'finalize']) {
 		const seen = [];

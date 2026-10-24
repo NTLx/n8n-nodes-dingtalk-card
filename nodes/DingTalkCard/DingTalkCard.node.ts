@@ -182,10 +182,11 @@ const properties: INodeProperties[] = [
 		displayName: 'Streaming Key',
 		name: 'key',
 		type: 'string',
-		default: 'content',
+		default: 'msgContent',
 		required: true,
 		displayOptions: { show: { inputMode: ['form'], operation: streamOperations } },
-		description: 'Template variable bound to a streaming component',
+		description:
+			'Template variable bound to a streaming component; msgContent for the public default AI template. Override for custom templates.',
 	},
 	{
 		displayName: 'Content',
