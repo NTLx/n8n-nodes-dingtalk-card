@@ -40,6 +40,8 @@ Full visual/template-contract acceptance remains pending rendered-card evidence 
 
 ## v0.4.0-beta.1 final Presentation template-contract acceptance — 2026-10-25
 
+The Presentation mapper includes the fixed public AI-host compatibility value `flowStatus: "3"` in addition to the 13 Presentation contract variables. The current AI Card builder template configuration (`type=im`, `schemaVersion=3.0.0`, `extendType=AI`) needs completed-state `flowStatus` for `AICardContainer` to select its completed content branch. The descriptor schema and 13-variable contract remain unchanged. This host compatibility behavior is covered by local unit tests; it does not constitute visual acceptance of the user's template or client rendering.
+
 The dedicated test template was rebuilt from the user-exported DingTalk JSON as a compact `NORMAL` template with three logical components: one Grid and two BaseText components. Its 13/13 v0.4 contract variables are defined as public strings and statically bound in both `editorData` and `widgetInfo`. The user imported and published this template.
 
 Final live connected-instance acceptance sent all five Presentation families (`alert`, `status`, `digest`, `action`, and `report`) through the published template. Required and optional fields were populated for each family. All five n8n executions succeeded; every DingTalk response had top-level `success=true` and `deliverResults[].success=true`.

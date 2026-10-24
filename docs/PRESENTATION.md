@@ -12,7 +12,9 @@ All list families require 1–20 entries. Digest items have required `title` (up
 
 ## Families and exact variable mapping
 
-Every family maps these entries:
+Every family maps the 13 contract variables described below. Presentation mode also adds the AI-host compatibility field `flowStatus: "3"` to the public `cardParamMap`; it is not a descriptor field or part of the Presentation contract. This fixed value cannot be overridden by descriptor input. The current DingTalk AI Card builder templates (`type=im`, `schemaVersion=3.0.0`, `extendType=AI`) require completed-state `flowStatus` for `AICardContainer` to select its completed content branch. The 13 contract variables retain their existing meanings and encodings.
+
+Every family maps these contract entries:
 
 | Descriptor value | `cardParamMap` variable | Encoding |
 | --- | --- | --- |
@@ -32,7 +34,7 @@ Family-specific fields:
 | `action` | required `label` (100 chars); optional `description` | `label`, optional `description` |
 | `report` | required `sections` array | `sections` as compact JSON string |
 
-The only status states are `idle`, `running`, `success`, `failed`, and `cancelled`. Digest and report objects serialize with stable field order as shown in the schema (`title`, `summary`, `tone`; and `heading`, `body`). All resulting values are strings, as required by the existing Card Data boundary. The mapper does not reorder list entries.
+The only status states are `idle`, `running`, `success`, `failed`, and `cancelled`. Digest and report objects serialize with stable field order as shown in the schema (`title`, `summary`, `tone`; and `heading`, `body`). All resulting values are strings, as required by the existing Card Data boundary. The mapper does not reorder list entries. Thus the payload contains 13 contract variables plus one AI-host compatibility field.
 
 ### Template acceptance rule
 

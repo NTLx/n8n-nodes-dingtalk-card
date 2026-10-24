@@ -167,6 +167,7 @@ test('presentation maps all five families into string-valued cardParamMap determ
 		assert.deepEqual(first, presentationCardData(JSON.parse(JSON.stringify(descriptor))));
 		assert.equal(first.cardParamMap.presentationVersion, '1');
 		assert.equal(first.cardParamMap.presentationFamily, family);
+		assert.equal(first.cardParamMap.flowStatus, '3');
 		assert.equal(first.cardParamMap.title, descriptor.title);
 		assert.equal(first.cardParamMap.tone, descriptor.tone);
 		assert.ok(Object.values(first.cardParamMap).every((value) => typeof value === 'string'));
@@ -179,6 +180,7 @@ test('presentation rejects unsupported versions and families, unknown fields and
 		{ ...presentations.alert, version: '2' },
 		{ ...presentations.alert, family: 'unknown' },
 		{ ...presentations.alert, surprise: true },
+		{ ...presentations.alert, flowStatus: '2' },
 		{ ...presentations.alert, title: 4 },
 		{ ...presentations.alert, tone: 'red' },
 		{ ...presentations.digest, items: [{ title: 'x', extra: 1 }] },
@@ -699,6 +701,7 @@ test('Presentation mode maps descriptor through existing Create and Update reque
 			JSON.parse(JSON.stringify(write.body.cardData)),
 			JSON.parse(JSON.stringify(presentationCardData(presentations.status))),
 		);
+		assert.equal(write.body.cardData.cardParamMap.flowStatus, '3');
 	}
 });
 test('defaulted Robot Code does not leak credential values in failures', async () => {

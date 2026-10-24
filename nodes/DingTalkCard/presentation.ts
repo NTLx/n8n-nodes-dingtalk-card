@@ -46,6 +46,7 @@ export function presentationCardData(input: unknown): Json {
 	const map: Record<string, string> = Object.create(null);
 	map.presentationVersion = '1';
 	map.presentationFamily = family as string;
+	map.flowStatus = '3';
 	map.title = string(d.title, 'title', 200);
 	const summary = optionalString(d.summary, 'summary');
 	if (summary !== undefined) map.summary = summary;
