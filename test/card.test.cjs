@@ -198,6 +198,172 @@ test('successful documented bodies accepted and malformed bodies rejected', () =
 	for (const b of [null, [], 'html'])
 		assert.throws(() => checkBusinessResponse(b), /invalid response/);
 });
+test('CardError normalizes validation and hostile API codes without retaining supplied data', () => {
+	const validation = formCardData;
+	assert.throws(() => validation([{ name: 'field', value: '{secret', valueMode: 'json' }]), (error) => {
+		assert.equal(error.category, 'validation');
+		assert.equal(error.retryable, false);
+		assert.equal(error.mayHaveSucceeded, false);
+		assert.doesNotMatch(JSON.stringify(error), /secret/);
+		return true;
+	});
+	assert.throws(
+		() => checkBusinessResponse({ success: false, code: 'BAD <script> token' }),
+		(error) => {
+			assert.equal(error.code, 'DINGTALK_ERROR');
+			assert.equal(error.category, 'business');
+			assert.equal(error.retryable, false);
+			assert.equal(error.mayHaveSucceeded, true);
+			assert.doesNotMatch(JSON.stringify(error), /script|secret/);
+			return true;
+		},
+	);
+	assert.throws(
+		() => checkBusinessResponse({ success: false, code: 'InvalidAccessToken' }),
+		(error) => {
+			assert.equal(error.category, 'authentication');
+			assert.equal(error.retryable, true);
+			assert.equal(error.mayHaveSucceeded, false);
+			return true;
+		},
+	);
+	assert.throws(
+		() => checkBusinessResponse({ success: false, code: 'Forbidden' }, 'token'),
+		(error) => {
+			assert.equal(error.category, 'authentication');
+			assert.equal(error.retryable, false);
+			assert.equal(error.mayHaveSucceeded, false);
+			return true;
+		},
+	);
+});
+test('HTTP status is normalized only when it is a valid HTTP status', async () => {
+	for (const [status, expected, category, mayHaveSucceeded] of [
+		[503, 503, 'http', true],
+		['429', 429, 'http', true],
+		[401, 401, 'authentication', false],
+		[99, undefined, 'network', true],
+		[600, undefined, 'network', true],
+	]) {
+		let writes = 0;
+		const api = createClient(
+			async (o) => {
+				if (o.url.endsWith('/accessToken')) return { accessToken: 't', expireIn: 7200 };
+				writes++;
+				throw { response: { status, body: { code: 'Busy', message: 'private server detail' } } };
+			},
+			randomUUID(),
+			's',
+		);
+		await assert.rejects(api('PUT', '/v1.0/card/instances', { private: 'card value' }), (error) => {
+			assert.equal(error.httpStatus, expected);
+			assert.equal(error.category, category);
+			assert.equal(error.retryable, false);
+			assert.equal(error.mayHaveSucceeded, mayHaveSucceeded);
+			assert.doesNotMatch(JSON.stringify(error), /private server detail|card value/);
+			return true;
+		});
+		assert.equal(writes, 1);
+	}
+});
+test('partial delivery and incomplete responses are ambiguous and never automatically replayed', async () => {
+	for (const [response, category] of [
+		[
+			{
+				success: true,
+				result: {
+					deliverResults: [
+						{ success: true, spaceId: 'one' },
+						{ success: false, spaceId: 'two', errorMsg: 'private delivery detail' },
+					],
+				},
+			},
+			'incomplete',
+		],
+		[{ success: true, result: {} }, 'incomplete'],
+	]) {
+		let writes = 0;
+		const api = createClient(
+			async (o) => {
+				if (o.url.endsWith('/accessToken')) return { accessToken: 't', expireIn: 7200 };
+				writes++;
+				return response;
+			},
+			randomUUID(),
+			's',
+		);
+		await assert.rejects(api('POST', '/v1.0/card/instances/createAndDeliver', { card: 'private' }), (error) => {
+			assert.equal(error.category, category);
+			assert.equal(error.retryable, false);
+			assert.equal(error.mayHaveSucceeded, true);
+			assert.doesNotMatch(JSON.stringify(error), /private delivery detail|private/);
+			return true;
+		});
+		assert.equal(writes, 1);
+	}
+});
+test('transient token acquisition failure is retryable before any write', async () => {
+	let requests = 0;
+	const api = createClient(
+		async () => {
+			requests++;
+			throw new Error('credential secret and card payload');
+		},
+		randomUUID(),
+		's',
+	);
+	await assert.rejects(api('PUT', '/v1.0/card/instances', {}), (error) => {
+		assert.equal(error.category, 'network');
+		assert.equal(error.retryable, true);
+		assert.equal(error.mayHaveSucceeded, false);
+		assert.doesNotMatch(JSON.stringify(error), /credential secret|card payload/);
+		return true;
+	});
+	assert.equal(requests, 1);
+});
+test('timeout, HTTP 5xx, and business write failures are not automatically replayed', async () => {
+	const failures = [
+		{
+			name: 'timeout',
+			request: async () => {
+				throw new Error('private timeout detail');
+			},
+			category: 'network',
+		},
+		{
+			name: 'http 5xx',
+			request: async () => {
+				throw { response: { status: 503, data: { code: 'Busy', message: 'private server detail' } } };
+			},
+			category: 'http',
+		},
+		{
+			name: 'business rejection',
+			request: async () => ({ success: false, code: 'Forbidden', message: 'private business detail' }),
+			category: 'business',
+		},
+	];
+	for (const failure of failures) {
+		let writes = 0;
+		const api = createClient(
+			async (options) => {
+				if (options.url.endsWith('/accessToken')) return { accessToken: 't', expireIn: 7200 };
+				writes++;
+				return failure.request();
+			},
+			randomUUID(),
+			's',
+		);
+		await assert.rejects(api('PUT', '/v1.0/card/instances', { card: 'private card value' }), (error) => {
+			assert.equal(error.category, failure.category, failure.name);
+			assert.equal(error.retryable, false, failure.name);
+			assert.equal(error.mayHaveSucceeded, true, failure.name);
+			assert.doesNotMatch(JSON.stringify(error), /private timeout detail|private server detail|private business detail|private card value/);
+			return true;
+		});
+		assert.equal(writes, 1, failure.name);
+	}
+});
 test('auth acquires, caches across clients, refreshes before expiry and isolates rotated credentials', async () => {
 	const requests = [];
 	let now = 0;
@@ -473,6 +639,7 @@ test('Form value mode defaults to String and guided JSON parameters reach create
 test('defaulted Robot Code does not leak credential values in failures', async () => {
 	for (const continueOnFail of [false, true]) {
 		const credential = { appKey: randomUUID(), appSecret: randomUUID() };
+		const cardValue = 'PRIVATE-CARD-VALUE-sentinel';
 		const c = context(
 			[
 				{
@@ -480,7 +647,8 @@ test('defaulted Robot Code does not leak credential values in failures', async (
 					inputMode: 'form',
 					outTrackId: 'track',
 					cardTemplateId: 'tpl',
-					cardDataMode: 'form',
+					cardDataMode: 'json',
+					cardData: JSON.stringify({ cardParamMap: { title: cardValue } }),
 					target: 'group',
 					spaceId: 'destination',
 				},
@@ -495,6 +663,7 @@ test('defaulted Robot Code does not leak credential values in failures', async (
 		c.getCredentials = async () => credential;
 		const check = (value) => {
 			for (const secret of Object.values(credential)) assert.ok(!value.includes(secret));
+			assert.ok(!value.includes(cardValue));
 		};
 		if (continueOnFail) {
 			const result = await new DingTalkCard().execute.call(c);
@@ -580,8 +749,35 @@ test('continueOnFail preserves failed identifier and processes later items', asy
 		context(p, mockApi(seen), true, [{ json: {} }, { json: {} }]),
 	);
 	assert.equal(result[0][0].json.outTrackId, 'bad');
+	assert.equal(result[0][0].json.operation, 'update');
 	assert.equal(result[0][0].json.success, false);
+	assert.equal(typeof result[0][0].json.error, 'string');
+	assert.deepEqual(result[0][0].json.errorDetails, {
+		code: 'DINGTALK_ERROR',
+		category: 'validation',
+		retryable: false,
+		mayHaveSucceeded: false,
+	});
+	assert.deepEqual(result[0][0].pairedItem, { item: 0 });
 	assert.equal(result[0][1].json.success, true);
+});
+test('unexpected non-CardError uses a safe internal fallback without write ambiguity', async () => {
+	const c = context([{ operation: 'update', inputMode: 'form' }], mockApi([]), true);
+	c.getNodeParameter = (name, index, fallback) => {
+		if (name === 'operation') return 'update';
+		if (name === 'inputMode') return 'form';
+		if (name === 'outTrackId') throw new Error('private parameter error');
+		return fallback;
+	};
+	const result = await new DingTalkCard().execute.call(c);
+	assert.equal(result[0][0].json.error, 'DingTalk Card could not process this item. Check parameter types and credential configuration.');
+	assert.deepEqual(result[0][0].json.errorDetails, {
+		code: 'DINGTALK_ERROR',
+		category: 'internal',
+		retryable: false,
+		mayHaveSucceeded: false,
+	});
+	assert.doesNotMatch(JSON.stringify(result), /private parameter error/);
 });
 test('node errors carry item index and credential test never sends cards or exposes tokens', async () => {
 	const n = new DingTalkCard();
@@ -592,7 +788,11 @@ test('node errors carry item index and credential test never sends cards or expo
 	);
 	await assert.rejects(
 		n.execute.call(c),
-		(e) => e.context.itemIndex === 0 && e.description.includes('track'),
+		(e) =>
+			e.context.itemIndex === 0 &&
+			e.description.includes('track') &&
+			e.description.includes('Category: business') &&
+			e.description.includes('May have succeeded: true'),
 	);
 	const seen = [];
 	const testResult = await n.methods.credentialTest.dingTalkCardCredentialTest.call(

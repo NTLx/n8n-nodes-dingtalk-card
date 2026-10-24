@@ -11,7 +11,7 @@ import type {
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { buildRequest, formCardData, jsonObject, type Operation } from './payload';
-import { CardError, createClient, type Json } from './transport';
+import { CardError, createClient, type CardErrorDetails, type Json } from './transport';
 
 const operations = ['createAndDeliver', 'update'];
 const streamOperations = ['stream', 'finalize'];
@@ -360,10 +360,10 @@ export class DingTalkCard implements INodeType {
 							const robotCode = robotCodeOverride.trim()
 								? robotCodeOverride
 								: (credential.appKey as string);
-							if (!spaceId.trim())
-								throw new NodeOperationError(this.getNode(), 'Space ID must be non-empty.', {
-									itemIndex: i,
-								});
+							if (!spaceId.trim()) {
+								// eslint-disable-next-line n8n-nodes-base/node-execute-block-wrong-error-thrown -- Pure input validation is converted to NodeOperationError at the item boundary.
+								throw new CardError('Space ID must be non-empty.');
+							}
 							body.openSpaceId = `dtv1.card//${group ? 'IM_GROUP' : 'IM_ROBOT'}.${spaceId}`;
 							body[group ? 'imGroupOpenSpaceModel' : 'imRobotOpenSpaceModel'] = {
 								supportForward: false,
@@ -397,10 +397,23 @@ export class DingTalkCard implements INodeType {
 					pairedItem: { item: i },
 				});
 			} catch (error) {
-				const message =
-					error instanceof CardError || error instanceof NodeOperationError
-						? error.message
-						: 'DingTalk Card could not process this item. Check parameter types and credential configuration.';
+				const cardError = error instanceof CardError ? error : undefined;
+				const message = cardError?.message ??
+					'DingTalk Card could not process this item. Check parameter types and credential configuration.';
+				const errorDetails: CardErrorDetails = cardError
+					? {
+							code: cardError.code,
+							category: cardError.category,
+							retryable: cardError.retryable,
+							mayHaveSucceeded: cardError.mayHaveSucceeded,
+							...(cardError.httpStatus === undefined ? {} : { httpStatus: cardError.httpStatus }),
+						}
+					: {
+							code: 'DINGTALK_ERROR',
+							category: 'internal',
+							retryable: false,
+							mayHaveSucceeded: false,
+						};
 				const outTrackId = typeof body.outTrackId === 'string' ? body.outTrackId : '';
 				if (this.continueOnFail()) {
 					output.push({
@@ -410,13 +423,18 @@ export class DingTalkCard implements INodeType {
 							...(body.guid ? { guid: body.guid as string } : {}),
 							success: false,
 							error: message,
+							errorDetails,
 						},
 						pairedItem: { item: i },
 					});
 				} else
 					throw new NodeOperationError(this.getNode(), message, {
 						itemIndex: i,
-						description: `Operation: ${operation}. Out Track ID: ${outTrackId || '(not assigned)'}. Preserve this identifier when investigating partial delivery.`,
+						description: `Operation: ${operation}. Error code: ${errorDetails.code}. Category: ${errorDetails.category}. Retryable: ${errorDetails.retryable}. May have succeeded: ${errorDetails.mayHaveSucceeded}.${
+							errorDetails.httpStatus === undefined
+								? ''
+								: ` HTTP status: ${errorDetails.httpStatus}.`
+						} Out Track ID: ${outTrackId || '(not assigned)'}. Preserve this identifier when investigating partial delivery.`,
 					});
 			}
 		}

@@ -5,22 +5,62 @@ import type { IHttpRequestOptions } from 'n8n-workflow';
 export type Json = Record<string, unknown>;
 export type Request = (options: IHttpRequestOptions) => Promise<unknown>;
 export const API_BASE = 'https://api.dingtalk.com';
-export class CardError extends Error {
-	constructor(
-		message: string,
-		readonly code = 'DINGTALK_ERROR',
-	) {
-		super(message);
-	}
+export type CardErrorCategory =
+	| 'validation'
+	| 'authentication'
+	| 'network'
+	| 'http'
+	| 'business'
+	| 'incomplete'
+	| 'internal';
+export interface CardErrorDetails {
+	code: string;
+	category: CardErrorCategory;
+	retryable: boolean;
+	mayHaveSucceeded: boolean;
+	httpStatus?: number;
 }
-export function object(value: unknown): value is Json {
-	return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-// Do not copy server messages or HTTP exceptions into n8n errors: they may echo secrets/card data.
+
 function safeCode(value: unknown): string {
 	return typeof value === 'string' && /^[a-zA-Z0-9_.-]{1,100}$/.test(value)
 		? value
 		: 'DINGTALK_ERROR';
+}
+
+function validHttpStatus(value: unknown): number | undefined {
+	const status =
+		typeof value === 'number'
+			? value
+			: typeof value === 'string' && /^\d{3}$/.test(value)
+				? Number(value)
+				: undefined;
+	return status !== undefined && Number.isInteger(status) && status >= 100 && status <= 599
+		? status
+		: undefined;
+}
+
+export class CardError extends Error {
+	readonly code: string;
+	readonly category: CardErrorCategory;
+	readonly retryable: boolean;
+	readonly mayHaveSucceeded: boolean;
+	readonly httpStatus?: number;
+
+	constructor(
+		message: string,
+		code = 'DINGTALK_ERROR',
+		metadata: Partial<Omit<CardErrorDetails, 'code'>> = {},
+	) {
+		super(message);
+		this.code = safeCode(code);
+		this.category = metadata.category ?? 'validation';
+		this.retryable = metadata.retryable ?? false;
+		this.mayHaveSucceeded = metadata.mayHaveSucceeded ?? false;
+		this.httpStatus = validHttpStatus(metadata.httpStatus);
+	}
+}
+export function object(value: unknown): value is Json {
+	return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 function failure(value: unknown): Json | undefined {
 	if (Array.isArray(value)) {
@@ -46,14 +86,42 @@ function failure(value: unknown): Json | undefined {
 }
 // Includes documented result.deliverResults and observed result:[{success:false}] variants.
 // https://open.dingtalk.com/document/orgapp/create-and-deliver-cards
-export function checkBusinessResponse(value: unknown): Json {
-	if (!object(value)) throw new CardError('DingTalk returned an invalid response body.');
+function hasPartialDelivery(value: unknown): boolean {
+	if (Array.isArray(value)) {
+		const hasSuccess = value.some((entry) => object(entry) && entry.success === true);
+		const hasFailure = value.some((entry) => object(entry) && failure(entry) !== undefined);
+		return (hasSuccess && hasFailure) || value.some((entry) => hasPartialDelivery(entry));
+	}
+	if (!object(value)) return false;
+	return ['result', 'deliverResults'].some((key) => hasPartialDelivery(value[key]));
+}
+
+export function checkBusinessResponse(value: unknown, phase: 'token' | 'write' = 'write'): Json {
+	if (!object(value))
+		throw new CardError('DingTalk returned an invalid response body.', 'DINGTALK_ERROR', {
+			category: 'incomplete',
+			mayHaveSucceeded: phase === 'write',
+		});
 	const failed = failure(value);
 	if (failed) {
 		const code = safeCode(failed.code ?? failed.errcode);
+		const invalidToken = invalidTokens.has(code);
+		const partialDelivery = phase === 'write' && hasPartialDelivery(value);
 		throw new CardError(
-			`DingTalk rejected the request (${code}). Check app permissions, published template, target membership and payload. Some deliveries may already have succeeded; inspect the card before retrying.`,
+			phase === 'token'
+				? `DingTalk rejected token acquisition (${code}). Check enterprise app credentials and permissions.`
+				: `DingTalk rejected the request (${code}). Check app permissions, published template, target membership and payload. Some deliveries may already have succeeded; inspect the card before retrying.`,
 			code,
+			{
+				category:
+					phase === 'token' || invalidToken
+						? 'authentication'
+						: partialDelivery
+							? 'incomplete'
+							: 'business',
+				retryable: phase === 'write' && invalidToken,
+				mayHaveSucceeded: phase === 'write' && !invalidToken,
+			},
 		);
 	}
 	return value;
@@ -75,14 +143,34 @@ async function send(request: Request, options: IHttpRequestOptions): Promise<unk
 			}
 		}
 		const code = object(data) ? safeCode(data.code ?? data.errcode) : 'DINGTALK_ERROR';
-		const status = Number(response.status ?? response.statusCode ?? e.statusCode ?? e.httpCode);
+		const status = validHttpStatus(response.status ?? response.statusCode ?? e.statusCode ?? e.httpCode);
+		const tokenRequest = options.url.endsWith('/v1.0/oauth2/accessToken');
+		const invalidToken = invalidTokens.has(code);
+		const authenticationStatus = status === 401 || status === 403;
+		const category: CardErrorCategory = invalidToken
+			? 'authentication'
+			: status === undefined
+				? 'network'
+				: authenticationStatus
+					? 'authentication'
+					: 'http';
 		const label =
-			Number.isInteger(status) && status >= 100 && status <= 599
+			status !== undefined
 				? `HTTP ${status}`
 				: 'network/timeout failure';
 		throw new CardError(
-			`DingTalk ${label} (${code}). Check connectivity, app credentials, API permissions and payload. A write may have succeeded; verify before retrying.`,
+			`DingTalk ${label} (${code}). Check connectivity, app credentials, API permissions and payload. ${tokenRequest ? 'Token acquisition failed before the card write.' : 'A write may have succeeded; verify before retrying.'}`,
 			code,
+			{
+				category,
+				retryable:
+					(!tokenRequest && invalidToken) ||
+					(tokenRequest &&
+						!invalidToken &&
+						(status === undefined || status === 408 || status === 429 || status >= 500)),
+				mayHaveSucceeded: !tokenRequest && !invalidToken && !authenticationStatus,
+				httpStatus: status,
+			},
 		);
 	}
 }
@@ -106,6 +194,8 @@ export function createClient(request: Request, appKey: string, appSecret: string
 	if (!appKey || !appSecret)
 		throw new CardError(
 			'Configure Client ID and Client Secret in the DingTalk Card API credential.',
+			'DINGTALK_ERROR',
+			{ category: 'authentication' },
 		);
 	const cacheKey = createHash('sha256')
 		.update(JSON.stringify([appKey, appSecret]))
@@ -123,6 +213,7 @@ export function createClient(request: Request, appKey: string, appSecret: string
 					url: `${API_BASE}/v1.0/oauth2/accessToken`,
 					body: { appKey, appSecret },
 				}),
+				'token',
 			);
 			if (
 				typeof body.accessToken !== 'string' ||
@@ -133,6 +224,8 @@ export function createClient(request: Request, appKey: string, appSecret: string
 			)
 				throw new CardError(
 					'DingTalk token response is missing accessToken or a valid expireIn. Check enterprise app credentials.',
+					'DINGTALK_ERROR',
+					{ category: 'authentication' },
 				);
 			const entry = {
 				value: body.accessToken,
@@ -172,6 +265,8 @@ export function createClient(request: Request, appKey: string, appSecret: string
 				if (response.success !== true || !validResult) {
 					throw new CardError(
 						'DingTalk returned an incomplete card response. Verify the card before retrying.',
+						'DINGTALK_ERROR',
+						{ category: 'incomplete', mayHaveSucceeded: true },
 					);
 				}
 				return response;
