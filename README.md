@@ -2,7 +2,7 @@
 
 Focused n8n community node for **DingTalk Card Platform / interactive-card outbound lifecycle**.
 
-**Beta: not real-DingTalk-E2E certified.** No npm publication is performed by this repository's beta release process. Local mocked tests cannot certify enterprise app permissions, template rendering or actual delivery. This project is not affiliated with DingTalk or n8n.
+**Beta: not real-DingTalk-E2E certified.** Version `0.1.0-beta.2` is published on npm. Local mocked tests cannot certify enterprise app permissions, template rendering or actual delivery. This project is not n8n-verified. This project is not affiliated with DingTalk or n8n.
 
 It provides one **DingTalk Card** node and one **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -10,21 +10,21 @@ It provides one **DingTalk Card** node and one **DingTalk Card API** enterprise 
 
 Requires Node.js 24+ and a compatible n8n installation. Development compiles and loads the node against `n8n-workflow` 2.44.2 (the dependency of current stable n8n 2.44.6); full runtime/UI compatibility is not yet certified. CI uses Node 24. Current stable n8n 2.44.6 declares Node >=24; this takes precedence over older starter guidance mentioning Node 22.
 
-The beta package is not yet published to npm. After its first npm publication, install it in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation may be disabled by the instance owner or hosting policy. This beta is not n8n-verified, and npm installation does not certify live DingTalk behavior. Real DingTalk E2E remains pending.
+Install this beta in self-hosted n8n from **Settings > Community Nodes > Install** by entering `n8n-nodes-dingtalk-card@beta`. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Use the `beta` tag explicitly; as of 2026-10-24, npm's `latest` tag also points to `0.1.0-beta.2` and does not indicate a stable release. npm installation does not certify live DingTalk behavior. Real DingTalk E2E and n8n verification remain pending.
 
-Until then, you can try the GitHub prerelease on a disposable self-hosted n8n instance:
+To install the tagged GitHub prerelease manually on a disposable self-hosted n8n instance:
 
 ```sh
 git clone https://github.com/NTLx/n8n-nodes-dingtalk-card.git
 cd n8n-nodes-dingtalk-card
-git checkout v0.1.0-beta.1
+git checkout v0.1.0-beta.2
 npm ci
 npm run build
 npm test
 npm pack
 # Install the resulting tgz in your self-hosted n8n community-node directory:
 cd ~/.n8n/nodes
-npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.1.0-beta.1.tgz
+npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.1.0-beta.2.tgz
 ```
 
 Create the community-node directory/package.json if needed, run as the n8n service account, and restart n8n after installation. Container users must install into a persistent volume accessible to n8n. For development use `npm run dev` with the official CLI; follow its prerequisites for your n8n version.
@@ -88,7 +88,7 @@ Uses the official [n8n node CLI](https://docs.n8n.io/connect/create-nodes/build-
 
 Programmatic execution is intentional: shared token handling, strict 2xx/partial-delivery failure checks, generated identifier propagation and sanitized item-level errors are implemented once, separated from pure payload builders. The current custom credential-test context in `n8n-workflow` exposes only the legacy `request` helper; that single call has a documented lint exception and sanitized error boundary. Main execution uses `httpRequest`. Pure helper errors are converted to `NodeOperationError` at the execution boundary.
 
-See [verification record](docs/VERIFICATION.md) for exact local/CI gates, dependency findings and limitations. GitHub prereleases are conditional on all non-live gates passing. No stable tag or `latest` npm release is implied.
+See [verification record](docs/VERIFICATION.md) for exact local/CI gates, dependency findings and limitations. GitHub prereleases are conditional on all non-live gates passing. No stable release is implied.
 
 ## Roadmap
 

@@ -2,7 +2,7 @@
 
 ## 0.1.0-beta.2
 
-Prepare npm distribution: include the README in the package, document n8n UI installation, verify community-node metadata and registered entry paths in the package check, and add a manually dispatched GitHub Actions workflow for beta-only npm publishing with OIDC provenance. Initial npm publication is pending authenticated package bootstrap. Real DingTalk enterprise app/card E2E and full current-stable n8n runtime compatibility remain unverified; no stable release.
+Published to npm as `0.1.0-beta.2` with the README included, community-node metadata and registered entry paths verified, and n8n UI installation documented. The manually dispatched GitHub Actions workflow is ready for beta-only OIDC publishing after npm Trusted Publisher setup. On 2026-10-24, both `beta` and `latest` point to `0.1.0-beta.2`. Real DingTalk enterprise app/card E2E and full current-stable n8n runtime compatibility remain unverified; this is not a stable or n8n-verified release.
 
 ## 0.1.0-beta.1
 
