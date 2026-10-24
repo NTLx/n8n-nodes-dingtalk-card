@@ -28,6 +28,14 @@ This accepts the Presentation adapter mapping, DingTalk API transport, and compa
 
 The preceding prepublication development verification remains historical and records local gates only; it makes no claim of production use at that earlier point. No real organization, group, card, credential, workflow, execution, or `outTrackId` identifiers are recorded.
 
+## v0.4.0-beta.1 live Presentation template-contract probe — 2026-10-25
+
+A user-published dedicated DingTalk test template was exercised with real Create & Deliver for all five Presentation families: `alert`, `status`, `digest`, `action`, and `report`. Each descriptor populated all common fields and every family-specific optional and required field. All five API Create & Deliver calls succeeded.
+
+A negative-control Create & Deliver using Card Data JSON with one deliberately unknown `cardParamMap` key also succeeded. This demonstrates that DingTalk API success does **not** prove a template defines or binds the supplied variables. Transport acceptance and template-variable binding/rendering acceptance are separate checks.
+
+Full visual/template-contract acceptance remains pending rendered-card evidence or template-definition/export evidence. No real template, group, card, workflow, execution, credential, or `outTrackId` identifiers are recorded.
+
 ## v0.3.0 stable release — 2026-10-24
 
 Stable acceptance for the existing v0.3 scope is closed and the release is published. The earlier beta-era records below are historical; this section records the final stable-release evidence and supersedes their open/remaining v0.3 acceptance statements.

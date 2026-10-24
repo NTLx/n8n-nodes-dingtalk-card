@@ -34,6 +34,10 @@ Family-specific fields:
 
 The only status states are `idle`, `running`, `success`, `failed`, and `cancelled`. Digest and report objects serialize with stable field order as shown in the schema (`title`, `summary`, `tone`; and `heading`, `body`). All resulting values are strings, as required by the existing Card Data boundary. The mapper does not reorder list entries.
 
+### Template acceptance rule
+
+A successful DingTalk Create & Deliver response proves transport acceptance only. It does not prove that the selected template defines or binds the supplied variables, or that the card renders them. Accept the template contract only after inspecting rendered-card evidence or template-definition/export evidence showing the required variables are defined and bound. Treat transport acceptance and template-variable binding/rendering acceptance as separate checks.
+
 `Action` is presentation metadata only. `label` and `description` are display strings. They do not define a callback ID, route, authorization, executable action, or platform button. Workflow routing and callback contracts are outside this version.
 
 ## Status and transitions
