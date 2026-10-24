@@ -46,6 +46,22 @@ As of the beta.4 preparation on 2026-10-24, public npm reported `beta -> 0.1.0-b
 - Public package metadata reports version `0.1.0-beta.4`, tarball `https://registry.npmjs.org/n8n-nodes-dingtalk-card/-/n8n-nodes-dingtalk-card-0.1.0-beta.4.tgz`, integrity `sha512-IVzMIqoBiXx6qYhue2NgY/BkP+mMMJzxx3c+Pp5PItMuv/caVKiYQk/8CuvYZt6kqaAvCWHwLp2BS37nfGKkmA==`, and repository `git+https://github.com/NTLx/n8n-nodes-dingtalk-card.git`. The fetched public tarball's SHA-512 matched registry integrity; its 13 files included README, compiled node and credential entries, and its manifest version matched.
 - The `latest` tag remains the one-time cleanup issue and is deliberately unchanged by the beta publishing workflow. No stable release was created. Beta.3 remains GitHub prerelease only and was not published. Real DingTalk E2E and full current-stable n8n runtime compatibility remain unverified.
 
+## Guided Robot Code default — 2026-10-24
+
+Inspected `DingTalkCardApi.credentials.ts` and the node execution path before changing guided Create & Deliver. The bound credential's `appKey` (Client ID / AppKey) now supplies `robotCode` at execution time when the guided field is missing, empty or whitespace-only, for both group and robot direct-message targets. Nonblank overrides are preserved exactly. The node field is optional and its help text documents the default. Whole-body JSON, endpoint/model semantics, auth handling and other operations are unchanged. The resolved credential is used only in the outbound request, without adding it to outputs, logs or errors.
+
+Local non-live gates on Node **26.12.1**, npm **12.2.1**:
+
+- `npm run lint`: exit 0; no ESLint errors or warnings (Node emits an environment color-setting warning).
+- `npm run typecheck`: exit 0.
+- `npm run build`: exit 0; TypeScript and static assets built successfully.
+- `npm test`: exit 0; **29 passed, 0 failed, 0 skipped**. Added regression coverage for both delivery targets with missing/empty/whitespace Robot Code, exact explicit overrides, unchanged JSON payloads, successful output without credential values, and sanitized thrown/Continue On Fail errors when an HTTP exception contains credential/request data.
+- `npm run verify:package`: exit 0; **13 allowlisted files**, archive extraction, registered class loading and icon checks passed.
+- `npm audit --omit=dev --audit-level=high`: exit 0; **0 vulnerabilities**.
+- `git diff --check`: exit 0.
+
+No live DingTalk or n8n UI validation was performed. Package version remains `0.1.0-beta.4`; this focused development change does not create a tag or publish an npm/GitHub release.
+
 ## Limits and next acceptance
 
 No DingTalk secrets, live enterprise account, card template, destination or n8n instance was provided or used. Mocked execution and tarball class loading do not establish real HTTP behavior, rendering, quotas, host UI loading or full current-stable n8n runtime compatibility. The exported workflow's graph, parameters and expression payload are checked locally, not executed on a live n8n instance.

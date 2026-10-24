@@ -337,6 +337,91 @@ test('execute guided group and robot mapping, identifiers, raw result and paired
 	assert.equal(result[0][0].json.outTrackId, writes[0].body.outTrackId);
 	assert.equal(result[0][0].json.raw.success, true);
 });
+test('guided Create & Deliver defaults Robot Code from the bound credential and preserves overrides', async () => {
+	const field = new DingTalkCard().description.properties.find((p) => p.name === 'robotCode');
+	assert.ok(!field.required);
+	assert.equal(field.default, '');
+	for (const target of ['group', 'robot']) {
+		for (const robotCode of [undefined, '', ' \t ', ' explicit-robot ']) {
+			const seen = [];
+			const credential = { appKey: randomUUID(), appSecret: randomUUID() };
+			const params = {
+				operation: 'createAndDeliver',
+				inputMode: 'form',
+				outTrackId: 'track',
+				cardTemplateId: 'tpl',
+				cardDataMode: 'form',
+				target,
+				spaceId: 'destination',
+				...(robotCode === undefined ? {} : { robotCode }),
+			};
+			const c = context([params], mockApi(seen));
+			c.getCredentials = async (name) => {
+				assert.equal(name, 'dingTalkCardApi');
+				return credential;
+			};
+			const result = await new DingTalkCard().execute.call(c);
+			const model = target === 'group' ? 'imGroupOpenDeliverModel' : 'imRobotOpenDeliverModel';
+			assert.equal(
+				seen[1].body[model].robotCode,
+				robotCode?.trim() ? robotCode : credential.appKey,
+			);
+			if (target === 'robot') assert.equal(seen[1].body[model].spaceType, 'IM_ROBOT');
+			for (const value of Object.values(credential))
+				assert.ok(!JSON.stringify(result).includes(value));
+		}
+	}
+});
+test('JSON Create & Deliver preserves explicit Robot Code and does not default missing Robot Code', async () => {
+	for (const model of [{ robotCode: 'json-robot' }, {}]) {
+		const seen = [];
+		const body = { ...create(), imGroupOpenDeliverModel: model };
+		await new DingTalkCard().execute.call(
+			context(
+				[{ operation: 'createAndDeliver', inputMode: 'json', requestBody: body }],
+				mockApi(seen),
+			),
+		);
+		assert.deepEqual(seen[1].body, body);
+	}
+});
+test('defaulted Robot Code does not leak credential values in failures', async () => {
+	for (const continueOnFail of [false, true]) {
+		const credential = { appKey: randomUUID(), appSecret: randomUUID() };
+		const c = context(
+			[
+				{
+					operation: 'createAndDeliver',
+					inputMode: 'form',
+					outTrackId: 'track',
+					cardTemplateId: 'tpl',
+					cardDataMode: 'form',
+					target: 'group',
+					spaceId: 'destination',
+				},
+			],
+			async (o) => {
+				if (o.url.endsWith('/accessToken')) return { accessToken: 't', expireIn: 7200 };
+				assert.equal(o.body.imGroupOpenDeliverModel.robotCode, credential.appKey);
+				throw new Error(JSON.stringify({ request: o, credential }));
+			},
+			continueOnFail,
+		);
+		c.getCredentials = async () => credential;
+		const check = (value) => {
+			for (const secret of Object.values(credential)) assert.ok(!value.includes(secret));
+		};
+		if (continueOnFail) {
+			const result = await new DingTalkCard().execute.call(c);
+			assert.equal(result[0][0].json.success, false);
+			check(JSON.stringify(result));
+		} else
+			await assert.rejects(new DingTalkCard().execute.call(c), (e) => {
+				check(String(e) + JSON.stringify(e));
+				return true;
+			});
+	}
+});
 test('execute JSON update/stream/finalize and guided update/stream use expected payloads', async () => {
 	for (const op of ['update', 'stream', 'finalize']) {
 		const seen = [];

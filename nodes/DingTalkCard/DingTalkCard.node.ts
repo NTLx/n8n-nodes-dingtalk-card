@@ -165,10 +165,9 @@ const properties: INodeProperties[] = [
 		name: 'robotCode',
 		type: 'string',
 		default: '',
-		required: true,
 		displayOptions: { show: { inputMode: ['form'], operation: ['createAndDeliver'] } },
 		description:
-			'Robot code, usually the enterprise robot AppKey; robot must have access to the target',
+			'Optional override. Leave blank to use the bound credential’s Client ID / AppKey for the application’s own enterprise robot. Robot must have access to the target.',
 	},
 	{
 		displayName: 'Update by Key',
@@ -334,13 +333,14 @@ export class DingTalkCard implements INodeType {
 							body.cardTemplateId = this.getNodeParameter('cardTemplateId', i);
 							const group = this.getNodeParameter('target', i) === 'group';
 							const spaceId = this.getNodeParameter('spaceId', i) as string;
-							const robotCode = this.getNodeParameter('robotCode', i) as string;
-							if (!spaceId.trim() || !robotCode.trim())
-								throw new NodeOperationError(
-									this.getNode(),
-									'Space ID and Robot Code must be non-empty.',
-									{ itemIndex: i },
-								);
+							const robotCodeOverride = this.getNodeParameter('robotCode', i, '') as string;
+							const robotCode = robotCodeOverride.trim()
+								? robotCodeOverride
+								: (credential.appKey as string);
+							if (!spaceId.trim())
+								throw new NodeOperationError(this.getNode(), 'Space ID must be non-empty.', {
+									itemIndex: i,
+								});
 							body.openSpaceId = `dtv1.card//${group ? 'IM_GROUP' : 'IM_ROBOT'}.${spaceId}`;
 							body[group ? 'imGroupOpenSpaceModel' : 'imRobotOpenSpaceModel'] = {
 								supportForward: false,
