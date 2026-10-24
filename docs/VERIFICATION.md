@@ -62,10 +62,20 @@ Local non-live gates on Node **26.12.1**, npm **12.2.1**:
 
 No live DingTalk or n8n UI validation was performed. Package version remains `0.1.0-beta.4`; this focused development change does not create a tag or publish an npm/GitHub release.
 
+## Beta.5 release preparation — 2026-10-24
+
+Release target `0.1.0-beta.5` includes the focused Robot Code default from `8916aea395f3604a0f104d3cb3065cb47528e8b6`. Release preparation changes manifest/lockfile versions, release documentation and the publishing workflow only.
+
+The user reported that n8n Community Nodes Update downgraded an installed beta.4 to stale `latest -> 0.1.0-beta.2`. Beta.5 therefore adds `npm dist-tag add <package>@<published-beta> latest` after successful publishing in the same Trusted Publisher/OIDC job. No tag removal or npm token fallback is used. Before synchronization, the workflow checks public versions and skips changing `latest` if a stable version exists; malformed/failed queries or a failed dist-tag add fail the job. It verifies both `beta` and `latest` against the published version when synchronization applies. **TODO / transition:** once the first stable release exists, `latest` must track stable and beta must stop rewriting it. This temporary n8n compatibility policy does not make beta.5 stable.
+
+The initial standalone pack inspection failed because lifecycle build output preceded JSON on stdout; no package failure was established and no release occurred. The resumed gate uses `npm pack --ignore-scripts --json` after a successful build, then inspects and loads the actual tarball with the same allowlist/class/icon checks as `verify:package`. After the workflow/docs change, all local release gates passed on Node **26.12.1** / npm **12.2.1** (exit 0): clean `npm ci`, lint, typecheck, build, **29 tests passed / 0 failed / 0 skipped**, `verify:package`, standalone pack inspection (**13 allowlisted files**, beta.5 manifest, registered class loadability and icon checks), production audit (**0 vulnerabilities**), and `git diff --check`. Workflow YAML/step ordering/OIDC permissions and all inline JavaScript syntax were validated; six mocked synchronization scenarios covered prerelease-only history, stable history, empty/malformed history, registry failure and dist-tag rejection. The clean install still reports existing development-only advisories (**19 high, 4 moderate**), deprecations and npm 12 blocked dependency install-script notices. GitHub CI must pass before annotated tag/prerelease creation. Final workflow, public registry, tarball integrity and provenance results are recorded in the GitHub prerelease notes after publication.
+
+No live DingTalk or n8n UI validation is claimed. This remains a beta, not a stable release.
+
 ## Limits and next acceptance
 
 No DingTalk secrets, live enterprise account, card template, destination or n8n instance was provided or used. Mocked execution and tarball class loading do not establish real HTTP behavior, rendering, quotas, host UI loading or full current-stable n8n runtime compatibility. The exported workflow's graph, parameters and expression payload are checked locally, not executed on a live n8n instance.
 
-The original **0.1.0-beta.1** baseline was a GitHub prerelease only. The current prerelease is `0.1.0-beta.2`; real DingTalk E2E and full current-stable n8n runtime compatibility remain unverified. No stable `v0.1.0` release has been made.
+The original **0.1.0-beta.1** baseline was a GitHub prerelease only. The current release target is `0.1.0-beta.5`; real DingTalk E2E and full current-stable n8n runtime compatibility remain unverified. No stable `v0.1.0` release has been made.
 
 Before v0.2.0, implement and verify inbound interaction/callback authentication, acknowledgment timing, button/form mapping and duplicate delivery handling using current official mechanisms. Before v1.0.0, verify real enterprise app group/DM delivery, template rendering, update merging, streaming/completed/error states and failure recovery, plus current-stable n8n runtime/UI compatibility. Finish npm installation/release documentation and resolve/reassess upstream development advisories before stable publication.

@@ -2,7 +2,7 @@
 
 Focused n8n community node for **DingTalk Card Platform / interactive-card outbound lifecycle**.
 
-**Beta: not real-DingTalk-E2E certified.** As of 2026-10-24, `0.1.0-beta.4` is published on npm under `beta`; `latest` still points to `0.1.0-beta.2` because its one-time cleanup remains unresolved. Install the current prerelease using `n8n-nodes-dingtalk-card@beta`; `latest` does not indicate a stable release. Version `0.1.0-beta.3` is a GitHub prerelease only and was not published to npm. Local mocked tests cannot certify enterprise app permissions, template rendering or actual delivery. This project is not n8n-verified. This project is not affiliated with DingTalk or n8n.
+**Beta: not real-DingTalk-E2E certified.** As of 2026-10-24, this release is `0.1.0-beta.5`, distributed under the npm `beta` tag; before beta.5, stale `latest -> 0.1.0-beta.2` caused n8n Community Nodes Update to downgrade beta.4 installations. Beta.5 publishing synchronizes `latest` to the published beta as a temporary n8n compatibility measure while no stable release exists. Install the current prerelease using `n8n-nodes-dingtalk-card@beta`; `latest` currently does not indicate a stable release. **TODO / transition:** once the first stable release exists, `latest` must track stable and beta publishing must stop rewriting it; the workflow guards against rewriting `latest` when any stable version exists. Version `0.1.0-beta.3` is a GitHub prerelease only and was not published to npm. Local mocked tests cannot certify enterprise app permissions, template rendering or actual delivery. This project is not n8n-verified. This project is not affiliated with DingTalk or n8n.
 
 It provides one **DingTalk Card** node and one **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -17,14 +17,14 @@ To install the tagged GitHub prerelease manually on a disposable self-hosted n8n
 ```sh
 git clone https://github.com/NTLx/n8n-nodes-dingtalk-card.git
 cd n8n-nodes-dingtalk-card
-git checkout v0.1.0-beta.4
+git checkout v0.1.0-beta.5
 npm ci
 npm run build
 npm test
 npm pack
 # Install the resulting tgz in your self-hosted n8n community-node directory:
 cd ~/.n8n/nodes
-npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.1.0-beta.4.tgz
+npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.1.0-beta.5.tgz
 ```
 
 Create the community-node directory/package.json if needed, run as the n8n service account, and restart n8n after installation. Container users must install into a persistent volume accessible to n8n. For development use `npm run dev` with the official CLI; follow its prerequisites for your n8n version.

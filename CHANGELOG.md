@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0-beta.5
+
+Guided (Form) Create & Deliver now defaults missing, empty or whitespace-only Robot Code to the bound DingTalk Card API credential's Client ID / AppKey at execution time for the application's own enterprise robot. Applies to group and direct-message targets; explicit overrides are preserved unchanged. Robot Code is optional in the UI, with the default documented. Whole-body JSON and other operations are unchanged. Regression tests cover default/override behavior and sanitized failures.
+
+Distributed under the npm `beta` tag. Fixes the reported n8n Community Nodes Update downgrade from beta.4 to stale `latest -> 0.1.0-beta.2` by adding the just-published beta to `latest` via Trusted Publisher/OIDC (without removing the tag). This is a temporary compatibility measure while no stable release exists, not a stable release designation. **TODO / transition:** after the first stable release, `latest` must track stable and beta must stop rewriting it; the workflow skips synchronization when any stable version exists. Real DingTalk E2E and full n8n runtime/UI compatibility remain unverified.
+
 ## 0.1.0-beta.4
 
 Documentation and release pipeline only. Published to npm through GitHub Actions Trusted Publishing with provenance under `beta`. Public tags are `beta -> 0.1.0-beta.4` and `latest -> 0.1.0-beta.2`; the latter remains a one-time cleanup issue. No DingTalk node behavior changed.

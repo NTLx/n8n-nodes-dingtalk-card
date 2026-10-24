@@ -33,7 +33,31 @@ jobs:
           node -e 'const p=require("./package.json"); if (!/^0\.1\.0-beta\.\d+$/.test(p.version) || `v${p.version}` !== process.env.GITHUB_REF_NAME) process.exit(1)'
       - name: Publish beta with provenance
         run: npm publish --access public --tag beta --provenance
+      # Temporary n8n Community Nodes compatibility: Update resolves npm latest.
+      # TODO(first stable): latest must track stable; beta must never rewrite it.
+      - name: Synchronize latest while no stable release exists
+        id: sync_latest
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const { execFileSync } = require('node:child_process');
+          const { appendFileSync } = require('node:fs');
+          const { name, version } = require('./package.json');
+          const output = execFileSync('npm', ['view', '--prefer-online', '--registry=https://registry.npmjs.org/', name, 'versions', '--json'], { encoding: 'utf8', timeout: 30_000 });
+          const versions = JSON.parse(output);
+          assert.ok(Array.isArray(versions) && versions.length > 0 && versions.every((value) => typeof value === 'string'), 'Invalid public version list; refusing to change latest');
+          const hasStable = versions.some((value) => /^\d+\.\d+\.\d+$/.test(value));
+          if (hasStable) {
+            console.log('Stable release exists: beta must leave latest tracking stable.');
+          } else {
+            // Same Trusted Publisher/OIDC job as publish; no token fallback.
+            execFileSync('npm', ['dist-tag', 'add', `${name}@${version}`, 'latest', '--registry=https://registry.npmjs.org/'], { stdio: 'inherit', timeout: 30_000 });
+          }
+          appendFileSync(process.env.GITHUB_OUTPUT, `synchronized=${!hasStable}\n`);
+          NODE
       - name: Verify public npm dist-tags
+        env:
+          SYNCHRONIZE_LATEST: ${{ steps.sync_latest.outputs.synchronized }}
         run: |
           node <<'NODE'
           const { execFileSync } = require('node:child_process');
@@ -41,6 +65,7 @@ jobs:
           const version = require('./package.json').version;
           const deadline = Date.now() + 5 * 60 * 1000;
           const wait = new Int32Array(new SharedArrayBuffer(4));
+          const synchronizeLatest = process.env.SYNCHRONIZE_LATEST === 'true';
           let last = 'no registry response';
           while (Date.now() < deadline) {
             try {
@@ -48,10 +73,10 @@ jobs:
               const output = execFileSync('npm', ['view', '--prefer-online', '--registry=https://registry.npmjs.org/', name, 'dist-tags', '--json'], { encoding: 'utf8', timeout: Math.min(30_000, remaining) });
               const result = JSON.parse(output);
               const tags = Array.isArray(result) ? result[0] : result;
-              last = JSON.stringify({ beta: tags?.beta });
-              console.log(`Observed public beta tag: ${last}`);
-              if (tags?.beta === version) {
-                console.log(`Verified ${name} beta -> ${version}`);
+              last = JSON.stringify({ beta: tags?.beta, latest: tags?.latest });
+              console.log(`Observed public dist-tags: ${last}`);
+              if (tags?.beta === version && (!synchronizeLatest || tags?.latest === version)) {
+                console.log(`Verified ${name} beta -> ${version}${synchronizeLatest ? ` and latest -> ${version}` : "; latest reserved for stable"}`);
                 process.exit(0);
               }
             } catch (error) {
@@ -60,7 +85,7 @@ jobs:
             const remaining = deadline - Date.now();
             if (remaining > 0) Atomics.wait(wait, 0, 0, Math.min(10_000, remaining));
           }
-          console.error(`Timed out waiting for ${name} beta -> ${version}; last observation: ${last}`);
+          console.error(`Timed out waiting for ${name} beta -> ${version}${synchronizeLatest ? ` and latest -> ${version}` : ""}; last observation: ${last}`);
           process.exit(1);
           NODE
       - name: Verify published metadata and tarball
