@@ -30,11 +30,21 @@ The preceding prepublication development verification remains historical and rec
 
 ## v0.4.0-beta.1 live Presentation template-contract probe — 2026-10-25
 
+This probe records the earlier state and is superseded by the final acceptance record below.
+
 A user-published dedicated DingTalk test template was exercised with real Create & Deliver for all five Presentation families: `alert`, `status`, `digest`, `action`, and `report`. Each descriptor populated all common fields and every family-specific optional and required field. All five API Create & Deliver calls succeeded.
 
 A negative-control Create & Deliver using Card Data JSON with one deliberately unknown `cardParamMap` key also succeeded. This demonstrates that DingTalk API success does **not** prove a template defines or binds the supplied variables. Transport acceptance and template-variable binding/rendering acceptance are separate checks.
 
 Full visual/template-contract acceptance remains pending rendered-card evidence or template-definition/export evidence. No real template, group, card, workflow, execution, credential, or `outTrackId` identifiers are recorded.
+
+## v0.4.0-beta.1 final Presentation template-contract acceptance — 2026-10-25
+
+The dedicated test template was rebuilt from the user-exported DingTalk JSON as a compact `NORMAL` template with three logical components: one Grid and two BaseText components. Its 13/13 v0.4 contract variables are defined as public strings and statically bound in both `editorData` and `widgetInfo`. The user imported and published this template.
+
+Final live connected-instance acceptance sent all five Presentation families (`alert`, `status`, `digest`, `action`, and `report`) through the published template. Required and optional fields were populated for each family. All five n8n executions succeeded; every DingTalk response had top-level `success=true` and `deliverResults[].success=true`.
+
+Under the documented template acceptance rule, template-definition/export evidence together with live transport through the published template is sufficient to mark the Presentation template contract **PASS**. Client pixel-perfect visual inspection was not independently performed and is not claimed. This closes v0.4.0-beta.1 acceptance; the release is ready for stable promotion. No stable release was published or relabeled as part of this acceptance. No real template, group, card, workflow, execution, credential, or `outTrackId` identifiers are recorded.
 
 ## v0.3.0 stable release — 2026-10-24
 

@@ -4,7 +4,7 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap starts from the published **v0.3.0** stable state, with **v0.3.0-beta.1** retained as its prerelease. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-The repository package version is **0.4.0-beta.1**, publicly published as a beta. npm `beta` resolves to `0.4.0-beta.1`; `latest` remains stable at `0.3.0`. The v0.4.0 Presentation Contract & Template Kit is implemented and locally verified. Production installation and connected-instance Presentation transport acceptance passed on self-hosted n8n/runners 2.44.6, including adapter mapping, DingTalk API operations, and compatibility with the existing streaming/finalize lifecycle. Visual Presentation rendering/template acceptance remains pending because the live run used a legacy public AI template that does not satisfy the v0.4 variable contract; the package ships no DingTalk templates. See [production acceptance evidence](VERIFICATION.md#v040-beta1-production-install-and-connected-instance-transport-acceptance-2026-10-25).
+The repository package version is **0.4.0-beta.1**, publicly published as a beta. npm `beta` resolves to `0.4.0-beta.1`; `latest` remains stable at `0.3.0`. The v0.4.0 Presentation Contract & Template Kit is implemented and accepted, including live use of a user-published contract template. The package ships no DingTalk templates. See [final template-contract acceptance](VERIFICATION.md#v040-beta1-final-presentation-template-contract-acceptance-2026-10-25).
 
 ## Vision and product principle
 
@@ -47,7 +47,7 @@ Descriptors produced with model assistance may be considered only after determin
 
 **Compatibility and migration:** Preserve existing Form/JSON behavior, callback opt-in, output fields, and saved workflow behavior. Same-ID Create semantics remain explicitly non-guaranteed.
 
-### v0.4.0 — Presentation Contract & Template Kit (published beta; transport accepted, visual/template acceptance pending)
+### v0.4.0 — Presentation Contract & Template Kit (published beta; acceptance complete, ready for stable promotion)
 
 **Objective:** Define how workflows describe useful card presentations independently of a particular template.
 
@@ -60,11 +60,11 @@ Descriptors produced with model assistance may be considered only after determin
 
 The implementation is a deterministic stateless adapter to the existing Form-mode `cardData.cardParamMap` boundary. It does not ship DingTalk templates or claim verified component support. Status transition descriptions are workflow guidance only.
 
-**Acceptance gates:** Local schema validation, family examples, mapping, compatibility, and workflow-only state guidance are documented and locally verified. Production UI installation, loaded schema, adapter/API transport, and compatibility with the existing lifecycle passed on n8n/runners 2.44.6. The live E2E used a legacy public AI template that does not satisfy the v0.4 variable contract; visual Presentation rendering and matching-template acceptance remain pending. Do not label a component supported until current official platform behavior is verified.
+**Acceptance gates (complete):** Local schema validation, family examples, mapping, compatibility, and workflow-only state guidance are documented and locally verified. Production UI installation, loaded schema, adapter/API transport, and compatibility with the existing lifecycle passed on n8n/runners 2.44.6. The dedicated template definition/export established all 13 contract variables as public strings statically bound in both `editorData` and `widgetInfo`; live published-template transport passed for all five families with required and optional fields populated. Five n8n executions succeeded, with top-level DingTalk `success=true` and `deliverResults[].success=true` in every response. This is sufficient under the documented rule to pass the template contract; client pixel-perfect visual inspection was not independently performed. The beta is ready for stable promotion; stable promotion is outside this milestone's completed work.
 
 **Non-goals / deferrals:** No arbitrary UI or HTML, no automatic template authoring, and no A2UI runtime in this milestone.
 
-**Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. The beta is published and production-installed through the supported UI. Transport/lifecycle acceptance is complete for the documented paths; matching-template visual E2E remains pending.
+**Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. The beta is published and production-installed through the supported UI. Transport, lifecycle, and Presentation template-contract acceptance are complete for the documented paths.
 
 ### v0.5.0 — Interaction Contract & Normalized Trigger
 
