@@ -22,6 +22,12 @@
 
 The official starter conventions were adopted in place. npm's stable CLI 0.53.4 pinned Handlebars 4.7.9, with critical advisories. The official CLI **0.54.2 beta** pins fixed Handlebars 4.7.10. It is explicitly pinned in the manifest/lockfile; there are no dependency overrides. The repository does not expose the CLI's npm-publishing release command.
 
+## npm publishing preparation — 0.1.0-beta.2
+
+The package metadata now includes `README.md`; the package check asserts the `n8n-nodes-` name, required community-node keyword, README, and exact compiled node/credential registration paths. The npm workflow is manually dispatched from a matching `v0.1.0-beta.N` tag, runs all release gates, publishes only with the `beta` dist-tag, and grants GitHub OIDC permission for npm trusted publishing/provenance. It cannot publish until the package exists and its npm Trusted Publisher is configured.
+
+On 2026-10-24, a fresh install and local gates ran on Node 26.12.1/npm 12.2.1. Lint, typecheck, build, 26 tests and tarball verification passed. `npm audit --omit=dev --audit-level=high` passed with zero production findings. The unfiltered audit reports 19 high and 4 moderate findings in the n8n development CLI/toolchain dependency graph; these dependencies are not shipped in the package, so CI and the publishing workflow gate production dependencies. This does not claim the development toolchain is advisory-free.
+
 ## Limits and next acceptance
 
 No DingTalk secrets, live enterprise account, card template, destination or n8n instance was provided or used. Mocked execution and tarball class loading do not establish real HTTP behavior, rendering, quotas, host UI loading or full current-stable n8n runtime compatibility. The exported workflow's graph, parameters and expression payload are checked locally, not executed on a live n8n instance.

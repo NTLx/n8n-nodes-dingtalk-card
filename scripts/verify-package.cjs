@@ -18,8 +18,13 @@ execFileSync('tar', ['-xzf', join(destination, pack.filename), '-C', destination
 const root = join(destination, 'package');
 const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 assert.equal(manifest.name, 'n8n-nodes-dingtalk-card');
+assert.ok(manifest.name.startsWith('n8n-nodes-'));
+assert.ok(manifest.keywords.includes('n8n-community-node-package'));
+assert.ok(pack.files.some(({ path }) => path === 'README.md'), 'README.md must be published');
 assert.equal(manifest.n8n.nodes.length, 1);
 assert.equal(manifest.n8n.credentials.length, 1);
+assert.deepEqual(manifest.n8n.nodes, ['dist/nodes/DingTalkCard/DingTalkCard.node.js']);
+assert.deepEqual(manifest.n8n.credentials, ['dist/credentials/DingTalkCardApi.credentials.js']);
 for (const file of [...manifest.n8n.nodes, ...manifest.n8n.credentials]) {
 	assert.ok(existsSync(join(root, file)), `Missing entry ${file}`);
 	// Load the actual tarball's compiled classes with the pinned n8n peer API.
