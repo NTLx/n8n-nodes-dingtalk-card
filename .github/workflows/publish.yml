@@ -35,31 +35,88 @@ jobs:
         run: npm publish --access public --tag beta --provenance
       - name: Verify public npm dist-tags
         run: |
-          node -e 'const { execFileSync } = require("node:child_process"); const tags = JSON.parse(execFileSync("npm", ["view", "n8n-nodes-dingtalk-card", "dist-tags", "--json"], { encoding: "utf8" })); const version = require("./package.json").version; if (tags.beta !== version) { console.error(JSON.stringify(tags)); process.exit(1); } console.log(JSON.stringify(tags));'
+          node <<'NODE'
+          const { execFileSync } = require('node:child_process');
+          const name = require('./package.json').name;
+          const version = require('./package.json').version;
+          const deadline = Date.now() + 5 * 60 * 1000;
+          const wait = new Int32Array(new SharedArrayBuffer(4));
+          let last = 'no registry response';
+          while (Date.now() < deadline) {
+            try {
+              const remaining = deadline - Date.now();
+              const output = execFileSync('npm', ['view', '--prefer-online', '--registry=https://registry.npmjs.org/', name, 'dist-tags', '--json'], { encoding: 'utf8', timeout: Math.min(30_000, remaining) });
+              const result = JSON.parse(output);
+              const tags = Array.isArray(result) ? result[0] : result;
+              last = JSON.stringify({ beta: tags?.beta });
+              console.log(`Observed public beta tag: ${last}`);
+              if (tags?.beta === version) {
+                console.log(`Verified ${name} beta -> ${version}`);
+                process.exit(0);
+              }
+            } catch (error) {
+              last = `registry query failed (${error.code ?? error.name})`;
+            }
+            const remaining = deadline - Date.now();
+            if (remaining > 0) Atomics.wait(wait, 0, 0, Math.min(10_000, remaining));
+          }
+          console.error(`Timed out waiting for ${name} beta -> ${version}; last observation: ${last}`);
+          process.exit(1);
+          NODE
       - name: Verify published metadata and tarball
         run: |
           node <<'NODE'
           const assert = require('node:assert/strict');
           const { execFileSync } = require('node:child_process');
-          const { mkdtempSync, readFileSync, existsSync } = require('node:fs');
+          const { mkdtempSync, mkdirSync, readFileSync, existsSync, rmSync } = require('node:fs');
           const { tmpdir } = require('node:os');
           const { join } = require('node:path');
           const name = require('./package.json').name;
           const version = require('./package.json').version;
-          const result = JSON.parse(execFileSync('npm', ['view', `${name}@${version}`, 'version', 'dist.tarball', 'dist.integrity', 'repository.url', '--json'], { encoding: 'utf8' }));
-          const metadata = Array.isArray(result) ? result[0] : result;
-          assert.equal(metadata.version, version);
-          assert.match(metadata['dist.tarball'], new RegExp(`^https://registry\\.npmjs\\.org/${name}/-/`));
-          assert.ok(metadata['dist.integrity']);
-          assert.equal(metadata['repository.url'], 'git+https://github.com/NTLx/n8n-nodes-dingtalk-card.git');
-          const destination = mkdtempSync(join(tmpdir(), 'published-dingtalk-card-'));
-          const packed = JSON.parse(execFileSync('npm', ['pack', `${name}@${version}`, '--json', '--pack-destination', destination], { encoding: 'utf8' }))[0];
-          execFileSync('tar', ['-xzf', join(destination, packed.filename), '-C', destination]);
-          const root = join(destination, 'package');
-          const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
-          assert.equal(manifest.version, version);
-          assert.ok(existsSync(join(root, 'README.md')));
-          assert.ok(existsSync(join(root, 'dist/nodes/DingTalkCard/DingTalkCard.node.js')));
-          assert.ok(existsSync(join(root, 'dist/credentials/DingTalkCardApi.credentials.js')));
-          console.log(JSON.stringify({ version, tarball: metadata['dist.tarball'], integrity: metadata['dist.integrity'], files: packed.files.length }));
+          const deadline = Date.now() + 5 * 60 * 1000;
+          const wait = new Int32Array(new SharedArrayBuffer(4));
+          const temporaryRoot = mkdtempSync(join(tmpdir(), 'published-dingtalk-card-'));
+          let last = 'package metadata is not available';
+          let verified = false;
+          try {
+            for (let attempt = 1; Date.now() < deadline; attempt++) {
+              const destination = join(temporaryRoot, `attempt-${attempt}`);
+              mkdirSync(destination);
+              try {
+                const commandTimeout = () => Math.max(1, Math.min(30_000, deadline - Date.now()));
+                const output = execFileSync('npm', ['view', '--prefer-online', '--registry=https://registry.npmjs.org/', `${name}@${version}`, 'version', 'dist.tarball', 'dist.integrity', 'repository.url', '--json'], { encoding: 'utf8', timeout: commandTimeout() });
+                const result = JSON.parse(output);
+                const metadata = Array.isArray(result) ? result[0] : result;
+                assert.equal(metadata.version, version);
+                assert.match(metadata['dist.tarball'], new RegExp(`^https://registry\\.npmjs\\.org/${name}/-/`));
+                assert.ok(metadata['dist.integrity']);
+                assert.equal(metadata['repository.url'], 'git+https://github.com/NTLx/n8n-nodes-dingtalk-card.git');
+                const packedOutput = execFileSync('npm', ['pack', '--prefer-online', '--registry=https://registry.npmjs.org/', `${name}@${version}`, '--json', '--pack-destination', destination], { encoding: 'utf8', timeout: commandTimeout() });
+                const packedResult = JSON.parse(packedOutput);
+                const packed = Array.isArray(packedResult) ? packedResult[0] : Object.values(packedResult)[0];
+                execFileSync('tar', ['-xzf', join(destination, packed.filename), '-C', destination]);
+                const root = join(destination, 'package');
+                const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+                assert.equal(manifest.version, version);
+                assert.ok(existsSync(join(root, 'README.md')));
+                assert.ok(existsSync(join(root, 'dist/nodes/DingTalkCard/DingTalkCard.node.js')));
+                assert.ok(existsSync(join(root, 'dist/credentials/DingTalkCardApi.credentials.js')));
+                console.log(JSON.stringify({ version, tarball: metadata['dist.tarball'], integrity: metadata['dist.integrity'], files: packed.files.length }));
+                verified = true;
+                break;
+              } catch (error) {
+                last = error.code ? `registry operation failed (${error.code})` : error.message;
+                rmSync(destination, { recursive: true, force: true });
+                console.log(`Public package verification attempt ${attempt} is not ready: ${last}`);
+                const remaining = deadline - Date.now();
+                if (remaining > 0) Atomics.wait(wait, 0, 0, Math.min(10_000, remaining));
+              }
+            }
+            if (!verified) {
+              console.error(`Timed out verifying public package ${name}@${version}: ${last}`);
+              process.exitCode = 1;
+            }
+          } finally {
+            rmSync(temporaryRoot, { recursive: true, force: true });
+          }
           NODE
