@@ -1,5 +1,20 @@
 # Release verification record — 2026-10-24
 
+## v0.4.0-beta.1 publication and production preflight — 2026-10-25
+
+The v0.4.0-beta.1 package is publicly published as a beta. This records release identity and a read-only production preflight; it does not claim a production upgrade or live DingTalk Presentation acceptance.
+
+- Tag `v0.4.0-beta.1` points to commit `3bb7e64c5a45aa78ba82ba1547c2e037e8f89655`. GitHub Actions publish run [40110742892](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40110742892) succeeded.
+- Public npm dist-tags are `beta -> 0.4.0-beta.1` and `latest -> 0.3.0`. Trusted Publisher/OIDC publication and provenance succeeded.
+- The canonical GitHub prerelease asset matches the public npm tarball: **54,776 bytes**, SHA-256 `d906cd7e69379841655cd2c562558cf75bff622e4284ca58e1b9680f232c8870`.
+- No live DingTalk Presentation template acceptance has occurred. The package ships no DingTalk templates.
+
+### Connected-instance production preflight
+
+On 2026-10-25, connected production n8n and its runners were healthy on version **2.44.6**. The installed `n8n-nodes-dingtalk-card` remains **0.3.0**; its live node schema exposes `cardDataMode` values `form` and `json` only. The official `/api/v1/community-packages` route exists and requires authentication. No confirmed existing Public API credential with both `communityPackage:list` and `communityPackage:update` scopes was available on-host, and `N8N_COMMUNITY_PACKAGES` environment management is not configured.
+
+The existing DingTalk Card E2E workflow uses the earlier template-variable pattern; it is not evidence of v0.4 Presentation acceptance. Production upgrade and live template E2E therefore remain pending. No private IDs or secrets are recorded here.
+
 ## v0.3.0 stable release — 2026-10-24
 
 Stable acceptance for the existing v0.3 scope is closed and the release is published. The earlier beta-era records below are historical; this section records the final stable-release evidence and supersedes their open/remaining v0.3 acceptance statements.
@@ -212,8 +227,8 @@ The maintainer supplied the following successful real DingTalk E2E result for do
 This validates the tested request-button callback path and immediate receipt ACK transport with asynchronous downstream execution in practice. It does not certify every template, form submission, reconnect or failure mode, establish exactly-once delivery, or add synchronous local-update ACK support. No measured ACK latency or untested recovery behavior is claimed.
 
 Only the non-sensitive result is recorded. No private organization/group/robot/user/workflow/execution identifiers, message IDs, tracking IDs, corp IDs, actual callback values or secrets are included. This closure makes no new live calls and changes only repository documentation and existing GitHub prerelease notes. The annotated tag, tagged source, package version/lockfile, release asset and npm publication remain unchanged; the immutable archive's bundled documentation predates this post-release record.
-# v0.4.0-beta.1 development verification — 2026-10-25
+# v0.4.0-beta.1 prepublication development verification — 2026-10-25 (historical)
 
-The v0.4.0 Presentation Contract & Template Kit is implemented. Package metadata is `0.4.0-beta.1`, but this candidate remains unpublished and unreleased. Release preparation allows v0.4.0 beta tags under the established beta channel and validates exact package version/tag matches; the stable `v0.3.0` guard remains the only `latest` publish path. On the repository's configured Node/npm environment, release gates passed: clean `npm ci`; `npm run lint`; `npm run typecheck`; `npm run build`; `npm test` (**60 passed, 0 failed**); `npm run verify:package` (standalone packed class loading/registration passed; **27 allowlisted files**); `npm audit --omit=dev --audit-level=high` (**0 production vulnerabilities**); release-ref policy self-tests; YAML and inline Node.js syntax validation; and `git diff --check`. The clean install reported 23 total dependency advisories across development and production dependencies.
+This records local verification before publication; its unpublished status describes that point in time only. Current publication and production preflight status is recorded in [the post-release section above](#v040-beta1-publication-and-production-preflight-2026-10-25). The v0.4.0 Presentation Contract & Template Kit was implemented. Package metadata was `0.4.0-beta.1`; release preparation allowed v0.4.0 beta tags under the established beta channel and validated exact package version/tag matches; the stable `v0.3.0` guard remained the only `latest` publish path. On the repository's configured Node/npm environment, release gates passed: clean `npm ci`; `npm run lint`; `npm run typecheck`; `npm run build`; `npm test` (**60 passed, 0 failed**); `npm run verify:package` (standalone packed class loading/registration passed; **27 allowlisted files**); `npm audit --omit=dev --audit-level=high` (**0 production vulnerabilities**); release-ref policy self-tests; YAML and inline Node.js syntax validation; and `git diff --check`. The clean install reported 23 total dependency advisories across development and production dependencies.
 
-Tests cover all five descriptor families, deterministic string mapping, contract identity fields, unknown versions/families/fields, wrong types, missing fields, invalid status values, collection bounds, and Create & Deliver/Update node mapping. Existing test coverage remains passing. No DingTalk credentials or live template were used. No template rendering, live acceptance, npm publication, Git tag/release, or external-system mutation is claimed. The package contains no DingTalk platform templates; users must publish templates matching the documented variables.
+Tests covered all five descriptor families, deterministic string mapping, contract identity fields, unknown versions/families/fields, wrong types, missing fields, invalid status values, collection bounds, and Create & Deliver/Update node mapping. Existing test coverage remained passing. No DingTalk credentials or live template were used. At prepublication verification time, no template rendering, live acceptance, npm publication, Git tag/release, or external-system mutation was claimed. The package contains no DingTalk platform templates; users must publish templates matching the documented variables.

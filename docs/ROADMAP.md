@@ -4,7 +4,7 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap starts from the published **v0.3.0** stable state, with **v0.3.0-beta.1** retained as its prerelease. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-The repository package version is **0.4.0-beta.1**, an unpublished development candidate for the v0.4.0 milestone. The v0.4.0 Presentation Contract & Template Kit is implemented and verified locally, but remains unreleased. No v0.4.0 live DingTalk acceptance, npm publication, or release provenance is claimed. Beta release preparation remains separate.
+The repository package version is **0.4.0-beta.1**, publicly published as a beta. npm `beta` resolves to `0.4.0-beta.1`; `latest` remains stable at `0.3.0`. The v0.4.0 Presentation Contract & Template Kit is implemented and locally verified. No live DingTalk Presentation template acceptance has occurred, and the package ships no DingTalk templates. Publication and production preflight evidence is recorded in [verification](VERIFICATION.md#v040-beta1-publication-and-production-preflight-2026-10-25).
 
 ## Vision and product principle
 
@@ -47,7 +47,7 @@ Descriptors produced with model assistance may be considered only after determin
 
 **Compatibility and migration:** Preserve existing Form/JSON behavior, callback opt-in, output fields, and saved workflow behavior. Same-ID Create semantics remain explicitly non-guaranteed.
 
-### v0.4.0 — Presentation Contract & Template Kit (implemented locally; unreleased)
+### v0.4.0 — Presentation Contract & Template Kit (published beta; live acceptance pending)
 
 **Objective:** Define how workflows describe useful card presentations independently of a particular template.
 
@@ -64,7 +64,7 @@ The implementation is a deterministic stateless adapter to the existing Form-mod
 
 **Non-goals / deferrals:** No arbitrary UI or HTML, no automatic template authoring, and no A2UI runtime in this milestone.
 
-**Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. The milestone remains unreleased pending release work/evidence.
+**Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. The beta is published; production upgrade and live Presentation template E2E remain pending.
 
 ### v0.5.0 — Interaction Contract & Normalized Trigger
 

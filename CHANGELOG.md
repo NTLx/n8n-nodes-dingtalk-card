@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.4.0-beta.1 (development candidate; unpublished)
+## 0.4.0-beta.1 (published beta)
 
-Adds opt-in Presentation Card Data Mode for Create & Deliver and Update. Version 1 descriptors cover alert, status, digest, action presentation metadata, and report families, with deterministic validation and mapping to string-valued `cardParamMap` entries. Includes template variable contract documentation and examples. Status transitions are guidance only; Action does not route or execute. No DingTalk templates are shipped, and no live template acceptance, npm publication, tag, or release is claimed. Release preparation is committed and pushed separately; tagging and publication remain pending. v0.5 callback/action normalization and v0.6 renderer/A2UI work remain deferred.
+Adds opt-in Presentation Card Data Mode for Create & Deliver and Update. Version 1 descriptors cover alert, status, digest, action presentation metadata, and report families, with deterministic validation and mapping to string-valued `cardParamMap` entries. Includes template variable contract documentation and examples. Status transitions are guidance only; Action does not route or execute. No DingTalk templates are shipped, and no live DingTalk Presentation template acceptance has occurred. The public beta is published as `beta -> 0.4.0-beta.1`; npm `latest` remains `0.3.0`. The tag, successful publication, provenance, and canonical artifact identity are recorded in [verification](docs/VERIFICATION.md#v040-beta1-publication-and-production-preflight-2026-10-25). v0.5 callback/action normalization and v0.6 renderer/A2UI work remain deferred.
 
 ## 0.3.0 (stable)
 

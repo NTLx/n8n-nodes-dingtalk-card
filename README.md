@@ -4,9 +4,9 @@ Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Strea
 
 **v0.3.0 is the stable release.** It adds guided Form String/JSON card parameter values, additive sanitized normalized outbound error details, and stable-ID recovery guidance with a packaged fixture; existing v0.2 Stream behavior is preserved. Connected-instance acceptance on self-hosted production n8n 2.44.5 closes the documented v0.3 stable scope; this does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
 
-**v0.4.0-beta.1 is an unpublished development candidate for the v0.4.0 milestone.** It adds an opt-in Presentation Card Data Mode for Create & Deliver and Update. This maps versioned presentation descriptors to user-published template variables; the package does not ship DingTalk templates. Release preparation is committed and pushed; tagging and publication remain pending. See the [presentation contract](docs/PRESENTATION.md). Local validation status is recorded in [verification](docs/VERIFICATION.md#v040-beta1-development-verification).
+**v0.4.0-beta.1 is publicly published as a beta** for the v0.4.0 milestone. It adds an opt-in Presentation Card Data Mode for Create & Deliver and Update. This maps versioned presentation descriptors to user-published template variables; the package does not ship DingTalk templates. No live DingTalk Presentation template acceptance has occurred. See the [presentation contract](docs/PRESENTATION.md) and [publication and production preflight evidence](docs/VERIFICATION.md#v040-beta1-publication-and-production-preflight-2026-10-25).
 
-The published beta remains available as `v0.3.0-beta.1` under npm's `beta` dist-tag; npm `latest` resolves to stable `0.3.0`. The stable package was published through GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
+The npm `beta` dist-tag resolves to `0.4.0-beta.1`; npm `latest` remains stable at `0.3.0`. Both releases were published through GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -14,24 +14,7 @@ It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingT
 
 Requires Node.js 24+ and a compatible n8n installation. Development compiles and loads the node against `n8n-workflow` 2.44.2 (the dependency of current stable n8n 2.44.6); full runtime/UI compatibility is not yet certified. CI uses Node 24. Current stable n8n 2.44.6 declares Node >=24; this takes precedence over older starter guidance mentioning Node 22.
 
-Install or upgrade the package in self-hosted n8n through the supported **Settings > Community Nodes** UI. A stable upgrade is a user-operated UI action; no direct internal database or Community Nodes directory mutation is part of the supported path. Community-node installation requires an Owner or Admin account and may be disabled by instance policy. npm installation does not certify live DingTalk behavior. The tested live scope and remaining limits are documented below; v1.0 readiness is not certified.
-
-To rebuild the previously published v0.2.0-beta.1 artifact from its tag:
-
-```sh
-git clone https://github.com/NTLx/n8n-nodes-dingtalk-card.git
-cd n8n-nodes-dingtalk-card
-git checkout v0.2.0-beta.1
-npm ci
-npm run build
-npm test
-npm pack
-# Install the resulting tgz in your self-hosted n8n community-node directory:
-cd ~/.n8n/nodes
-npm install /absolute/path/to/n8n-nodes-dingtalk-card-0.2.0-beta.1.tgz
-```
-
-Create the community-node directory/package.json if needed, run as the n8n service account, and restart n8n after installation. Container users must install into a persistent volume accessible to n8n. For development use `npm run dev` with the official CLI; follow its prerequisites for your n8n version.
+Install or upgrade the package through n8n's supported **Settings > Community Nodes** lifecycle. To install, enter `n8n-nodes-dingtalk-card` (stable) or `n8n-nodes-dingtalk-card@beta` (current beta). To install or upgrade to an exact prerelease version in the UI, uninstall the package and reinstall it with the exact version, for example `n8n-nodes-dingtalk-card@0.4.0-beta.1`; n8n's standard Update action targets the latest version. Where available, the official Public API `POST /api/v1/community-packages` and `PATCH /api/v1/community-packages/{packageName}` support package management and explicit update versions; use API keys scoped to `communityPackage:list` and `communityPackage:update` as applicable. See [n8n Community Nodes installation and management](https://docs.n8n.io/integrations/community-nodes/installation-and-management/gui-installation/) and [Public API authentication and scopes](https://docs.n8n.io/api/authentication/). Community-node installation requires an Owner or Admin account and may be disabled by instance policy. Installation does not certify live DingTalk behavior. The tested live scope and remaining limits are documented below; v1.0 readiness is not certified.
 
 ## Credentials
 
