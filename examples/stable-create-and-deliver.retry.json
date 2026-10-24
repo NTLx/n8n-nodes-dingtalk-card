@@ -1,0 +1,50 @@
+{
+	"description": "Reusable node and branching recipe; not an importable workflow. Copy the node parameters into a workflow with stable orderId/eventId input and configure Continue On Fail output handling.",
+	"exampleInput": {
+		"orderId": "ORDER-1042",
+		"eventId": "PAYMENT-CAPTURED-0007"
+	},
+	"createAndDeliver": {
+		"nodeType": "n8n-nodes-dingtalk-card.dingTalkCard",
+		"nodeErrorHandling": "Continue On Fail",
+		"parameters": {
+			"operation": "createAndDeliver",
+			"inputMode": "form",
+			"outTrackId": "={{ 'order-card-' + String($json.orderId) + '-' + String($json.eventId) }}",
+			"cardTemplateId": "REPLACE_WITH_PUBLISHED_TEMPLATE_ID",
+			"cardDataMode": "form",
+			"cardParameters": {
+				"parameters": [
+					{ "name": "orderId", "value": "={{ $json.orderId }}" },
+					{ "name": "status", "value": "Payment captured" }
+				]
+			},
+			"target": "group",
+			"spaceId": "REPLACE_WITH_OPEN_CONVERSATION_ID",
+			"robotCode": ""
+		}
+	},
+	"branches": [
+		{
+			"name": "success",
+			"condition": "={{ $json.success === true }}",
+			"action": "Continue the normal workflow."
+		},
+		{
+			"name": "ambiguous write outcome",
+			"condition": "={{ $json.success === false && $json.errorDetails?.mayHaveSucceeded === true }}",
+			"action": "Inspect the card and delivery state before considering any replay. Do not blindly run Create & Deliver again."
+		},
+		{
+			"name": "no write applied",
+			"condition": "={{ $json.success === false && $json.errorDetails?.mayHaveSucceeded === false }}",
+			"action": "Diagnose errorDetails.category/code. A retry is safe only when errorDetails.retryable is true and the workflow applies a bounded retry policy."
+		}
+	],
+	"operatorReplay": {
+		"outTrackIdExpression": "={{ 'order-card-' + String($json.orderId) + '-' + String($json.eventId) }}",
+		"prerequisite": "Verify whether the card or delivery already exists before replaying an ambiguous outcome.",
+		"sameIdGuaranteesDeduplication": false,
+		"repeatedCreateBehavior": "The same outTrackId does not guarantee deduplication or upsert. If verification shows the card exists, use Update rather than Create & Deliver."
+	}
+}

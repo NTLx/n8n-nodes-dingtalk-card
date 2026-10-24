@@ -31,6 +31,15 @@ assert.ok(
 	pack.files.some(({ path }) => path === 'README.md'),
 	'README.md must be published',
 );
+const recoveryExample = 'examples/stable-create-and-deliver.retry.json';
+assert.ok(
+	pack.files.some(({ path }) => path === recoveryExample),
+	`${recoveryExample} must be published`,
+);
+assert.equal(
+	JSON.parse(readFileSync(join(root, recoveryExample), 'utf8')).createAndDeliver.parameters.operation,
+	'createAndDeliver',
+);
 assert.deepEqual(manifest.n8n.nodes, [
 	'dist/nodes/DingTalkCard/DingTalkCard.node.js',
 	'dist/nodes/DingTalkCardTrigger/DingTalkCardTrigger.node.js',

@@ -852,6 +852,34 @@ test('error workflow fixture matches registered operation and constructs a usabl
 	assert.equal(request.body.cardData.cardParamMap.workflowName, 'Example');
 });
 
+test('stable Create & Deliver recovery fixture uses a stable event key and verifies ambiguous outcomes', () => {
+	const fs = require('node:fs');
+	const fixture = JSON.parse(fs.readFileSync('examples/stable-create-and-deliver.retry.json', 'utf8'));
+	assert.equal(fixture.createAndDeliver.nodeType, 'n8n-nodes-dingtalk-card.dingTalkCard');
+	assert.equal(fixture.createAndDeliver.nodeErrorHandling, 'Continue On Fail');
+	assert.equal(fixture.createAndDeliver.parameters.operation, 'createAndDeliver');
+	assert.equal(fixture.createAndDeliver.parameters.target, 'group');
+	assert.equal(fixture.createAndDeliver.parameters.spaceId, 'REPLACE_WITH_OPEN_CONVERSATION_ID');
+	assert.equal(Object.hasOwn(fixture.createAndDeliver, 'credentials'), false);
+	const expression = fixture.createAndDeliver.parameters.outTrackId.slice(3, -2).trim();
+	assert.match(expression, /orderId/);
+	assert.match(expression, /eventId/);
+	assert.doesNotMatch(expression, /random|randomUUID|Date\.now/);
+	const input = { orderId: 'ORDER-1042', eventId: 'PAYMENT-CAPTURED-0007' };
+	const evaluate = () => new Function('$json', `return (${expression})`)(input);
+	assert.equal(evaluate(), 'order-card-ORDER-1042-PAYMENT-CAPTURED-0007');
+	assert.equal(evaluate(), evaluate());
+	const branchNames = fixture.branches.map((branch) => branch.name);
+	assert.deepEqual(branchNames, ['success', 'ambiguous write outcome', 'no write applied']);
+	const ambiguous = fixture.branches.find((branch) => branch.name === 'ambiguous write outcome');
+	assert.match(ambiguous.condition, /\$json\.success/);
+	assert.match(ambiguous.condition, /errorDetails\?\.mayHaveSucceeded === true/);
+	assert.match(ambiguous.action, /Inspect.*before considering any replay/);
+	assert.equal(fixture.operatorReplay.sameIdGuaranteesDeduplication, false);
+	assert.match(fixture.operatorReplay.repeatedCreateBehavior, /use Update/);
+	assert.doesNotMatch(JSON.stringify(fixture), /appSecret|accessToken|PRIVATE-/);
+});
+
 test('guided STREAM callback opt-in includes STREAM only when enabled and retains robot fallback', async () => {
 	const field = new DingTalkCard().description.properties.find(
 		(p) => p.name === 'enableStreamCallbacks',
