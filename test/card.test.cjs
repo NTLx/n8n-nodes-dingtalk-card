@@ -118,6 +118,62 @@ test('form maps strings including special keys and rejects duplicate parameter n
 		/unique/,
 	);
 });
+test('Form card parameter string mode and missing mode preserve entered values', () => {
+	const entries = [
+		{ name: 'stringMode', value: '{"kept":"literal"}', valueMode: 'string' },
+		{ name: 'missingMode', value: '[1,2]' },
+	];
+	assert.deepEqual(JSON.parse(JSON.stringify(formCardData(entries))), {
+		cardParamMap: { stringMode: '{"kept":"literal"}', missingMode: '[1,2]' },
+	});
+});
+test('Form JSON mode serializes object, array, and scalar values once', () => {
+	assert.deepEqual(
+		JSON.parse(
+			JSON.stringify(
+				formCardData([
+					{ name: 'object', value: '{"nested":true}', valueMode: 'json' },
+					{ name: 'array', value: '[1,"two",null]', valueMode: 'json' },
+					{ name: 'number', value: '42', valueMode: 'json' },
+					{ name: 'boolean', value: 'false', valueMode: 'json' },
+					{ name: 'null', value: 'null', valueMode: 'json' },
+					{ name: 'string', value: '"quoted"', valueMode: 'json' },
+				]),
+			),
+		),
+		{
+			cardParamMap: {
+				object: '{"nested":true}',
+				array: '[1,"two",null]',
+				number: '42',
+				boolean: 'false',
+				null: 'null',
+				string: '"quoted"',
+			},
+		},
+	);
+});
+test('malformed Form JSON identifies its parameter without echoing its value', () => {
+	const supplied = '{"private-sentinel":';
+	assert.throws(
+		() => formCardData([{ name: 'templateField', value: supplied, valueMode: 'json' }]),
+		(error) => {
+			assert.match(error.message, /templateField/);
+			assert.doesNotMatch(error.message, /private-sentinel/);
+			return true;
+		},
+	);
+});
+test('duplicate Form parameter names are rejected before parsing the duplicate value', () => {
+	assert.throws(
+		() =>
+			formCardData([
+				{ name: 'same', value: 'first' },
+				{ name: 'same', value: '{malformed', valueMode: 'json' },
+			]),
+		/unique/,
+	);
+});
 for (const [label, body] of Object.entries({
 	top: { success: false },
 	resultFalse: { success: true, result: false },
@@ -383,6 +439,35 @@ test('JSON Create & Deliver preserves explicit Robot Code and does not default m
 			),
 		);
 		assert.deepEqual(seen[1].body, body);
+	}
+});
+test('Form value mode defaults to String and guided JSON parameters reach create and update as strings', async () => {
+	const properties = new DingTalkCard().description.properties;
+	const cardParameters = properties.find((property) => property.name === 'cardParameters');
+	const valueMode = cardParameters.options[0].values.find(
+		(property) => property.name === 'valueMode',
+	);
+	assert.equal(valueMode.default, 'string');
+	for (const operation of ['createAndDeliver', 'update']) {
+		const seen = [];
+		const params = {
+			operation,
+			inputMode: 'form',
+			outTrackId: 'track',
+			cardDataMode: 'form',
+			'cardParameters.parameters': [
+				{ name: 'object', value: '{"key":1}', valueMode: 'json' },
+				{ name: 'legacy', value: '[1,2]' },
+			],
+			...(operation === 'createAndDeliver'
+				? { cardTemplateId: 'tpl', target: 'group', spaceId: 'destination' }
+				: { updateByKey: true }),
+		};
+		await new DingTalkCard().execute.call(context([params], mockApi(seen)));
+		const write = seen.find((request) => !request.url.endsWith('/accessToken'));
+		assert.deepEqual(JSON.parse(JSON.stringify(write.body.cardData)), {
+			cardParamMap: { object: '{"key":1}', legacy: '[1,2]' },
+		});
 	}
 });
 test('defaulted Robot Code does not leak credential values in failures', async () => {

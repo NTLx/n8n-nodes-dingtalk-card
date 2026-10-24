@@ -126,12 +126,22 @@ const properties: INodeProperties[] = [
 				values: [
 					{ displayName: 'Name', name: 'name', type: 'string', default: '', required: true },
 					{
+						displayName: 'Value Mode',
+						name: 'valueMode',
+						type: 'options',
+						default: 'string',
+						options: [
+							{ name: 'String', value: 'string' },
+							{ name: 'JSON', value: 'json' },
+						],
+						description: 'String preserves the value as entered. JSON parses and serializes one JSON value.',
+					},
+					{
 						displayName: 'Value',
 						name: 'value',
 						type: 'string',
 						default: '',
-						description:
-							'String value. Serialize arrays or objects to JSON strings if the template requires them.',
+						description: 'Value text. In JSON mode, enter a valid JSON object, array, or scalar.',
 					},
 				],
 			},
@@ -337,6 +347,7 @@ export class DingTalkCard implements INodeType {
 										this.getNodeParameter('cardParameters.parameters', i, []) as Array<{
 											name: string;
 											value: string;
+												valueMode?: string;
 										}>,
 									);
 						if (operation === 'createAndDeliver') {

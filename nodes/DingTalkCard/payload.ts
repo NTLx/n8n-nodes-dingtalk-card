@@ -31,14 +31,24 @@ export function cardData(value: unknown): Json {
 		);
 	return data;
 }
-export function formCardData(entries: Array<{ name: string; value: string }>): Json {
+export function formCardData(
+	entries: Array<{ name: string; value: string; valueMode?: string }>,
+): Json {
 	const map: Record<string, string> = Object.create(null);
 	for (const entry of entries) {
 		const name = text(entry.name, 'Parameter name');
 		if (Object.hasOwn(map, name)) throw new CardError('Card parameter names must be unique.');
 		if (typeof entry.value !== 'string')
 			throw new CardError('Card parameter values must be strings.');
-		map[name] = entry.value;
+		if (entry.valueMode === 'json') {
+			let parsed: unknown;
+			try {
+				parsed = JSON.parse(entry.value);
+			} catch {
+				throw new CardError(`Card parameter "${name}" must contain valid JSON.`);
+			}
+			map[name] = JSON.stringify(parsed);
+		} else map[name] = entry.value;
 	}
 	return { cardParamMap: map };
 }
