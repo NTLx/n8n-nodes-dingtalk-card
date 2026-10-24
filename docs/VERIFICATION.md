@@ -4,7 +4,7 @@
 
 This source-only candidate combines the three completed v0.3 slices: additive Form card parameter String/JSON modes with legacy and whole-body JSON compatibility; sanitized normalized outbound `errorDetails` with conservative retryability/`mayHaveSucceeded` metadata and unchanged one-time invalid-token replay; and stable caller-controlled `outTrackId` recovery guidance with a packaged synthetic branch fixture. Existing v0.2 Stream behavior is preserved. No node runtime behavior beyond those already-implemented v0.3 outbound slices is changed in this release preparation.
 
-Version metadata is `0.3.0-beta.1`. The candidate has not been tagged, published or installed. Local candidate gates and packed artifact details are recorded after they run below. Real v0.3 DingTalk E2E and acceptance in an installed current n8n runtime/UI remain pending; this is not a stable release.
+Version metadata is `0.3.0-beta.1`. The candidate remains untagged and unpublished. Local candidate gates and packed artifact details are recorded after they run below; connected-instance acceptance is recorded separately below. This is not a stable release.
 
 Candidate gates passed locally on Node **26.12.1 / npm 12.2.1**:
 
@@ -109,6 +109,23 @@ The clean install reports existing development-toolchain advisories (**19 high, 
 Current source candidate: `0.3.0-beta.1` (not published); the latest published prerelease remains `0.2.0-beta.1`. No stable release is implied. Earlier gate records above are historical. Mocked tests and tarball class loading complement the connected-instance live result but do not expand its tested scope. The v0.3 stable-ID recovery fixture uses synthetic values and placeholders; it is locally validated, not a live execution.
 
 The post-release request-button callback E2E below passed; broader live Stream acceptance remains open before stable v0.2.0. The transport uses gateway credential authentication and immediate receipt ACK, with normalized button/form data; durable deduplication is deferred and workflows must make side effects idempotent. Before v1.0.0, verify the remaining group/DM delivery, rendering, error states and failure recovery cases, plus current-stable n8n runtime/UI compatibility. Resolve/reassess upstream development advisories before stable publication.
+
+## v0.3.0-beta.1 connected-instance live acceptance — 2026-10-24
+
+Acceptance ran against the connected self-hosted production n8n **2.44.5** instance. The offline `0.3.0-beta.1` candidate was temporarily installed into community-node `node_modules` with no-save, no-lockfile and no-script semantics. The parent `/home/lx/n8n/data/nodes/package.json` remained byte-identical. After restarting `n8n_service`, `/healthz` and `/healthz/readiness` each returned HTTP 200 twice consecutively under bounded readiness polling, and app-to-DB TCP connectivity succeeded. The DB and runners were neither restarted nor recreated. Startup logs contained no community-node, module or migration failures. The first attempt was rolled back after an immediate post-restart connection refusal was treated as failure; postmortem found no candidate startup defect. The second attempt passed the bounded readiness checks.
+
+Before package acceptance, an unrelated external task-runner routing incident caused JavaScript Code executions to hang. Resetting the `n8n_service` and `n8n_runners` sessions restored execution. A disposable Manual → JavaScript Code → Python Code probe succeeded as execution **4487**; probes were then archived. This was an environment incident, not a DingTalk Card defect.
+
+Live DingTalk executions on the candidate:
+
+- **4489 passed** Group Create & Deliver → Update → Streaming Update → Finalize → final Update. It mixed legacy String values and new JSON Value Mode structured parameters; every card operation returned `success=true`, with the same `outTrackId` propagated throughout.
+- **4490 passed** Continue On Fail local validation handling: `errorDetails.category=validation`, `retryable=false`, `mayHaveSucceeded=false`.
+- **4491 passed** synthetic nonexistent-card Update: sanitized HTTP 400 `param.cardNotExist`, `category=http`, `retryable=false`, `mayHaveSucceeded=true`; raw response content was not leaked.
+- **4492 passed** caller-controlled stable `outTrackId` end-to-end and returned the exact supplied ID. No duplicate Create replay was attempted.
+- **4493 passed** the lifecycle with final Update in whole-body JSON mode, verifying request-body passthrough without duplicating the robot AppKey into the workflow.
+- **4494 passed** Create & Deliver for a callback-enabled interaction card with `enableStreamCallbacks`. No button click was performed, so callback delivery was not revalidated in v0.3. The earlier v0.2 real callback E2E remains the inbound-trigger evidence; trigger code was unchanged in v0.3.
+
+Remaining limits: Robot Direct Message was not rerun because this acceptance did not introduce a staff `userId`. Whole-body JSON Create & Deliver was not rerun because it would require explicitly duplicating robotCode/AppKey into the workflow; whole-body JSON Update was tested. Same-`outTrackId` Create deduplication/upsert is intentionally neither claimed nor tested. This evidence supports the stated v0.3 outbound beta scope; it does not establish stable/v1.0 readiness. The candidate remains unpublished and untagged.
 
 ## v0.2.0-beta.1 prerelease — local verification and remaining live acceptance
 

@@ -8,7 +8,7 @@ The outbound node adds sanitized, normalized `errorDetails` while preserving exi
 
 Documents stable caller-controlled `outTrackId` recovery guidance and adds a packaged synthetic branching fixture. Reusing an ID does not guarantee Create deduplication/upsert; verify before replay, and use Update for an existing card. Existing v0.2 Stream callback behavior is preserved.
 
-This is an unpublished prerelease candidate, not a stable release. Real v0.3 DingTalk E2E and acceptance in an installed current n8n runtime/UI remain pending.
+This is an unpublished, untagged prerelease candidate, not a stable release. The documented outbound live acceptance passed on connected self-hosted n8n 2.44.5; this supports the v0.3 outbound beta scope only and does not establish stable/v1.0 readiness. See [verification](docs/VERIFICATION.md#v030-beta1-connected-instance-live-acceptance--2026-10-24) for evidence and limits.
 
 ## 0.2.0-beta.1 (prerelease)
 
