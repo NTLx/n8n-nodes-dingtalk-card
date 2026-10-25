@@ -1,19 +1,23 @@
 # Changelog
 
-## 0.8.0-beta.2 (candidate; not published)
+## 0.8.0 (stable)
+
+Promotes the v0.8.0-beta.2 Automation Presentation Kit with no runtime or transport changes. User-facing reusable recipes use the production-accepted A2UI `universal-v1` surface; Presentation v1 examples remain deterministic adapter/diagnostic fixtures. Connected-instance acceptance passed for report Create & Deliver, same-card status Update using `updateByKey=false` with no stale report-only fields, and a request-action callback followed by a successful same-card Update. The npm `beta` channel remains on `0.8.0-beta.2`. See [release verification](docs/VERIFICATION.md).
+
+## 0.8.0-beta.2 (published prerelease)
 
 - Correct user-facing Automation Presentation patterns to use valid A2UI `universal-v1` descriptors and the already production-accepted rendering surface. Keep Presentation v1 examples as deterministic adapter/diagnostic contract fixtures; connected visual evidence showed their previously used published template is diagnostic-only and unsuitable as the canonical user-facing surface.
 - Add representative A2UI examples for alerts, service status, progress, daily/technical digests, GitHub/RSS/changelog report shapes, and summary plus detail URL text. The universal-v1 URL is plain text; no clickability is claimed.
 - Set catalog Update recipes to replace public card data (`updateByKey: false`) to clear stale fields when changing card families.
 - No runtime or transport behavior changes. Form/Selection remain deferred; no template management or external ingestion is added.
-- Bump package metadata to `0.8.0-beta.2`; stable `0.8.0` remains disabled.
+- Published to npm under `beta`; `latest` remained on `0.7.0`. Stable promotion follows connected-instance visual and request-action acceptance.
 
-## 0.8.0-beta.1 (candidate; not published)
+## 0.8.0-beta.1 (published prerelease)
 
 - Add placeholder-safe examples for the five existing Presentation families and reusable workflow-layer patterns for error, infrastructure/backup/UPS alerts, status, progress, daily/technical digest, GitHub/RSS/changelog report shapes, and summary plus detail link.
 - Document required variables, Create/Update flows, callback boundaries, and data-sensitivity guidance. External-source ingestion and DingTalk templates are not included.
 - No runtime or transport behavior changes. Only the existing request-button/action callback path is described as supported; Form and Selection remain deferred.
-- Beta release-ref and package validation support is prepared for `0.8.0-beta.1`; stable `0.8.0` remains disabled.
+- Beta release-ref and package validation support was prepared for `0.8.0-beta.1`; its Presentation v1 user-facing recipes were superseded by the beta.2 A2UI correction.
 
 ## 0.7.0 (stable)
 

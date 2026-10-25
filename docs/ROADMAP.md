@@ -120,7 +120,7 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 
 **Compatibility and migration:** Additive event/result/error fields only. Dedupe is bounded in-process and expires; it is not durable exactly-once across restart or multiple instances. Existing node identifiers and fields remain usable.
 
-### v0.8.0 — Automation Presentation Kit (beta.2 candidate)
+### v0.8.0 — Automation Presentation Kit (stable; connected-instance acceptance complete)
 
 **Objective:** Demonstrate polished, reusable presentation patterns for common automation outcomes.
 
@@ -131,13 +131,13 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 - Consistent visual hierarchy and reusable card templates.
 - Verified input/action round trips where supported.
 
-**Acceptance gates:** Each pattern includes a placeholder-safe example, required template variables, state/update flow, and data-sensitivity guidance. Verify action/input round trips against supported platform capabilities before claiming them.
+**Acceptance gates (complete):** Each pattern includes a placeholder-safe example, required template variables, state/update flow, and data-sensitivity guidance. Connected-instance visual acceptance passed for A2UI Create & Deliver and replacement Update; the supported request-action callback and same-card Update also passed. Form and Selection remain deferred.
 
 **Non-goals / deferrals:** These are patterns and examples, not built-in external-service integrations or a generic content ingestion suite.
 
 **Compatibility and migration:** Build on the v0.4 presentation contract and v0.7 reliability primitives. Keep existing raw JSON recipes available.
 
-The beta.2 candidate corrects the user-facing examples to use the connected-instance-accepted A2UI `universal-v1` rendering surface. Connected visual evidence showed the Presentation v1 template used for earlier recipes is diagnostic-only and unsuitable as the canonical user-facing presentation; Presentation v1 examples remain as deterministic adapter/diagnostic fixtures. Pattern Updates replace public card data to avoid retaining fields from a prior family. This remains a workflow-layer examples/docs release: no runtime, transport, template-management, or ingestion behavior is added. Form and Selection remain deferred, and the summary-detail example displays URL text without claiming it is clickable. See [Automation Presentation patterns](AUTOMATION_PRESENTATION.md) and [verification](VERIFICATION.md).
+The beta.2 correction uses the connected-instance-accepted A2UI `universal-v1` rendering surface for user-facing examples; Presentation v1 examples remain deterministic adapter/diagnostic fixtures because the prior published Presentation v1 template was diagnostic-only. Production connected-instance acceptance passed for report Create & Deliver followed by same-card status Update with replacement semantics and no stale report-only fields, and for the supported request-action callback followed by same-card Update and a visually confirmed success card. This remains a workflow-layer examples/docs release: no runtime, transport, template-management, or ingestion behavior is added. Form and Selection remain deferred, and the summary-detail example displays URL text without claiming it is clickable. See [Automation Presentation patterns](AUTOMATION_PRESENTATION.md) and [verification](VERIFICATION.md).
 
 ### v0.9.0 — Production Hardening
 

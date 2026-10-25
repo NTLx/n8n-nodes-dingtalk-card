@@ -10,7 +10,19 @@ Public npm dist-tags are `beta -> 0.8.0-beta.2` and `latest -> 0.7.0`; stable `0
 
 An isolated install followed by `npm audit signatures` verified **94 registry signatures** and **6 attestations**; invalid and missing signatures were both zero. The beta.2 package's verified SLSA provenance subject matches the SHA-512 above and identifies `.github/workflows/publish.yml`, `refs/tags/v0.8.0-beta.2`, release commit `f698b734d286f1bac3b80efabe3408297c7bbf02`, and publish run `40176938568` attempt 1. Its SLSA transparency-log entry is [3455741080](https://search.sigstore.dev/?logIndex=3455741080); the npm publish signature entry is [3455759355](https://search.sigstore.dev/?logIndex=3455759355).
 
-The [GitHub prerelease](https://github.com/NTLx/n8n-nodes-dingtalk-card/releases/tag/v0.8.0-beta.2) (release ID `423256076`) is published with `draft=false` and `prerelease=true`. Its canonical asset `n8n-nodes-dingtalk-card-0.8.0-beta.2.tgz` is 86,583 bytes and byte-identical to the public npm tarball. Both SHA-256 digests are `673f0cce1fde97457852f89a8e4c4176a3dc104e990f4ed08689b99f5fc549dd`. No production n8n instance was changed; connected-instance acceptance of the corrected beta.2 visual recipes and replacement Update flow remains a follow-up gate before stable promotion.
+The [GitHub prerelease](https://github.com/NTLx/n8n-nodes-dingtalk-card/releases/tag/v0.8.0-beta.2) (release ID `423256076`) is published with `draft=false` and `prerelease=true`. Its canonical asset `n8n-nodes-dingtalk-card-0.8.0-beta.2.tgz` is 86,583 bytes and byte-identical to the public npm tarball. Both SHA-256 digests are `673f0cce1fde97457852f89a8e4c4176a3dc104e990f4ed08689b99f5fc549dd`.
+
+## v0.8.0-beta.2 connected-instance acceptance — 2026-10-25
+
+The maintainer reports that the production connected-instance visual gate workflow `060Rp2Vrynm6S5rw` execution **5766** succeeded with A2UI report Create & Deliver followed by same-card A2UI status Update on `outTrackId=51b34e84-296a-4dad-9caf-eba557f0cddb`, using replacement semantics `updateByKey=false`. Client visual evidence confirmed normal A2UI rendering and no stale report-only fields.
+
+The request-action gate workflow `kOZB4ztPUyXjXeuT` manual execution **5788** delivered `outTrackId=049ff219-310d-44de-9440-f4546d2a6a9e`. Trigger execution **5791** succeeded with `normalized.interaction.params` exactly `{"gate":"automation-presentation","source":"v0.8.0-beta.2"}`; normalized correlation `messageId` and `topic` were present. Same-card Update succeeded, and client visual evidence confirmed the final success card. The interaction workflow was unpublished after acceptance.
+
+These connected-instance acceptance facts were supplied by the maintainer for this release record and were not independently queried during release preparation. No production n8n configuration was changed by the repository release work.
+
+## v0.8.0 stable release preparation — 2026-10-25
+
+The connected-instance visual and request-action gates above complete the documented v0.8 acceptance scope. Stable promotion changes package version metadata, release-ref/publish policy, and release-status documentation only; no runtime source, dependencies, or beta behavior changes. The npm `beta` dist-tag remains on `0.8.0-beta.2` while stable `latest` moves to `0.8.0`.
 
 Local gates on Node 26.12.1/npm 12.2.1 passed: clean `npm ci` (588 packages; the existing development tree reported 19 high and 4 moderate advisories, deprecations, and five blocked install scripts), lint, typecheck, build, all **74 tests**, package verification/standalone class registration (**46 allowlisted files**), `npm audit --omit=dev --audit-level=high` (**0 production vulnerabilities**), `0.8.0-beta.2` release-ref simulation and policy self-test, and `git diff --check`. Package verification parsed all JSON examples, validated universal-v1 descriptors with the built A2UI mapper, checked all catalog updates use replacement semantics, and verified intended example/docs package inclusion. No runtime source changed.
 
