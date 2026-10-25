@@ -2,7 +2,7 @@
 
 ## 0.9.0 (stable)
 
-Promotes v0.9.0-beta.1 with no runtime implementation changes. Production acceptance on n8n 2.44.6 confirmed a healthy service and runners, successful health and readiness checks, and successful Create & Deliver followed by same-card Update from an existing saved v0.8 workflow without migration. The npm `beta` channel remains on `0.9.0-beta.1`. Form and Selection remain deferred; no exactly-once or broader DingTalk support claim is made. See [release verification](docs/VERIFICATION.md).
+Promotes v0.9.0-beta.1 with no runtime implementation changes. Post-release acceptance on the upgraded v0.9 path additionally passed one real Stream request-action callback after workflow deactivation/reactivation, normalized action and correlation fields, and downstream same-card replacement Update; the temporary listener was unpublished and verified inactive. Deduplication remains process-local only, with no durable exactly-once claim. Form and Selection remain deferred. The npm `beta` channel remains on `0.9.0-beta.1`. See [release verification](docs/VERIFICATION.md).
 
 ## 0.9.0-beta.1 (published prerelease)
 
