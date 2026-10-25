@@ -1,5 +1,9 @@
 # API contracts checked 2026-10-24
 
+## Controlled A2UI (v0.6.0-beta.1 candidate)
+
+Form input on Create & Deliver or Update can select Card Data Mode `a2ui` and provide `a2uiDescriptor`. It maps the frozen `universal-v1` contract to fixed `cardParamMap` string variables. See [A2UI.md](A2UI.md) and the [candidate plan](V0.6_PLAN.md). Create with an action requires Stream callbacks enabled; Update maps data and does not enable callback routing. No current importable template asset is claimed.
+
 ## Presentation Card Data Mode (v0.4.0 development)
 
 For Form input on Create & Deliver or Update, Card Data Mode `Presentation` accepts the v1 descriptor documented in [PRESENTATION.md](PRESENTATION.md) and produces existing `cardData.cardParamMap` string values. It is opt-in; Card Data Form/JSON and whole-body Input Mode JSON contracts are unchanged. This mode is a stateless adapter and does not ship templates, render components, route actions, or enforce status transitions.

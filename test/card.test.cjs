@@ -2,6 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { buildRequest, formCardData, jsonObject } = require('../dist/nodes/DingTalkCard/payload');
 const { presentationCardData } = require('../dist/nodes/DingTalkCard/presentation');
+const { a2uiCardData } = require('../dist/nodes/DingTalkCard/a2ui');
 const { createClient, checkBusinessResponse } = require('../dist/nodes/DingTalkCard/transport');
 const { DingTalkCard } = require('../dist/nodes/DingTalkCard/DingTalkCard.node');
 const { DingTalkCardApi } = require('../dist/credentials/DingTalkCardApi.credentials');
@@ -161,6 +162,38 @@ const presentations = {
 	action: { version: '1', family: 'action', title: 'Review', tone: 'warning', label: 'Open details', description: 'Display only' },
 	report: { version: '1', family: 'report', title: 'Report', tone: 'success', sections: [{ heading: 'Uptime', body: '99.9%' }] },
 };
+const a2ui = { version: '1', profile: 'universal-v1', title: 'Status', summary: 'Current', tone: 'info', blocks: [
+	{ type: 'text', text: 'Ready' }, { type: 'keyValue', label: 'Queue', value: '2' },
+	{ type: 'list', items: ['one', 'two'] },
+], actions: [{ type: 'request', id: 'refresh:1', label: 'Refresh', params: { z: null, a: true } }] };
+test('A2UI maps deterministically to only fixed template variables and plain text', () => {
+	const mapped = a2uiCardData(a2ui).cardParamMap;
+	assert.deepEqual(mapped, {
+		a2uiVersion: '1', a2uiProfile: 'universal-v1', a2uiTitle: 'Status', a2uiSummary: 'Current',
+		a2uiTone: 'info', a2uiContent: 'Ready\nQueue: 2\n• one\n• two', a2uiActionId: 'refresh:1',
+		a2uiActionLabel: 'Refresh', a2uiActionParams: '{"a":true,"z":null}', a2uiActionVisible: 'true',
+	});
+	assert.deepEqual(a2uiCardData({ version: '1', profile: 'universal-v1', title: 'T', tone: 'neutral', blocks: [{ type: 'text', text: 'x' }] }).cardParamMap.a2uiActionVisible, 'false');
+});
+test('A2UI rejects unknown fields, versions, profiles, block/action types and malformed inputs', () => {
+	for (const value of [null, [], 'x', { ...a2ui, extra: 1 }, { ...a2ui, version: 1 }, { ...a2ui, version: '2' }, { ...a2ui, profile: 'other' }, { ...a2ui, tone: 'purple' }, { ...a2ui, blocks: [{ type: 'html', text: '<b>x</b>' }] }, { ...a2ui, blocks: [{ type: 'text', text: 'x', html: 'bad' }] }, { ...a2ui, actions: [{ type: 'url', id: 'x', label: 'x' }] }, { ...a2ui, actions: [{ type: 'request', id: 'x', label: 'x', url: 'https://example.invalid' }] }]) assert.throws(() => a2uiCardData(value));
+});
+test('A2UI enforces every descriptor, block, list, action and parameter bound', () => {
+	const one = (changes) => a2uiCardData({ version: '1', profile: 'universal-v1', title: 'T', tone: 'neutral', blocks: [{ type: 'text', text: 'x' }], ...changes });
+	for (const make of [() => one({ title: 't'.repeat(201) }), () => one({ summary: 's'.repeat(1001) }), () => one({ blocks: [] }), () => one({ blocks: Array(13).fill({ type: 'text', text: 'x' }) }), () => one({ blocks: [{ type: 'text', text: 'x'.repeat(1001) }] }), () => one({ blocks: [{ type: 'keyValue', label: 'l'.repeat(101), value: 'v' }] }), () => one({ blocks: [{ type: 'keyValue', label: 'l', value: 'v'.repeat(1001) }] }), () => one({ blocks: [{ type: 'list', items: [] }] }), () => one({ blocks: [{ type: 'list', items: Array(21).fill('x') }] }), () => one({ blocks: [{ type: 'list', items: ['x'.repeat(301)] }] }), () => one({ actions: Array(2).fill({ type: 'request', id: 'a', label: 'a' }) }), () => one({ actions: [{ type: 'request', id: 'bad id', label: 'a' }] }), () => one({ actions: [{ type: 'request', id: 'a', label: 'l'.repeat(101) }] }), () => one({ actions: [{ type: 'request', id: 'a', label: 'a', params: Object.fromEntries(Array.from({ length: 21 }, (_, i) => [`k${i}`, i])) }] }), () => one({ actions: [{ type: 'request', id: 'a', label: 'a', params: { 'bad key': 'x' } }] }), () => one({ actions: [{ type: 'request', id: 'a', label: 'a', params: { x: [] } }] })]) assert.throws(make);
+});
+test('A2UI accepts inclusive size and count maxima', () => {
+	const descriptor = { version: '1', profile: 'universal-v1', title: 't'.repeat(200), summary: 's'.repeat(1000), tone: 'danger', blocks: [
+		{ type: 'text', text: 'x'.repeat(1000) }, { type: 'keyValue', label: 'l'.repeat(100), value: 'v'.repeat(1000) },
+		{ type: 'list', items: Array(20).fill('i'.repeat(300)) },
+	], actions: [{ type: 'request', id: 'a'.repeat(64), label: 'b'.repeat(100), params: Object.fromEntries(Array.from({ length: 20 }, (_, i) => [`k${String(i).padStart(2, '0')}`, i])) }] };
+	assert.ok(a2uiCardData(descriptor).cardParamMap.a2uiContent.length > 0);
+	assert.equal(a2uiCardData({ ...descriptor, blocks: Array(12).fill({ type: 'text', text: '' }), actions: [] }).cardParamMap.a2uiActionVisible, 'false');
+});
+test('A2UI compact params preserve permitted special object keys', () => {
+	const descriptor = JSON.parse('{"version":"1","profile":"universal-v1","title":"T","tone":"neutral","blocks":[{"type":"text","text":"x"}],"actions":[{"type":"request","id":"go","label":"Go","params":{"__proto__":"safe","constructor":1}}]}');
+	assert.equal(a2uiCardData(descriptor).cardParamMap.a2uiActionParams, '{"__proto__":"safe","constructor":1}');
+});
 test('presentation maps all five families into string-valued cardParamMap deterministically', () => {
 	for (const [family, descriptor] of Object.entries(presentations)) {
 		const first = presentationCardData(descriptor);
@@ -982,4 +1015,18 @@ test('guided STREAM callback opt-in includes STREAM only when enabled and retain
 			);
 		}
 	}
+});
+test('A2UI action Create fails before any API request unless Stream callbacks are enabled', async () => {
+	const descriptor = { ...a2ui, blocks: [{ type: 'text', text: 'Ready' }] };
+	for (const enabled of [undefined, false]) {
+		const seen = [];
+		const params = [{ operation: 'createAndDeliver', inputMode: 'form', outTrackId: 'track', cardTemplateId: 'tpl', cardDataMode: 'a2ui', a2uiDescriptor: JSON.stringify(descriptor), target: 'group', spaceId: 'destination', ...(enabled === undefined ? {} : { enableStreamCallbacks: enabled }) }];
+		const result = await new DingTalkCard().execute.call(context(params, mockApi(seen), true));
+		assert.equal(seen.length, 0);
+		assert.match(result[0][0].json.error, /require Enable Stream Callbacks/);
+	}
+	const seen = [];
+	const params = [{ operation: 'createAndDeliver', inputMode: 'form', outTrackId: 'track', cardTemplateId: 'tpl', cardDataMode: 'a2ui', a2uiDescriptor: JSON.stringify(descriptor), target: 'group', spaceId: 'destination', enableStreamCallbacks: true }];
+	await new DingTalkCard().execute.call(context(params, mockApi(seen)));
+	assert.ok(seen.some((request) => request.url.endsWith('/createAndDeliver')));
 });

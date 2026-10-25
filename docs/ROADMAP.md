@@ -4,7 +4,7 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap starts from the published **v0.4.0** stable state. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-The repository package version is **0.5.0**. npm `latest` tracks `0.5.0`; beta remains `0.5.0-beta.1`. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0 promotes the beta.1 baseline without runtime changes. Its production acceptance covers only the request-button/action-callback path; Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
+The repository candidate version is **0.6.0-beta.1**. npm `latest` remains `0.5.0`; this candidate has not been published. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0 promotes the beta.1 baseline without runtime changes. Its production acceptance covers only the request-button/action-callback path; Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
 
 ## Vision and product principle
 
@@ -86,22 +86,22 @@ The implementation is a deterministic stateless adapter to the existing Form-mod
 
 The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), with phases and acceptance criteria in [V0.5_PLAN.md](V0.5_PLAN.md). Production acceptance passed for the existing request-button/action callback path, including compatibility with legacy downstream expressions. Form and selection remain unverified and deferred. Beta.1 is eligible for stable promotion; see [verification](VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
 
-### v0.6.0 — Controlled A2UI Runtime
+### v0.6.0 — Controlled A2UI Runtime (beta.1 candidate)
 
-**Objective:** Render validated presentation/action descriptors through an approved set of DingTalk card primitives and templates.
+**Objective:** Add a constrained template-first descriptor adapter without a runtime DOM. The frozen `universal-v1` contract is in [V0.6_PLAN.md](V0.6_PLAN.md) and [A2UI.md](A2UI.md).
 
 **Main deliverables:**
 
-- Versioned descriptor schema and deterministic renderer validation.
-- Explicit component and action allowlists, approved template mappings, and safe fallback behavior.
+- Versioned descriptor schema and deterministic validation into a fixed NORMAL template variable contract.
+- Explicit block and request-action allowlists; unknown input fails closed.
 - No arbitrary code or HTML. Model-generated descriptors are acceptable only after deterministic validation.
-- Progressive rendering, status, or streaming behavior where supported by verified platform capabilities and template constraints.
+- No runtime DOM, business router/state/deduplication, or LLM behavior.
 
-**Acceptance gates:** Invalid, unknown-version, and disallowed actions fail safely; payloads remain auditable; renderer output is bounded by the allowlist; security boundaries and fallback behavior are documented and exercised. Verify every implemented primitive against current official DingTalk behavior.
+**Candidate gates:** Pure mapping and node-level action policy are locally covered. Template import and visual/live acceptance remain pending: no reliable current official schemaVersion 3.0.0 NORMAL dynamic-form/loop asset could be verified, so no fabricated template is shipped.
 
 **Non-goals / deferrals:** No arbitrary LLM-generated DingTalk request bodies, executable UI, or general-purpose visual builder.
 
-**Compatibility and migration:** Version descriptors explicitly. Preserve the low-level raw JSON escape hatch as a separate expert API path and retain existing lifecycle semantics.
+**Compatibility and migration:** Additive `a2ui` Card Data Mode for Create & Deliver and Update. Preserve Form/JSON/Presentation behavior and the low-level raw JSON expert path. Update does not enable callbacks.
 
 ### v0.7.0 — n8n Action & Workflow Kit
 

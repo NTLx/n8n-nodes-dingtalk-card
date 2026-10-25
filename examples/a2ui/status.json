@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Example status",
+  "summary": "Replace with a short, non-sensitive summary.",
+  "tone": "info",
+  "blocks": [
+    { "type": "keyValue", "label": "Service", "value": "example-service" },
+    { "type": "list", "items": ["First placeholder item", "Second placeholder item"] }
+  ]
+}

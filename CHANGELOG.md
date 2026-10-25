@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0-beta.1 (candidate; unpublished)
+
+- Add the template-first Controlled A2UI `universal-v1` descriptor mode for Create & Deliver and Update, mapped to fixed string variables.
+- Reject unknown descriptor/block/action fields and types, invalid bounds and unsupported actions; require Stream callbacks for action-enabled Create.
+- Preserve Form, JSON and Presentation modes. No importable DingTalk template is shipped because a current official NORMAL schema could not be verified; visual/live acceptance remains pending.
+- This candidate has not been published or production-installed. Stable npm `latest` remains `0.5.0`.
+
 ## 0.5.0 (stable)
 
 Promotes the production-accepted v0.5.0-beta.1 normalized Trigger envelope without runtime changes. Production acceptance covers one request-button/action-callback path, including legacy downstream expression compatibility. Form and Selection remain unverified and deferred; no broader live interaction claim is made. The npm `beta` channel remains on `0.5.0-beta.1`.

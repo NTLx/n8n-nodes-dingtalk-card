@@ -8,7 +8,7 @@ The published **v0.4.0-beta.2** established the functional baseline for stable v
 
 The published **v0.5.0-beta.1** remains available on the beta channel and is the functional baseline for stable v0.5.0. Its optional normalized Trigger envelope passed production acceptance for one real request-button/action-callback path, with existing downstream expressions continuing to work. Form and Selection remain unverified and deferred. See [release verification](docs/VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
 
-The npm `latest` dist-tag resolves to `0.5.0`; `beta` remains `0.5.0-beta.1`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
+The npm `latest` dist-tag resolves to `0.5.0`; `0.6.0-beta.1` is an unpublished candidate. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -116,6 +116,8 @@ Programmatic execution is intentional: shared token handling, strict 2xx/partial
 See [verification record](docs/VERIFICATION.md) for release identity, public artifact digests, provenance, update-discovery evidence, exact local/CI gates, dependency findings and limitations.
 
 ## Roadmap
+
+The additive `a2ui` Card Data Mode accepts the constrained `universal-v1` descriptor on Create & Deliver and Update and maps it to fixed string template variables. An action on Create requires **Enable Stream Callbacks**; Update does not enable callbacks. No A2UI template import asset is shipped because a current official importable NORMAL template could not be verified. See [the A2UI contract](docs/A2UI.md) and [v0.6 plan](docs/V0.6_PLAN.md).
 
 The direction is **Interactive-first, AI-when-needed**: use DingTalk cards for presentation and lightweight control of n8n automation, routing deterministic actions through n8n without an LLM. The version milestones, acceptance gates, non-goals and compatibility notes are in the [product and engineering roadmap](docs/ROADMAP.md).
 

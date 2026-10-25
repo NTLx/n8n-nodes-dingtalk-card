@@ -12,6 +12,7 @@ import type {
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { buildRequest, formCardData, jsonObject, type Operation } from './payload';
 import { presentationCardData } from './presentation';
+import { a2uiCardData } from './a2ui';
 import { CardError, createClient, type CardErrorDetails, type Json } from './transport';
 
 const operations = ['createAndDeliver', 'update'];
@@ -74,6 +75,17 @@ const properties: INodeProperties[] = [
 		description: 'Versioned presentation descriptor mapped to the documented template variables',
 	},
 	{
+		displayName: 'A2UI Descriptor',
+		name: 'a2uiDescriptor',
+		type: 'json',
+		default: '{}',
+		required: true,
+		displayOptions: {
+			show: { inputMode: ['form'], operation: operations, cardDataMode: ['a2ui'] },
+		},
+		description: 'Constrained universal-v1 descriptor mapped to fixed A2UI template variables',
+	},
+	{
 		displayName: 'Request Body',
 		name: 'requestBody',
 		type: 'json',
@@ -120,6 +132,7 @@ const properties: INodeProperties[] = [
 			{ name: 'Form', value: 'form' },
 			{ name: 'JSON', value: 'json' },
 			{ name: 'Presentation', value: 'presentation' },
+			{ name: 'A2UI', value: 'a2ui' },
 		],
 		displayOptions: { show: { inputMode: ['form'], operation: operations } },
 	},
@@ -360,6 +373,8 @@ export class DingTalkCard implements INodeType {
 								? presentationCardData(
 										jsonObject(this.getNodeParameter('presentationDescriptor', i), 'Presentation Descriptor'),
 									)
+								: cardDataMode === 'a2ui'
+									? a2uiCardData(jsonObject(this.getNodeParameter('a2uiDescriptor', i), 'A2UI Descriptor'))
 								: formCardData(
 										this.getNodeParameter('cardParameters.parameters', i, []) as Array<{
 											name: string;
@@ -369,7 +384,13 @@ export class DingTalkCard implements INodeType {
 									);
 						if (operation === 'createAndDeliver') {
 							body.cardTemplateId = this.getNodeParameter('cardTemplateId', i);
-							if (this.getNodeParameter('enableStreamCallbacks', i, false))
+							const enableStreamCallbacks = this.getNodeParameter('enableStreamCallbacks', i, false);
+							const a2uiMap = (body.cardData as { cardParamMap?: Record<string, string> }).cardParamMap;
+							if (cardDataMode === 'a2ui' && a2uiMap?.a2uiActionVisible === 'true' && enableStreamCallbacks !== true) {
+								// eslint-disable-next-line n8n-nodes-base/node-execute-block-wrong-error-thrown -- Pure validation is converted to NodeOperationError at the item boundary.
+								throw new CardError('A2UI request actions require Enable Stream Callbacks on Create & Deliver.');
+							}
+							if (enableStreamCallbacks)
 								body.callbackType = 'STREAM';
 							const group = this.getNodeParameter('target', i) === 'group';
 							const spaceId = this.getNodeParameter('spaceId', i) as string;
