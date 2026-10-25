@@ -4,7 +4,7 @@ Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Strea
 
 **v0.8.0 is the stable release.** It promotes the v0.8.0-beta.2 Automation Presentation Kit without runtime changes. Connected-instance acceptance confirmed A2UI report Create & Deliver, same-card status Update with replacement semantics and no stale report-only fields, and the supported request-action callback path through a final card Update. This does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n. See [release verification](docs/VERIFICATION.md).
 
-The repository is preparing an unpublished **v0.9.0-beta.1** production-hardening candidate. It adds compatibility, lifecycle, security, and operations evidence without adding product features. See the [v0.9 plan](docs/V0.9_PLAN.md) and [compatibility/security/operations guidance](docs/COMPATIBILITY_SECURITY_OPERATIONS.md). The candidate has not been tagged or published.
+The published **v0.9.0-beta.1** prerelease adds compatibility, lifecycle, security, and operations evidence without adding product features. See the [v0.9 plan](docs/V0.9_PLAN.md), [compatibility/security/operations guidance](docs/COMPATIBILITY_SECURITY_OPERATIONS.md), and [release verification](docs/VERIFICATION.md#v090-beta1-public-prerelease--2026-10-25).
 
 The v0.8.0-beta.2 prerelease corrected Automation Presentation recipes to use the production-accepted A2UI `universal-v1` surface for user-facing patterns. Connected-instance acceptance confirmed normal rendering and cross-family replacement Update behavior. Presentation v1 examples remain adapter/diagnostic fixtures. No node runtime behavior or DingTalk templates were added. See the [pattern guide](docs/AUTOMATION_PRESENTATION.md) and [release verification](docs/VERIFICATION.md).
 
@@ -12,7 +12,7 @@ The published **v0.4.0-beta.2** established the functional baseline for stable v
 
 The published **v0.5.0-beta.1** remains available on the beta channel and is the functional baseline for stable v0.5.0. Its optional normalized Trigger envelope passed production acceptance for one real request-button/action-callback path, with existing downstream expressions continuing to work. Form and Selection remain unverified and deferred. See [release verification](docs/VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
 
-The npm `latest` dist-tag resolves to `0.8.0`; `beta` remains on `0.8.0-beta.2`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
+The npm `latest` dist-tag resolves to `0.8.0`; `beta` resolves to `0.9.0-beta.1`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 

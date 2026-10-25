@@ -1,10 +1,10 @@
 # Changelog
 
-## 0.9.0-beta.1 (unpublished candidate)
+## 0.9.0-beta.1 (published prerelease)
 
 - Document the tested Node runtime and stable n8n 2.44.x package-compatibility matrix, contributor/build baseline, migration path, security/privacy boundaries, and operations guidance.
 - Add packed-artifact compatibility CI for Node 24 and `n8n-workflow` 2.44.0/2.44.2, plus trigger replay and saved-workflow fixture regressions.
-- No runtime behavior or product features changed. Form and Selection remain deferred. This candidate has not been tagged or published.
+- No runtime behavior or product features changed. Form and Selection remain deferred. Published through the Trusted Publisher/OIDC workflow under npm `beta`; stable `latest` remains `0.8.0`. See [release verification](docs/VERIFICATION.md#v090-beta1-public-prerelease--2026-10-25).
 
 ## 0.8.0 (stable)
 

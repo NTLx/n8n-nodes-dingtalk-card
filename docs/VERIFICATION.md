@@ -1,5 +1,13 @@
 # Release verification record — 2026-10-24
 
+## v0.9.0-beta.1 public prerelease — 2026-10-25
+
+The annotated tag `v0.9.0-beta.1` points to release commit `ce2f635ee7a2a682414f3eac7e22dc9fe5e0e126`. Main CI [40184693621](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40184693621) and tag CI [40184836267](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40184836267) passed on that exact commit. Trusted Publisher/OIDC publish workflow [40184836016](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40184836016), attempt 1, passed its install, lint, typecheck, build, tests, package verification, production audit, release-ref check, beta publication, public dist-tag verification, and published metadata/tarball verification. Stable publication was skipped.
+
+Public npm dist-tags are `beta -> 0.9.0-beta.1` and `latest -> 0.8.0`. Registry metadata reports tarball `https://registry.npmjs.org/n8n-nodes-dingtalk-card/-/n8n-nodes-dingtalk-card-0.9.0-beta.1.tgz`, SHA-1 `e4487202d729499f3ba0797f9bc9df54b2309d04`, and integrity `sha512-ensU4Hif9CKVmhr0KudIMoSXosoMxdL44yp1jOKmCzSYkLCzXF7sL0VsTi3iRIW3CZjhrau5GZYn1NsMQdbyQA==`. An isolated install followed by `npm audit signatures` verified 94 registry signatures and 6 attestations; invalid and missing signatures were both zero. The verified SLSA provenance subject SHA-512 is `7a7b14e0789ff422959a1af42ae748328497a2ca0cc5d2f8e32a758ce2a60b349890b0b35c5eec2f456c4e2de24485b70998e1adabb9199627d4db0c41d6f240`; it identifies `.github/workflows/publish.yml`, `refs/tags/v0.9.0-beta.1`, release commit `ce2f635ee7a2a682414f3eac7e22dc9fe5e0e126`, and publish run `40184836016` attempt 1. Its SLSA transparency-log entry is [3458346480](https://search.sigstore.dev/?logIndex=3458346480); the npm publish signature entry is [3458374426](https://search.sigstore.dev/?logIndex=3458374426).
+
+The [GitHub prerelease](https://github.com/NTLx/n8n-nodes-dingtalk-card/releases/tag/v0.9.0-beta.1) (release ID `RE_kwDOVU-7As4ZO2cP`) is published with `draft=false` and `prerelease=true`. Its canonical asset `n8n-nodes-dingtalk-card-0.9.0-beta.1.tgz` is 93,386 bytes and byte-identical to the public npm tarball; GitHub reports the matching SHA-256 `577edaa621701f772ebc93b4ee96fc2c66887f86c91685509e4f86b9ae40d277`. Stable was not promoted, `v0.9.0` was not created, and production n8n was not accessed or changed by this release.
+
 ## v0.9.0-beta.1 local production-hardening candidate — 2026-10-25
 
 This is local candidate evidence only. Package metadata is `0.9.0-beta.1`; only the exact `v0.9.0-beta.1` ref is accepted by the candidate release-ref policy. No tag was created, npm/GitHub release was not published, and production n8n was not accessed or changed.
