@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 (stable)
+
+Promotes the production-accepted v0.4.0-beta.2 Presentation Contract & Template Kit to stable. No functional changes from beta.2: adds the fixed AI-host compatibility value `flowStatus: "3"` to Presentation `cardParamMap`, preserving all 13 Presentation contract fields. Production acceptance passed for true Presentation-mode status rendering and Create & Deliver across alert, status, digest, action, and report. No private identifiers are recorded. The package ships no DingTalk templates. The npm `beta` channel remains on `0.4.0-beta.2`.
+
 ## 0.4.0-beta.2 (prerelease)
 
 Adds the fixed AI-host compatibility value `flowStatus: "3"` to Presentation `cardParamMap`, preserving all 13 Presentation contract fields. Production beta.2 acceptance is complete: a true Presentation-mode status card rendered correctly on Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body, and the final live Create & Deliver regression passed for alert, status, digest, action, and report. The v0.4.0 milestone is ready for stable promotion; stable has not been published or promoted. No private identifiers are recorded. The package ships no DingTalk templates. npm `latest` remains stable at `0.3.0`.

@@ -6,7 +6,11 @@ Production n8n was upgraded to `n8n-nodes-dingtalk-card@0.4.0-beta.2` through th
 
 The final beta.2 live Create & Deliver regression passed for all five Presentation families: alert, status, digest, action, and report. Every n8n execution succeeded; each DingTalk response had top-level `success=true` and `deliverResults[].success=true`. Temporary test workflows were archived. No private template, group, card, workflow, execution, credential, or other private identifiers are recorded.
 
-Beta.2 production acceptance is complete and v0.4.0 is ready for stable promotion. Stable has **not** been published or promoted. The earlier beta.1 acceptance sections below are preserved as historical records; beta.2 acceptance above records the completed regression.
+Beta.2 production acceptance is complete and forms the exact functional baseline for stable v0.4.0. The earlier beta.1 acceptance sections below are preserved as historical records; beta.2 acceptance above records the completed regression.
+
+## v0.4.0 stable release
+
+Stable promotion changes package and release metadata only. The Presentation implementation is unchanged from the production-accepted v0.4.0-beta.2 baseline. Release gates and public artifact evidence will be recorded here after publication. Beta remains on `0.4.0-beta.2`; stable publication uses the existing Trusted Publisher/OIDC workflow and `latest` dist-tag.
 
 ## v0.4.0-beta.2 real Mac DingTalk visual acceptance — 2026-10-25
 

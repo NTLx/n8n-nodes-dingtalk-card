@@ -2,9 +2,9 @@
 
 This roadmap is subordinate to the project's [design baseline](DESIGN.md), which governs architecture, scope, non-goals, and acceptance boundaries. Roadmap items may sequence work within those boundaries but cannot override them; resolve conflicts by updating the proposal to fit the baseline or deliberately revising the baseline first.
 
-This roadmap starts from the published **v0.3.0** stable state, with **v0.3.0-beta.1** retained as its prerelease. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
+This roadmap starts from the published **v0.4.0** stable state. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-The repository package version is **0.4.0-beta.2**, publicly published as a beta. npm `beta` resolves to `0.4.0-beta.2`; `latest` remains stable at `0.3.0`. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.4.0 is ready for stable promotion; stable has not been published or promoted. The package ships no DingTalk templates. See [beta.2 production acceptance](VERIFICATION.md#v040-beta2-production-regression-acceptance-2026-10-25).
+The repository package version is **0.4.0**. npm `latest` resolves to `0.4.0`; `beta` remains `0.4.0-beta.2`. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. The package ships no DingTalk templates. See [beta.2 production acceptance](VERIFICATION.md#v040-beta2-production-regression-acceptance-2026-10-25) and [stable release verification](VERIFICATION.md#v040-stable-release).
 
 ## Vision and product principle
 
@@ -47,7 +47,7 @@ Descriptors produced with model assistance may be considered only after determin
 
 **Compatibility and migration:** Preserve existing Form/JSON behavior, callback opt-in, output fields, and saved workflow behavior. Same-ID Create semantics remain explicitly non-guaranteed.
 
-### v0.4.0 — Presentation Contract & Template Kit (published beta; acceptance complete, ready for stable promotion)
+### v0.4.0 — Presentation Contract & Template Kit (stable release)
 
 **Objective:** Define how workflows describe useful card presentations independently of a particular template.
 
@@ -60,11 +60,11 @@ Descriptors produced with model assistance may be considered only after determin
 
 The implementation is a deterministic stateless adapter to the existing Form-mode `cardData.cardParamMap` boundary. It does not ship DingTalk templates or claim verified component support. Status transition descriptions are workflow guidance only.
 
-**Acceptance gates (complete):** Local schema validation, family examples, mapping, compatibility, and workflow-only state guidance are documented and locally verified. Production beta.2 installation, loaded schema, adapter/API transport, and compatibility with the existing lifecycle passed on n8n/runners 2.44.6. The dedicated template definition/export established all 13 contract variables as public strings statically bound in both `editorData` and `widgetInfo`; a visual probe confirmed all 13 Presentation fields, including summary, through one BaseText path. A true Presentation-mode status card then rendered correctly in Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body, demonstrating automatic AI-card completed-state host metadata. Final live Create & Deliver regression passed for all five families; all five n8n executions succeeded, with top-level DingTalk `success=true` and `deliverResults[].success=true` in every response. Temporary test workflows were archived. The v0.4.0 milestone is ready for stable promotion; stable has not been published or promoted.
+**Acceptance gates (complete):** Local schema validation, family examples, mapping, compatibility, and workflow-only state guidance are documented and locally verified. Production beta.2 installation, loaded schema, adapter/API transport, and compatibility with the existing lifecycle passed on n8n/runners 2.44.6. The dedicated template definition/export established all 13 contract variables as public strings statically bound in both `editorData` and `widgetInfo`; a visual probe confirmed all 13 Presentation fields, including summary, through one BaseText path. A true Presentation-mode status card then rendered correctly in Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body, demonstrating automatic AI-card completed-state host metadata. Final live Create & Deliver regression passed for all five families; all five n8n executions succeeded, with top-level DingTalk `success=true` and `deliverResults[].success=true` in every response. Temporary test workflows were archived. Stable v0.4.0 promotes this accepted beta.2 baseline without functional changes; publication evidence is recorded in [verification](VERIFICATION.md#v040-stable-release).
 
 **Non-goals / deferrals:** No arbitrary UI or HTML, no automatic template authoring, and no A2UI runtime in this milestone.
 
-**Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. Beta.2 is published and production-installed through the supported UI. Transport, lifecycle, and Presentation acceptance are complete for the documented paths. Stable promotion remains pending.
+**Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. Beta.2 was published and production-installed through the supported UI. Transport, lifecycle, and Presentation acceptance are complete for the documented paths.
 
 ### v0.5.0 — Interaction Contract & Normalized Trigger
 

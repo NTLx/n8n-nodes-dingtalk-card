@@ -2,11 +2,11 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**v0.3.0 is the stable release.** It adds guided Form String/JSON card parameter values, additive sanitized normalized outbound error details, and stable-ID recovery guidance with a packaged fixture; existing v0.2 Stream behavior is preserved. Connected-instance acceptance on self-hosted production n8n 2.44.5 closes the documented v0.3 stable scope; this does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
+**v0.4.0 is the stable release.** It adds the Presentation Contract & Template Kit, including five descriptor families and deterministic mapping, while preserving the existing lifecycle behavior. Production acceptance is recorded in [release verification](docs/VERIFICATION.md). This does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
 
-**v0.4.0-beta.2 is a prerelease** for the v0.4.0 milestone. Beta.2 is installed on production n8n and acceptance is complete; v0.4.0 is ready for stable promotion, which has not occurred. A true Presentation-mode status card rendered correctly in Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body, confirming the beta.2 adapter supplies the AI-card completed-state host metadata. The final live Create & Deliver regression passed for alert, status, digest, action, and report. The package ships no DingTalk templates. See the [presentation contract](docs/PRESENTATION.md) and [release verification](docs/VERIFICATION.md).
+**v0.4.0-beta.2 remains available on the beta channel.** Its production acceptance established the functional baseline for stable v0.4.0. A true Presentation-mode status card rendered correctly in Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body; the final live Create & Deliver regression passed for alert, status, digest, action, and report. The package ships no DingTalk templates. See the [presentation contract](docs/PRESENTATION.md) and [release verification](docs/VERIFICATION.md).
 
-The npm `beta` dist-tag resolves to `0.4.0-beta.2`; npm `latest` remains stable at `0.3.0`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
+The npm `latest` dist-tag resolves to `0.4.0`; `beta` remains `0.4.0-beta.2`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
