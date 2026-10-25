@@ -1,11 +1,11 @@
 # Changelog
 
-## 0.7.0-beta.1 (unpublished candidate)
+## 0.7.0-beta.1 (published prerelease)
 
 - Suppress duplicate Stream callbacks by `messageId` within one active Trigger lifecycle; duplicates still receive the immediate receipt ACK. Cache is bounded (10,000 entries), TTL-based (10 minutes), and explicitly not durable exactly-once across restart or instances.
 - Preserve the existing native WebSocket reconnect/backoff and shutdown lifecycle; no competing SDK/transport was introduced.
 - Normalize outbound error operation, phase, attempts, ambiguity and correlation fields. Only explicit invalid-token rejection is automatically retried for writes; network/timeout/5xx outcomes remain ambiguous and non-retryable, preventing blind Create replay.
-- Package and lockfile identify this unpublished prerelease candidate as `0.7.0-beta.1`; no tag or publication was created.
+- Published to npm under `beta`; `latest` remains on stable `0.6.0`. Release evidence, provenance, and canonical tarball identity are recorded in [verification](docs/VERIFICATION.md#v070-beta1-public-prerelease--2026-10-25).
 
 ## 0.6.0 (stable)
 
