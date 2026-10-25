@@ -10,7 +10,15 @@ Beta.2 production acceptance is complete and forms the exact functional baseline
 
 ## v0.4.0 stable release
 
-Stable promotion changes package and release metadata only. The Presentation implementation is unchanged from the production-accepted v0.4.0-beta.2 baseline. Release gates and public artifact evidence will be recorded here after publication. Beta remains on `0.4.0-beta.2`; stable publication uses the existing Trusted Publisher/OIDC workflow and `latest` dist-tag.
+Stable promotion changes package and release metadata only. The Presentation implementation is unchanged from the production-accepted v0.4.0-beta.2 baseline.
+
+- Release commit `019b52ddb89611b32bb0c73b6390b20eeede5c37`; annotated tag `v0.4.0` points to that commit. Main CI run [40161106076](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40161106076) and tag CI run [40161166710](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40161166710) passed the complete Node 24 gate set. The Trusted Publisher/OIDC publish run [40161166763](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40161166763) also passed install, lint, typecheck, build, 60 tests, package verification, production audit, release-ref policy, npm dist-tag and public package verification.
+- Public npm dist-tags are `latest -> 0.4.0` and `beta -> 0.4.0-beta.2`. Public metadata reports version `0.4.0`, `gitHead` `019b52ddb89611b32bb0c73b6390b20eeede5c37`, tarball `https://registry.npmjs.org/n8n-nodes-dingtalk-card/-/n8n-nodes-dingtalk-card-0.4.0.tgz`, and 27 files. `npm audit signatures` verified the published package signature and provenance; the package had no invalid or missing signature results.
+- The public SLSA provenance identifies `refs/tags/v0.4.0`, release commit `019b52ddb89611b32bb0c73b6390b20eeede5c37`, `.github/workflows/publish.yml`, and publish run `40161166763` attempt 1.
+- The non-prerelease [GitHub Release v0.4.0](https://github.com/NTLx/n8n-nodes-dingtalk-card/releases/tag/v0.4.0) is published and contains exactly one asset, `n8n-nodes-dingtalk-card-0.4.0.tgz`. Its 58,405 bytes match the public npm tarball; GitHub's asset digest matches the locally computed SHA-256.
+- Canonical tarball SHA-256: `11dfb9f75af58766196c7f2dbaea043267e2cc346cd46f15e961124e0cb6eb87`; SHA-1: `bdb23cf0e05fe77cc02099fa1e9b8800e7aaf888`; npm integrity: `sha512-3L4Pg2HabTP+FeSPJWjfMiv6SZ6yPdUZxitJMopIHomweS0/Lchx+JoOoGqgXEwrdTGYz+oQl28iLqmIff9vhQ==`.
+
+The local clean install, lint, typecheck, build, 60 tests, package verification, production audit (0 findings), release-ref self-test and `git diff --check` all passed. No production n8n installation was changed during this release task.
 
 ## v0.4.0-beta.2 real Mac DingTalk visual acceptance — 2026-10-25
 
