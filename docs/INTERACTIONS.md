@@ -1,0 +1,11 @@
+# Interaction contract v1
+
+Every valid DingTalk card `CALLBACK` item retains its existing top-level fields (`type`, `specVersion`, `headers`, `topic`, `messageId`, `receivedAt`, `data`, `rawData` by default, parsed `content`, `cardPrivateData`, `params`, and extracted identifiers) and adds `normalized`. Existing top-level fields remain supported; no migration is required for them.
+
+`normalized.schemaVersion` is the string `"1"`. `interaction` may contain the inner card callback business `type` when it is a string (root `data.type`, then `content.type`; this is not the outer Stream envelope type), validated string-array `actionIds`, parsed `params`, and parsed `value` (root `data.value`, then `content.value`). `actor` contains supplied `userId`, `userIdType`, `openId`, `unionId`, `operatorId`, and `operatorUserId`; `card` contains supplied `outTrackId`; `conversation` contains supplied `spaceId` and `spaceType`. Values are preserved as supplied. No identity equivalence or input type is inferred. `correlation` contains the validated Stream `messageId` and exact callback topic. `eventTime` is present only for a valid finite Unix timestamp in milliseconds in `headers.time`, represented as ISO-8601. `receivedAt` remains local receipt time.
+
+Callback extraction preserves precedence: direct `cardPrivateData` at root then content takes precedence over SDK `cardActionData.cardPrivateData` at root then content. `params` precedence remains root, content, then selected private data. String JSON parsing and malformed JSON preservation remain unchanged. Unknown params are retained. Form and selection inputs are unverified and deferred; generic `params` do not classify submitted values.
+
+The Trigger option **Include Raw Callback Data** defaults to true. When false, only top-level `rawData` is omitted; `data` and other fields remain. This reduces duplicate raw serialization but does not remove sensitive callback content. The live-verified interaction claim for this milestone is limited to the existing request-button/action callback path.
+
+The Stream receipt ACK is sent before item normalization/emission. Downstream workflow execution remains asynchronous. This provides no exactly-once or durable deduplication guarantee.

@@ -103,6 +103,14 @@ test('normalizes callback JSON with content/private params and unchanged identif
 		userId: 'fixture-user',
 		userIdType: 1,
 		operatorId: 'fixture-operator',
+		normalized: {
+			schemaVersion: '1',
+			interaction: { params: { input: 'test' } },
+			actor: { userId: 'fixture-user', userIdType: 1, operatorId: 'fixture-operator' },
+			card: { outTrackId: 'fixture-track' },
+			conversation: {},
+			correlation: { messageId: 'fixture-message', topic: CARD_TOPIC },
+		},
 	});
 	assert.deepEqual(
 		normalizeCallback(
@@ -116,6 +124,34 @@ test('normalizes callback JSON with content/private params and unchanged identif
 		{ own: true },
 	);
 	assert.equal(Object.hasOwn(normalizeCallback(frame('{')), 'content'), false);
+});
+
+test('normalized contract preserves precedence, validates actionIds, parses values, and controls raw serialization', () => {
+	const source = { type: 'actionCallback', outTrackId: 'root-track', userId: null, spaceId: 'space', value: '{"root":true}', params: { keep: 1 }, cardPrivateData: { actionIds: ['ok'], params: { losing: true } }, cardActionData: { cardPrivateData: { actionIds: ['ignored'] } }, content: { outTrackId: 'content-track', userId: 'content-user', value: { content: true }, spaceType: 2 } };
+	const frameValue = { ...frame(source), headers: { topic: CARD_TOPIC, messageId: 'verified-id', time: '1760000000000' } };
+	const result = normalizeCallback(frameValue, 'receipt', false);
+	assert.equal(Object.hasOwn(result, 'rawData'), false);
+	assert.equal(result.outTrackId, 'root-track');
+	assert.equal(result.normalized.interaction.value.root, true);
+	assert.equal(result.normalized.interaction.type, 'actionCallback');
+	assert.deepEqual(result.normalized.interaction.actionIds, ['ok']);
+	assert.deepEqual(result.normalized.interaction.params, { keep: 1 });
+	assert.equal(result.normalized.actor.userId, null);
+	assert.deepEqual(result.normalized.card, { outTrackId: 'root-track' });
+	assert.deepEqual(result.normalized.conversation, { spaceId: 'space', spaceType: 2 });
+	assert.deepEqual(result.normalized.correlation, { messageId: 'verified-id', topic: CARD_TOPIC });
+	assert.equal(result.normalized.eventTime, new Date(1760000000000).toISOString());
+	const official = normalizeCallback(frame({ cardActionData: { cardPrivateData: { actionIds: ['submit'], params: { unknown: 9 } } } }));
+	assert.deepEqual(official.cardPrivateData.actionIds, ['submit']);
+	assert.deepEqual(official.params, { unknown: 9 });
+	assert.equal(Object.hasOwn(official.normalized, 'eventTime'), false);
+	const invalidIds = normalizeCallback(frame({ cardPrivateData: { actionIds: ['ok', 1] } }));
+	assert.equal(Object.hasOwn(invalidIds.normalized.interaction, 'actionIds'), false);
+	assert.equal(normalizeCallback({ ...frame('{}'), headers: { topic: CARD_TOPIC, messageId: 'x', time: 'bad' } }).normalized.eventTime, undefined);
+	assert.equal(normalizeCallback({ ...frame({ type: 'contentCallback', content: { type: 'actionCallback' } }), headers: { topic: CARD_TOPIC, messageId: 'x', time: '999999999999999999999' } }).normalized.eventTime, undefined);
+	assert.equal(normalizeCallback(frame({ content: { type: 'contentCallback' } })).normalized.interaction.type, 'contentCallback');
+	const preserved = normalizeCallback(frame('exact raw'));
+	assert.equal(preserved.rawData, 'exact raw');
 });
 
 test('only exact CALLBACK topic is emitted as one item, after empty 200 ACK; malformed data also ACKs', async (t) => {

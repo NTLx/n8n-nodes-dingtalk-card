@@ -120,3 +120,6 @@ The durable architecture, scope boundaries, controlled A2UI contract, and anti-d
 Historical milestones: **v0.1.0-beta.1** introduced outbound Card Platform lifecycle operations; **v0.2.0-beta.1** added the narrow Stream callback trigger and explicit callback opt-in, with one real request-button path verified; **v0.3.0-beta.1** added Form String/JSON values, normalized outbound error details and stable-ID recovery guidance, and **v0.3.0** is its stable release. Stable acceptance evidence and limits are recorded in [verification](docs/VERIFICATION.md#v030-stable-release-2026-10-24).
 
 MIT licensed. Please remove identifiers, card data and credentials before filing an issue.
+# Normalized callback output
+
+The DingTalk Card Trigger adds a versioned `normalized` object while retaining all existing top-level fields; existing workflows need no migration. Raw callback serialization remains enabled by default and can be omitted with **Include Raw Callback Data**. This reduces duplicate raw serialization but does not remove sensitive callback content. See [the v1 interaction contract](docs/INTERACTIONS.md). Only the existing request-button/action callback path is live-verified; form and selection inputs remain deferred.

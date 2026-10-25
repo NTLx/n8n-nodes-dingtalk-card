@@ -1,0 +1,19 @@
+{
+  "normalized": {
+    "schemaVersion": "1",
+    "interaction": {
+      "type": "actionCallback",
+      "actionIds": ["<action-id>"],
+      "params": { "<parameter-name>": "<submitted-value>" }
+    },
+    "actor": { "userId": "<user-id>" },
+    "card": { "outTrackId": "<caller-generated-correlation-id>" },
+    "conversation": { "spaceId": "<conversation-id>" },
+    "correlation": {
+      "messageId": "<stream-message-id>",
+      "topic": "/v1.0/card/instances/callback"
+    },
+    "eventTime": "<ISO-8601-event-time>"
+  },
+  "receivedAt": "<ISO-8601-local-receipt-time>"
+}

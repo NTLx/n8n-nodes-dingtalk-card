@@ -4,7 +4,7 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap starts from the published **v0.4.0** stable state. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-The repository package version is **0.4.0**. npm `latest` resolves to `0.4.0`; `beta` remains `0.4.0-beta.2`. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. The package ships no DingTalk templates. See [beta.2 production acceptance](VERIFICATION.md#v040-beta2-production-regression-acceptance-2026-10-25) and [stable release verification](VERIFICATION.md#v040-stable-release).
+The repository package version is **0.5.0-beta.1**. npm `latest` remains `0.4.0`; beta candidates use the `beta` tag. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. See [verification](VERIFICATION.md).
 
 ## Vision and product principle
 
@@ -66,7 +66,7 @@ The implementation is a deterministic stateless adapter to the existing Form-mod
 
 **Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. Beta.2 was published and production-installed through the supported UI. Transport, lifecycle, and Presentation acceptance are complete for the documented paths.
 
-### v0.5.0 — Interaction Contract & Normalized Trigger
+### v0.5.0 — Interaction Contract & Normalized Trigger (beta.1 implemented)
 
 **Objective:** Give workflows a stable, safe representation of card actions.
 
@@ -83,6 +83,8 @@ The implementation is a deterministic stateless adapter to the existing Form-mod
 **Non-goals / deferrals:** No promise of synchronous local-update ACK, exactly-once delivery, durable deduplication, or inferred identity types.
 
 **Compatibility and migration:** Add normalized fields without removing or renaming current fields such as `params`, `outTrackId`, or `rawData`. Publish a migration note before any breaking envelope change.
+
+The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), with phases and acceptance criteria in [V0.5_PLAN.md](V0.5_PLAN.md). Only the existing request-button/action callback path is live-verified; form and selection remain deferred.
 
 ### v0.6.0 — Controlled A2UI Runtime
 

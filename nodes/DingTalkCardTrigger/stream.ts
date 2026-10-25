@@ -11,6 +11,7 @@ interface Dependencies {
 	request: Request;
 	emit: (item: Json) => void;
 	warn: (message: string) => void;
+	includeRawData?: boolean;
 	socket?: (url: string) => Socket;
 	setTimer?: typeof setTimeout;
 	clearTimer?: typeof clearTimeout;
@@ -23,7 +24,7 @@ function parse(value: unknown): unknown {
 		return value;
 	}
 }
-export function normalizeCallback(frame: Json, receivedAt = new Date().toISOString()): Json {
+export function normalizeCallback(frame: Json, receivedAt = new Date().toISOString(), includeRawData = true): Json {
 	const headers = object(frame.headers) ? frame.headers : {};
 	const data = parse(frame.data);
 	const body = object(data) ? data : {};
@@ -37,14 +38,53 @@ export function normalizeCallback(frame: Json, receivedAt = new Date().toISOStri
 		messageId: headers.messageId,
 		receivedAt,
 		data: data ?? null,
-		rawData: frame.data ?? null,
 	};
+	if (includeRawData) result.rawData = frame.data ?? null;
 	if (object(content)) result.content = content;
-	const privateData = parse(body.cardPrivateData ?? details.cardPrivateData);
+	const directPrivate = body.cardPrivateData ?? details.cardPrivateData;
+	const officialAction = body.cardActionData ?? details.cardActionData;
+	const officialPrivate = object(officialAction) ? officialAction.cardPrivateData : undefined;
+	const privateData = parse(directPrivate ?? officialPrivate);
 	if (privateData !== undefined) result.cardPrivateData = privateData;
 	const params =
 		body.params ?? details.params ?? (object(privateData) ? privateData.params : undefined);
 	if (params !== undefined) result.params = parse(params);
+	const supplied = (key: string) => {
+		if (Object.hasOwn(body, key)) return body[key];
+		if (Object.hasOwn(details, key)) return details[key];
+		return undefined;
+	};
+	const selectedPrivate = privateData;
+	const normalizedInteraction: Record<string, unknown> = {};
+	const interactionType = body.type ?? details.type;
+	if (typeof interactionType === 'string') normalizedInteraction.type = interactionType;
+	if (object(selectedPrivate) && Array.isArray(selectedPrivate.actionIds) && selectedPrivate.actionIds.every((id) => typeof id === 'string')) normalizedInteraction.actionIds = selectedPrivate.actionIds;
+	if (params !== undefined) normalizedInteraction.params = parse(params);
+	const value = body.value ?? details.value;
+	if (value !== undefined) normalizedInteraction.value = parse(value);
+	const actor: Record<string, unknown> = {};
+	for (const key of ['userId', 'userIdType', 'openId', 'unionId', 'operatorId', 'operatorUserId']) {
+		const value = supplied(key);
+		if (value !== undefined) actor[key] = value;
+	}
+	const card: Record<string, unknown> = {};
+	const outTrackId = supplied('outTrackId');
+	if (outTrackId !== undefined) card.outTrackId = outTrackId;
+	const conversation: Record<string, unknown> = {};
+	for (const key of ['spaceId', 'spaceType']) {
+		const value = supplied(key);
+		if (value !== undefined) conversation[key] = value;
+	}
+	const correlation: Record<string, unknown> = {};
+	if (typeof headers.messageId === 'string' && headers.messageId) correlation.messageId = headers.messageId;
+	if (headers.topic === CARD_TOPIC) correlation.topic = headers.topic;
+	const normalized: Record<string, unknown> = { schemaVersion: '1', interaction: normalizedInteraction, actor, card, conversation, correlation };
+	const eventTime = headers.time;
+	if ((typeof eventTime === 'number' || (typeof eventTime === 'string' && eventTime.trim() !== '')) && Number.isFinite(Number(eventTime))) {
+		const date = new Date(Number(eventTime));
+		if (Number.isFinite(date.getTime())) normalized.eventTime = date.toISOString();
+	}
+	result.normalized = normalized;
 	// Preserve source names and values. These identifiers are not interchangeable.
 	for (const key of [
 		'outTrackId',
@@ -188,7 +228,7 @@ export function createCardStream(clientId: string, clientSecret: string, deps: D
 						// ACK must be queued before normalization/emit, never after downstream processing.
 						acknowledge(current, messageId, {});
 						attempts = 0;
-						deps.emit(normalizeCallback(frame));
+						deps.emit(normalizeCallback(frame, new Date().toISOString(), deps.includeRawData !== false));
 					}
 				} catch {
 					deps.warn('DingTalk Card Stream message handling failed; reconnecting.');

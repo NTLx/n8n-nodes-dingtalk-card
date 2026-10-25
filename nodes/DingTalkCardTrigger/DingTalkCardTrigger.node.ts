@@ -36,6 +36,13 @@ export class DingTalkCardTrigger implements INodeType {
 				type: 'notice',
 				default: '',
 			},
+			{
+				displayName: 'Include Raw Callback Data',
+				name: 'includeRawData',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to include the original callback serialization in rawData. Disabling reduces duplicate raw serialization but does not remove sensitive callback content.',
+			},
 		],
 	};
 
@@ -46,6 +53,7 @@ export class DingTalkCardTrigger implements INodeType {
 		try {
 			const stream = createCardStream(credential.appKey as string, credential.appSecret as string, {
 				request: (options) => this.helpers.httpRequest(options),
+				includeRawData: (this.getNodeParameter?.('includeRawData', true) ?? true) as boolean,
 				emit: (item) => this.emit([[{ json: item as INodeExecutionData['json'] }]]),
 				warn: (message) => this.logger.warn(message),
 			});
