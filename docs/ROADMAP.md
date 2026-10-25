@@ -97,7 +97,7 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 - No arbitrary code or HTML. Model-generated descriptors are acceptable only after deterministic validation.
 - No runtime DOM, business router/state/deduplication, or LLM behavior.
 
-**Candidate gates:** Pure mapping and node-level action policy are locally covered. Template import and visual/live acceptance remain pending: no reliable current official schemaVersion 3.0.0 NORMAL dynamic-form/loop asset could be verified, so no fabricated template is shipped.
+**Candidate gates:** Pure mapping and node-level action policy are locally covered. The official examples repository contains a current NORMAL schemaVersion 3.0.0 loop source that informs the profile. No transformed import asset is shipped before transformation-specific live import, client rendering, and callback acceptance. These remain production beta gates.
 
 **Non-goals / deferrals:** No arbitrary LLM-generated DingTalk request bodies, executable UI, or general-purpose visual builder.
 

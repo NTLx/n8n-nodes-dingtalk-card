@@ -175,6 +175,20 @@ test('A2UI maps deterministically to only fixed template variables and plain tex
 	});
 	assert.deepEqual(a2uiCardData({ version: '1', profile: 'universal-v1', title: 'T', tone: 'neutral', blocks: [{ type: 'text', text: 'x' }] }).cardParamMap.a2uiActionVisible, 'false');
 });
+test('A2UI rejects empty required display labels and preserves valid strings exactly', () => {
+	for (const descriptor of [
+		{ ...a2ui, title: '' },
+		{ ...a2ui, title: '   ' },
+		{ ...a2ui, blocks: [{ type: 'keyValue', label: '', value: 'v' }] },
+		{ ...a2ui, blocks: [{ type: 'keyValue', label: '  ', value: 'v' }] },
+		{ ...a2ui, actions: [{ type: 'request', id: 'go', label: '' }] },
+		{ ...a2ui, actions: [{ type: 'request', id: 'go', label: '  ' }] },
+	]) assert.throws(() => a2uiCardData(descriptor));
+	const mapped = a2uiCardData({ ...a2ui, title: ' Status ', blocks: [{ type: 'keyValue', label: ' Queue ', value: ' 2 ' }], actions: [{ type: 'request', id: 'go', label: ' Refresh ' }] }).cardParamMap;
+	assert.equal(mapped.a2uiTitle, ' Status ');
+	assert.equal(mapped.a2uiContent, ' Queue :  2 ');
+	assert.equal(mapped.a2uiActionLabel, ' Refresh ');
+});
 test('A2UI rejects unknown fields, versions, profiles, block/action types and malformed inputs', () => {
 	for (const value of [null, [], 'x', { ...a2ui, extra: 1 }, { ...a2ui, version: 1 }, { ...a2ui, version: '2' }, { ...a2ui, profile: 'other' }, { ...a2ui, tone: 'purple' }, { ...a2ui, blocks: [{ type: 'html', text: '<b>x</b>' }] }, { ...a2ui, blocks: [{ type: 'text', text: 'x', html: 'bad' }] }, { ...a2ui, actions: [{ type: 'url', id: 'x', label: 'x' }] }, { ...a2ui, actions: [{ type: 'request', id: 'x', label: 'x', url: 'https://example.invalid' }] }]) assert.throws(() => a2uiCardData(value));
 });
@@ -183,16 +197,30 @@ test('A2UI enforces every descriptor, block, list, action and parameter bound', 
 	for (const make of [() => one({ title: 't'.repeat(201) }), () => one({ summary: 's'.repeat(1001) }), () => one({ blocks: [] }), () => one({ blocks: Array(13).fill({ type: 'text', text: 'x' }) }), () => one({ blocks: [{ type: 'text', text: 'x'.repeat(1001) }] }), () => one({ blocks: [{ type: 'keyValue', label: 'l'.repeat(101), value: 'v' }] }), () => one({ blocks: [{ type: 'keyValue', label: 'l', value: 'v'.repeat(1001) }] }), () => one({ blocks: [{ type: 'list', items: [] }] }), () => one({ blocks: [{ type: 'list', items: Array(21).fill('x') }] }), () => one({ blocks: [{ type: 'list', items: ['x'.repeat(301)] }] }), () => one({ actions: Array(2).fill({ type: 'request', id: 'a', label: 'a' }) }), () => one({ actions: [{ type: 'request', id: 'bad id', label: 'a' }] }), () => one({ actions: [{ type: 'request', id: 'a', label: 'l'.repeat(101) }] }), () => one({ actions: [{ type: 'request', id: 'a', label: 'a', params: Object.fromEntries(Array.from({ length: 21 }, (_, i) => [`k${i}`, i])) }] }), () => one({ actions: [{ type: 'request', id: 'a', label: 'a', params: { 'bad key': 'x' } }] }), () => one({ actions: [{ type: 'request', id: 'a', label: 'a', params: { x: [] } }] })]) assert.throws(make);
 });
 test('A2UI accepts inclusive size and count maxima', () => {
-	const descriptor = { version: '1', profile: 'universal-v1', title: 't'.repeat(200), summary: 's'.repeat(1000), tone: 'danger', blocks: [
-		{ type: 'text', text: 'x'.repeat(1000) }, { type: 'keyValue', label: 'l'.repeat(100), value: 'v'.repeat(1000) },
-		{ type: 'list', items: Array(20).fill('i'.repeat(300)) },
-	], actions: [{ type: 'request', id: 'a'.repeat(64), label: 'b'.repeat(100), params: Object.fromEntries(Array.from({ length: 20 }, (_, i) => [`k${String(i).padStart(2, '0')}`, i])) }] };
-	assert.ok(a2uiCardData(descriptor).cardParamMap.a2uiContent.length > 0);
-	assert.equal(a2uiCardData({ ...descriptor, blocks: Array(12).fill({ type: 'text', text: '' }), actions: [] }).cardParamMap.a2uiActionVisible, 'false');
+	const base = { version: '1', profile: 'universal-v1', title: 't'.repeat(200), summary: 's'.repeat(1000), tone: 'danger' };
+	const listDescriptor = { ...base, blocks: [{ type: 'list', items: Array(20).fill('i'.repeat(300)) }], actions: [{ type: 'request', id: 'a'.repeat(64), label: 'b'.repeat(100), params: Object.fromEntries(Array.from({ length: 20 }, (_, i) => [`k${String(i).padStart(2, '0')}`, i])) }] };
+	assert.equal(a2uiCardData(listDescriptor).cardParamMap.a2uiContent.length, 6059);
+	assert.equal(a2uiCardData({ ...base, blocks: [{ type: 'text', text: 'x'.repeat(1000) }] }).cardParamMap.a2uiContent.length, 1000);
+	assert.equal(a2uiCardData({ ...base, blocks: [{ type: 'keyValue', label: 'l'.repeat(100), value: 'v'.repeat(1000) }] }).cardParamMap.a2uiContent.length, 1102);
+	assert.equal(a2uiCardData({ ...listDescriptor, blocks: Array(12).fill({ type: 'text', text: '' }), actions: [] }).cardParamMap.a2uiActionVisible, 'false');
 });
 test('A2UI compact params preserve permitted special object keys', () => {
 	const descriptor = JSON.parse('{"version":"1","profile":"universal-v1","title":"T","tone":"neutral","blocks":[{"type":"text","text":"x"}],"actions":[{"type":"request","id":"go","label":"Go","params":{"__proto__":"safe","constructor":1}}]}');
 	assert.equal(a2uiCardData(descriptor).cardParamMap.a2uiActionParams, '{"__proto__":"safe","constructor":1}');
+});
+test('A2UI enforces aggregate content and action parameter size boundaries', () => {
+	const base = { version: '1', profile: 'universal-v1', title: 'T', tone: 'neutral', blocks: [{ type: 'text', text: 'x' }] };
+	const action = (params) => [{ type: 'request', id: 'go', label: 'Go', params }];
+	const exactContent = Array(7).fill({ type: 'text', text: 'x'.repeat(1000) });
+	exactContent.push({ type: 'text', text: 'x'.repeat(993) });
+	assert.equal(a2uiCardData({ ...base, blocks: exactContent }).cardParamMap.a2uiContent.length, 8000);
+	assert.throws(() => a2uiCardData({ ...base, blocks: Array(8).fill({ type: 'text', text: 'x'.repeat(1000) }) }), /rendered content.*8000/);
+	assert.equal(a2uiCardData({ ...base, actions: action({ text: 'x'.repeat(1000) }) }).cardParamMap.a2uiActionParams.length, 1011);
+	assert.throws(() => a2uiCardData({ ...base, actions: action({ text: 'x'.repeat(1001) }) }), /string must be at most 1000/);
+	const exactParams = Object.fromEntries('abcdefgh'.split('').map((key, i) => [key, 'x'.repeat(i === 7 ? 943 : 1000)]));
+	assert.equal(a2uiCardData({ ...base, actions: action(exactParams) }).cardParamMap.a2uiActionParams.length, 8000);
+	const oversizedParams = { ...exactParams, h: 'x'.repeat(944) };
+	assert.throws(() => a2uiCardData({ ...base, actions: action(oversizedParams) }), /serialized action params.*8000/);
 });
 test('presentation maps all five families into string-valued cardParamMap deterministically', () => {
 	for (const [family, descriptor] of Object.entries(presentations)) {

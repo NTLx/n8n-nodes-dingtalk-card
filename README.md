@@ -117,7 +117,7 @@ See [verification record](docs/VERIFICATION.md) for release identity, public art
 
 ## Roadmap
 
-The additive `a2ui` Card Data Mode accepts the constrained `universal-v1` descriptor on Create & Deliver and Update and maps it to fixed string template variables. An action on Create requires **Enable Stream Callbacks**; Update does not enable callbacks. No A2UI template import asset is shipped because a current official importable NORMAL template could not be verified. See [the A2UI contract](docs/A2UI.md) and [v0.6 plan](docs/V0.6_PLAN.md).
+The additive `a2ui` Card Data Mode accepts the constrained `universal-v1` descriptor on Create & Deliver and Update and maps it to fixed string template variables. An action on Create requires **Enable Stream Callbacks**; Update does not enable callbacks. An official current NORMAL v3 loop example informs this profile, but no transformed import asset is shipped before live template/client/callback acceptance. See [the A2UI contract](docs/A2UI.md) and [v0.6 plan](docs/V0.6_PLAN.md).
 
 The direction is **Interactive-first, AI-when-needed**: use DingTalk cards for presentation and lightweight control of n8n automation, routing deterministic actions through n8n without an LLM. The version milestones, acceptance gates, non-goals and compatibility notes are in the [product and engineering roadmap](docs/ROADMAP.md).
 
