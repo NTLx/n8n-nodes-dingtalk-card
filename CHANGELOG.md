@@ -2,7 +2,7 @@
 
 ## 0.4.0-beta.2 (prerelease)
 
-Adds the fixed AI-host compatibility value `flowStatus: "3"` to Presentation `cardParamMap`, preserving all 13 Presentation contract fields. Real Mac DingTalk visual acceptance passed with the user-published AI-card template when `flowStatus=3` was supplied: all 13 Presentation fields and the summary rendered. No private template, group, or card identifiers are recorded. The package ships no DingTalk templates. npm `latest` remains stable at `0.3.0`.
+Adds the fixed AI-host compatibility value `flowStatus: "3"` to Presentation `cardParamMap`, preserving all 13 Presentation contract fields. Production beta.2 acceptance is complete: a true Presentation-mode status card rendered correctly on Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body, and the final live Create & Deliver regression passed for alert, status, digest, action, and report. The v0.4.0 milestone is ready for stable promotion; stable has not been published or promoted. No private identifiers are recorded. The package ships no DingTalk templates. npm `latest` remains stable at `0.3.0`.
 
 ## 0.4.0-beta.1 (published beta)
 

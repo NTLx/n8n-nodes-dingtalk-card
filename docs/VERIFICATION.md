@@ -1,5 +1,13 @@
 # Release verification record — 2026-10-24
 
+## v0.4.0-beta.2 production regression acceptance — 2026-10-25
+
+Production n8n was upgraded to `n8n-nodes-dingtalk-card@0.4.0-beta.2` through the supported Community Nodes lifecycle. A true Presentation-mode status card rendered correctly in Mac DingTalk with no workflow-supplied `flowStatus` and no JSON request body. This demonstrates that beta.2 automatically supplies the AI-card completed-state host metadata. The earlier visual probe using the final AI-card template showed all 13 Presentation fields, including `summary`, through one BaseText path.
+
+The final beta.2 live Create & Deliver regression passed for all five Presentation families: alert, status, digest, action, and report. Every n8n execution succeeded; each DingTalk response had top-level `success=true` and `deliverResults[].success=true`. Temporary test workflows were archived. No private template, group, card, workflow, execution, credential, or other private identifiers are recorded.
+
+Beta.2 production acceptance is complete and v0.4.0 is ready for stable promotion. Stable has **not** been published or promoted. The earlier beta.1 acceptance sections below are preserved as historical records; beta.2 acceptance above records the completed regression.
+
 ## v0.4.0-beta.2 real Mac DingTalk visual acceptance — 2026-10-25
 
 Real Mac DingTalk visual acceptance passed with the user's published AI-card template when `flowStatus=3` was supplied. All 13 Presentation contract fields and the summary rendered. The Presentation adapter supplies the fixed public `flowStatus: "3"` compatibility field while retaining the 13 contract variables. No private template IDs or group/card identifiers are recorded.
