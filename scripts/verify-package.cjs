@@ -33,6 +33,10 @@ assert.ok(
 );
 const recoveryExample = 'examples/stable-create-and-deliver.retry.json';
 assert.ok(
+	!pack.files.some(({ path }) => path.startsWith('templates/candidates/')),
+	'Template candidates must not be published',
+);
+assert.ok(
 	pack.files.some(({ path }) => path === recoveryExample),
 	`${recoveryExample} must be published`,
 );
