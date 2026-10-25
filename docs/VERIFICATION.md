@@ -31,6 +31,14 @@ Stable promotion preserves the production-accepted v0.5.0-beta.1 runtime without
 
 No production n8n installation was changed during stable release preparation or publication. No private identifiers or secrets are recorded.
 
+## v0.5.0 stable production post-install acceptance — 2026-10-25
+
+After stable publication, production n8n was upgraded through the supported Community Nodes lifecycle. The host package metadata confirmed `n8n-nodes-dingtalk-card` version **0.5.0**. The live node schema exposed Presentation mode and the Trigger `includeRawData` option with default `true`.
+
+A temporary two-node Manual Trigger → DingTalk Card workflow ran a true Presentation-mode status Create & Deliver smoke on stable 0.5.0. The n8n execution succeeded; the DingTalk response reported top-level `success=true` and `deliverResults[].success=true`. The temporary workflow was archived after the smoke. Production n8n and external runners were both **2.44.6**; `n8n_service` and `n8n_db` were healthy, runners were running, and `/healthz` and `/healthz/readiness` both returned HTTP 200.
+
+This is post-install smoke acceptance only. It does not repeat the beta.1 real-user-button Interaction E2E or expand the previously verified scope for Form or Selection interactions. No private template, group, card, workflow, execution, credential, outTrack, or other private identifiers are recorded.
+
 ## v0.4.0-beta.2 production regression acceptance — 2026-10-25
 
 Production n8n was upgraded to `n8n-nodes-dingtalk-card@0.4.0-beta.2` through the supported Community Nodes lifecycle. A true Presentation-mode status card rendered correctly in Mac DingTalk with no workflow-supplied `flowStatus` and no JSON request body. This demonstrates that beta.2 automatically supplies the AI-card completed-state host metadata. The earlier visual probe using the final AI-card template showed all 13 Presentation fields, including `summary`, through one BaseText path.
