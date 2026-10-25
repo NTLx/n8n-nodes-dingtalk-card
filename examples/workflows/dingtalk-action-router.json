@@ -1,0 +1,266 @@
+{
+  "name": "DingTalk Action Router",
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Card callback",
+      "type": "n8n-nodes-dingtalk-card.dingTalkCardTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "route",
+      "name": "Allowlisted action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        300,
+        0
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.normalized?.interaction?.actionIds?.[0] || \"\" }}",
+                    "rightValue": "ACK",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "deterministic_ack"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.normalized?.interaction?.actionIds?.[0] || \"\" }}",
+                    "rightValue": "SET_PRIORITY",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "parameterized_priority"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.normalized?.interaction?.actionIds?.[0] || \"\" }}",
+                    "rightValue": "ASK_WORKER",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "intelligent_handoff"
+            }
+          ]
+        },
+        "options": {},
+        "mode": "rules"
+      }
+    },
+    {
+      "id": "ack",
+      "name": "Deterministic contract",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        600,
+        -120
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "kind",
+              "name": "kind",
+              "value": "deterministic",
+              "type": "string"
+            },
+            {
+              "id": "action",
+              "name": "action",
+              "value": "ACK",
+              "type": "string"
+            },
+            {
+              "id": "outTrackId",
+              "name": "outTrackId",
+              "value": "={{ $json.outTrackId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {},
+        "mode": "manual"
+      }
+    },
+    {
+      "id": "param",
+      "name": "Parameterized contract",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        600,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "kind",
+              "name": "kind",
+              "value": "parameterized",
+              "type": "string"
+            },
+            {
+              "id": "action",
+              "name": "action",
+              "value": "SET_PRIORITY",
+              "type": "string"
+            },
+            {
+              "id": "value",
+              "name": "value",
+              "value": "={{ $json.normalized?.interaction?.params?.value || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "outTrackId",
+              "name": "outTrackId",
+              "value": "={{ $json.outTrackId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {},
+        "mode": "manual"
+      }
+    },
+    {
+      "id": "handoff",
+      "name": "Generic worker handoff",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        600,
+        120
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "kind",
+              "name": "kind",
+              "value": "intelligent-handoff",
+              "type": "string"
+            },
+            {
+              "id": "task",
+              "name": "task",
+              "value": "Interpret this approved request and return a proposed response for human/workflow validation.",
+              "type": "string"
+            },
+            {
+              "id": "callback",
+              "name": "callback",
+              "value": "={{ $json.normalized?.interaction || {} }}",
+              "type": "object"
+            },
+            {
+              "id": "outTrackId",
+              "name": "outTrackId",
+              "value": "={{ $json.outTrackId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {},
+        "mode": "manual"
+      }
+    }
+  ],
+  "connections": {
+    "Card callback": {
+      "main": [
+        [
+          {
+            "node": "Allowlisted action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Allowlisted action": {
+      "main": [
+        [
+          {
+            "node": "Deterministic contract",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parameterized contract",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generic worker handoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

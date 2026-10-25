@@ -22,6 +22,87 @@ function jsonFiles(directory) {
 }
 
 const examples = jsonFiles('examples');
+const workflowAssets = [
+	'examples/workflows/dingtalk-notification-hub.json',
+	'examples/workflows/dingtalk-report-hub.json',
+	'examples/workflows/dingtalk-action-router.json',
+];
+function assertWorkflowExpressions(value, path) {
+	if (Array.isArray(value)) {
+		value.forEach((entry, index) => assertWorkflowExpressions(entry, `${path}[${index}]`));
+		return;
+	}
+	if (value === null || typeof value !== 'object') {
+		if (typeof value === 'string' && value.startsWith('=')) {
+			assert.ok(value.startsWith('={{'), `${path} must use an n8n expression prefix`);
+			assert.ok(value.endsWith('}}'), `${path} must close the n8n expression delimiter`);
+		}
+		return;
+	}
+	for (const [key, entry] of Object.entries(value)) assertWorkflowExpressions(entry, `${path}.${key}`);
+}
+for (const path of workflowAssets) {
+	const workflow = JSON.parse(readFileSync(path, 'utf8'));
+	assert.equal(workflow.active, false, `${path} must remain inactive`);
+	assertWorkflowExpressions(workflow, path);
+	const expectedTypes = path.endsWith('action-router.json')
+		? ['n8n-nodes-base.set', 'n8n-nodes-base.set', 'n8n-nodes-base.set', 'n8n-nodes-base.switch', 'n8n-nodes-dingtalk-card.dingTalkCardTrigger']
+		: ['n8n-nodes-base.executeWorkflowTrigger', 'n8n-nodes-base.set', 'n8n-nodes-base.switch', 'n8n-nodes-dingtalk-card.dingTalkCard', 'n8n-nodes-dingtalk-card.dingTalkCard'];
+	assert.deepEqual(workflow.nodes.map(({ type }) => type).sort(), expectedTypes.sort());
+	for (const node of workflow.nodes) {
+		const expectedVersion = node.type === 'n8n-nodes-base.executeWorkflowTrigger' || node.type.startsWith('n8n-nodes-dingtalk-card.') ? (node.type === 'n8n-nodes-base.executeWorkflowTrigger' ? 1.3 : 1) : 3.5;
+		assert.equal(node.typeVersion, expectedVersion, `${path} ${node.name} typeVersion`);
+	}
+	if (path.includes('hub')) {
+		const trigger = workflow.nodes.find(({ type }) => type === 'n8n-nodes-base.executeWorkflowTrigger');
+		assert.equal(trigger.parameters.inputSource, 'workflowInputs');
+		assert.ok(trigger.parameters.workflowInputs.values.length > 0);
+		for (const input of trigger.parameters.workflowInputs.values) {
+			assert.deepEqual(Object.keys(input).sort(), ['name', 'type']);
+			assert.equal(input.type, 'string');
+		}
+		const create = workflow.nodes.find(({ name }) => name === 'Create A2UI card');
+		const update = workflow.nodes.find(({ name }) => name === 'Replace card with A2UI descriptor');
+		assert.equal(create.parameters.operation, 'createAndDeliver');
+		assert.equal(create.parameters.cardDataMode, 'a2ui');
+		assert.equal(update.parameters.operation, 'update');
+		assert.equal(update.parameters.cardDataMode, 'a2ui');
+		assert.equal(update.parameters.updateByKey, false);
+		assert.ok(workflow.nodes.some(({ name }) => name === 'Create or update only'));
+		assert.ok(workflow.connections['Create or update only'].main.length === 2);
+		const switchNode = workflow.nodes.find(({ name }) => name === 'Create or update only');
+		assert.equal(switchNode.parameters.mode, 'rules');
+		assert.equal(workflow.nodes.find(({ type }) => type === 'n8n-nodes-base.set').parameters.mode, 'manual');
+		const triggerName = trigger.name;
+		for (const node of workflow.nodes.filter(({ type }) => type === 'n8n-nodes-dingtalk-card.dingTalkCard')) {
+			assert.equal(node.credentials, undefined, 'credential must be bound after import');
+			for (const key of ['outTrackId']) assert.ok(node.parameters[key].includes(`$('${triggerName}')`));
+			if (node.parameters.operation === 'createAndDeliver') {
+				assert.ok(node.parameters.cardTemplateId.includes(`$('${triggerName}')`));
+				assert.ok(node.parameters.spaceId.includes(`$('${triggerName}')`));
+			}
+		}
+		const descriptor = workflow.nodes.find(({ type }) => type === 'n8n-nodes-base.set').parameters.assignments.assignments.find(({ name }) => name === 'descriptor').value;
+		assert.ok(descriptor.startsWith('={{ '));
+		assert.ok(descriptor.includes(`$('${triggerName}')`));
+		if (path.endsWith('report-hub.json')) assert.ok(descriptor.includes('detailText'));
+		else assert.ok(descriptor.includes('status'));
+	}
+	if (path.endsWith('action-router.json')) {
+		const switchNode = workflow.nodes.find(({ type }) => type === 'n8n-nodes-base.switch');
+		assert.equal(switchNode.parameters.mode, 'rules');
+		for (const node of workflow.nodes.filter(({ type }) => type === 'n8n-nodes-base.set'))
+			assert.equal(node.parameters.mode, 'manual');
+		const serialized = JSON.stringify(switchNode.parameters);
+		assert.ok(serialized.includes('normalized?.interaction?.actionIds?.[0]'));
+		assert.doesNotMatch(serialized, /workflowId|executeWorkflow|httpRequest|command|code/i);
+		assert.ok(JSON.stringify(workflow).includes('normalized?.interaction?.params'));
+		assert.ok(!JSON.stringify(workflow).includes('normalized?.action'));
+		assert.deepEqual(switchNode.parameters.rules.values.map(({ conditions }) => conditions.conditions[0].rightValue), ['ACK', 'SET_PRIORITY', 'ASK_WORKER']);
+		assert.equal(workflow.nodes.find(({ name }) => name === 'Generic worker handoff').typeVersion, 3.5);
+		assert.equal(workflow.connections['Allowlisted action'].main.length, 3, 'unknown actions have no matching route');
+	}
+}
 function assertNoCredentialFields(value, path) {
 	if (Array.isArray(value)) {
 		value.forEach((entry, index) => assertNoCredentialFields(entry, `${path}[${index}]`));
@@ -129,6 +210,8 @@ assert.ok(
 	pack.files.some(({ path }) => path === 'docs/AUTOMATION_PRESENTATION.md'),
 	'Automation Presentation guidance must be published',
 );
+assert.ok(pack.files.some(({ path }) => path === 'docs/V1.0_PLAN.md'), 'v1.0 candidate plan must be published');
+for (const path of workflowAssets) assert.ok(pack.files.some(({ path: packagedPath }) => packagedPath === path), `${path} must be published`);
 assert.equal(
 	JSON.parse(readFileSync(join(root, recoveryExample), 'utf8')).createAndDeliver.parameters.operation,
 	'createAndDeliver',

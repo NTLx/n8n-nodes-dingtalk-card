@@ -1,0 +1,254 @@
+{
+  "name": "DingTalk Report Hub",
+  "nodes": [
+    {
+      "id": "manual",
+      "name": "Run report",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "name": "summary",
+              "type": "string"
+            },
+            {
+              "name": "highlights",
+              "type": "string"
+            },
+            {
+              "name": "detailText",
+              "type": "string"
+            },
+            {
+              "name": "operation",
+              "type": "string"
+            },
+            {
+              "name": "cardTemplateId",
+              "type": "string"
+            },
+            {
+              "name": "spaceId",
+              "type": "string"
+            },
+            {
+              "name": "outTrackId",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "contract",
+      "name": "Report card contract",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        280,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "title",
+              "name": "title",
+              "value": "={{ $json.title || \"Report summary\" }}",
+              "type": "string"
+            },
+            {
+              "id": "summary",
+              "name": "summary",
+              "value": "={{ $json.summary || \"Key findings go here.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "content",
+              "name": "content",
+              "value": "={{ $json.highlights || \"Concise highlights only; keep full report at the destination.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "detailText",
+              "name": "detailText",
+              "value": "={{ $json.detailText || \"Details: replace with access-controlled destination text.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "profile",
+              "name": "profile",
+              "value": "universal-v1",
+              "type": "string"
+            },
+            {
+              "id": "descriptor",
+              "name": "descriptor",
+              "value": "={{ { version: '1', profile: 'universal-v1', title: $('Run report').item.json.title || 'Report summary', summary: $('Run report').item.json.summary || 'Key findings go here.', tone: 'info', blocks: [{ type: 'text', text: $('Run report').item.json.highlights || 'Concise highlights only.' }, { type: 'text', text: $('Run report').item.json.detailText || 'Details are plain text; provide an access-controlled destination reference.' }] } }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {},
+        "mode": "manual"
+      }
+    },
+    {
+      "id": "operation-switch",
+      "name": "Create or update only",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        560,
+        0
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Run report').item.json.operation || '' }}",
+                    "rightValue": "create",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Run report').item.json.operation || '' }}",
+                    "rightValue": "update",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {},
+        "mode": "rules"
+      }
+    },
+    {
+      "id": "create-card",
+      "name": "Create A2UI card",
+      "type": "n8n-nodes-dingtalk-card.dingTalkCard",
+      "typeVersion": 1,
+      "position": [
+        840,
+        -120
+      ],
+      "parameters": {
+        "operation": "createAndDeliver",
+        "inputMode": "form",
+        "cardTemplateId": "={{ $('Run report').item.json.cardTemplateId || '' }}",
+        "cardDataMode": "a2ui",
+        "a2uiDescriptor": "={{ $json.descriptor }}",
+        "target": "group",
+        "spaceId": "={{ $('Run report').item.json.spaceId || '' }}",
+        "outTrackId": "={{ $('Run report').item.json.outTrackId || '' }}",
+        "enableStreamCallbacks": false
+      }
+    },
+    {
+      "id": "update-card",
+      "name": "Replace card with A2UI descriptor",
+      "type": "n8n-nodes-dingtalk-card.dingTalkCard",
+      "typeVersion": 1,
+      "position": [
+        840,
+        120
+      ],
+      "parameters": {
+        "operation": "update",
+        "inputMode": "form",
+        "cardDataMode": "a2ui",
+        "a2uiDescriptor": "={{ $json.descriptor }}",
+        "outTrackId": "={{ $('Run report').item.json.outTrackId || '' }}",
+        "updateByKey": false
+      }
+    }
+  ],
+  "connections": {
+    "Run report": {
+      "main": [
+        [
+          {
+            "node": "Report card contract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or update only": {
+      "main": [
+        [
+          {
+            "node": "Create A2UI card",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace card with A2UI descriptor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report card contract": {
+      "main": [
+        [
+          {
+            "node": "Create or update only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-beta.1 (convergence candidate)
+
+- Converge the validated presentation, request-action interaction, controlled A2UI, and reliability capabilities with reusable inactive Notification Hub, Report Hub, and Action Router examples. Workflow assets use typed inputs, explicit operation/action allowlists, A2UI Create and replacement Update, and contain no bound credentials or private target identifiers.
+- Document evidence and outstanding connected-instance gates in [the v1.0 plan](docs/V1.0_PLAN.md). Request-action remains the supported callback path; Form/Selection remain deferred; callback dedupe remains process-local; no durable exactly-once or Create-upsert guarantee is made.
+- Permit only exact `v1.0.0-beta.1` beta-channel release-ref validation. Stable `latest` remains `0.9.0`; no stable v1.0 release is enabled.
+
 ## 0.9.0 (stable)
 
 Promotes v0.9.0-beta.1 with no runtime implementation changes. Post-release acceptance on the upgraded v0.9 path additionally passed one real Stream request-action callback after workflow deactivation/reactivation, normalized action and correlation fields, and downstream same-card replacement Update; the temporary listener was unpublished and verified inactive. Deduplication remains process-local only, with no durable exactly-once claim. Form and Selection remain deferred. The npm `beta` channel remains on `0.9.0-beta.1`. See [release verification](docs/VERIFICATION.md).

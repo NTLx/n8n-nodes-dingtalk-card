@@ -1,0 +1,254 @@
+{
+  "name": "DingTalk Notification Hub",
+  "nodes": [
+    {
+      "id": "manual",
+      "name": "Run notification",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "name": "summary",
+              "type": "string"
+            },
+            {
+              "name": "content",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "operation",
+              "type": "string"
+            },
+            {
+              "name": "cardTemplateId",
+              "type": "string"
+            },
+            {
+              "name": "spaceId",
+              "type": "string"
+            },
+            {
+              "name": "outTrackId",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "contract",
+      "name": "Notification contract",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        280,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "title",
+              "name": "title",
+              "value": "={{ $json.title || \"Notification\" }}",
+              "type": "string"
+            },
+            {
+              "id": "summary",
+              "name": "summary",
+              "value": "={{ $json.summary || \"Replace with concise status.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "content",
+              "name": "content",
+              "value": "={{ $json.content || \"Provide safe, concise details.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "name": "status",
+              "value": "={{ $json.status || \"informational\" }}",
+              "type": "string"
+            },
+            {
+              "id": "profile",
+              "name": "profile",
+              "value": "universal-v1",
+              "type": "string"
+            },
+            {
+              "id": "descriptor",
+              "name": "descriptor",
+              "value": "={{ { version: '1', profile: 'universal-v1', title: $('Run notification').item.json.title || 'Notification', summary: $('Run notification').item.json.summary || 'Replace with concise status.', tone: 'info', blocks: [{ type: 'keyValue', label: 'Status', value: $('Run notification').item.json.status || 'informational' }, { type: 'text', text: $('Run notification').item.json.content || 'Provide safe, concise details.' }] } }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {},
+        "mode": "manual"
+      }
+    },
+    {
+      "id": "operation-switch",
+      "name": "Create or update only",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        560,
+        0
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Run notification').item.json.operation || '' }}",
+                    "rightValue": "create",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Run notification').item.json.operation || '' }}",
+                    "rightValue": "update",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {},
+        "mode": "rules"
+      }
+    },
+    {
+      "id": "create-card",
+      "name": "Create A2UI card",
+      "type": "n8n-nodes-dingtalk-card.dingTalkCard",
+      "typeVersion": 1,
+      "position": [
+        840,
+        -120
+      ],
+      "parameters": {
+        "operation": "createAndDeliver",
+        "inputMode": "form",
+        "cardTemplateId": "={{ $('Run notification').item.json.cardTemplateId || '' }}",
+        "cardDataMode": "a2ui",
+        "a2uiDescriptor": "={{ $json.descriptor }}",
+        "target": "group",
+        "spaceId": "={{ $('Run notification').item.json.spaceId || '' }}",
+        "outTrackId": "={{ $('Run notification').item.json.outTrackId || '' }}",
+        "enableStreamCallbacks": false
+      }
+    },
+    {
+      "id": "update-card",
+      "name": "Replace card with A2UI descriptor",
+      "type": "n8n-nodes-dingtalk-card.dingTalkCard",
+      "typeVersion": 1,
+      "position": [
+        840,
+        120
+      ],
+      "parameters": {
+        "operation": "update",
+        "inputMode": "form",
+        "cardDataMode": "a2ui",
+        "a2uiDescriptor": "={{ $json.descriptor }}",
+        "outTrackId": "={{ $('Run notification').item.json.outTrackId || '' }}",
+        "updateByKey": false
+      }
+    }
+  ],
+  "connections": {
+    "Run notification": {
+      "main": [
+        [
+          {
+            "node": "Notification contract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or update only": {
+      "main": [
+        [
+          {
+            "node": "Create A2UI card",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace card with A2UI descriptor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notification contract": {
+      "main": [
+        [
+          {
+            "node": "Create or update only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

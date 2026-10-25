@@ -125,6 +125,8 @@ The additive `a2ui` Card Data Mode accepts the constrained `universal-v1` descri
 
 The direction is **Interactive-first, AI-when-needed**: use DingTalk cards for presentation and lightweight control of n8n automation, routing deterministic actions through n8n without an LLM. The version milestones, acceptance gates, non-goals and compatibility notes are in the [product and engineering roadmap](docs/ROADMAP.md).
 
+The v1.0.0-beta.1 convergence candidate adds inactive, credential-unbound [Notification Hub, Report Hub, and Action Router workflow assets](examples/workflows/). Hubs take typed non-secret inputs, allow only explicit Create/Update operations, and use the accepted A2UI `universal-v1` path; Update replaces card data. Bind your own credential after import and supply your published template, target, and correlation values. The Action Router routes only explicit normalized action IDs; fixed actions are LLM-free and an optional branch emits a generic external Worker handoff. See the [v1.0 candidate plan and remaining gates](docs/V1.0_PLAN.md).
+
 The durable architecture, scope boundaries, controlled A2UI contract, and anti-drift decision rules are in the [design baseline](docs/DESIGN.md); the roadmap is subordinate to it.
 
 Historical milestones: **v0.1.0-beta.1** introduced outbound Card Platform lifecycle operations; **v0.2.0-beta.1** added the narrow Stream callback trigger and explicit callback opt-in, with one real request-button path verified; **v0.3.0-beta.1** added Form String/JSON values, normalized outbound error details and stable-ID recovery guidance, and **v0.3.0** is its stable release. Stable acceptance evidence and limits are recorded in [verification](docs/VERIFICATION.md#v030-stable-release-2026-10-24).
