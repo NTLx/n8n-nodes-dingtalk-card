@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0 (stable)
+
+Promotes the production-validated v0.7.0-beta.1 Event Handling & Reliability behavior without runtime changes. Connected-instance acceptance covered Create & Deliver, Trigger deactivation/reactivation, a real callback after reactivation, normalized event correlation, and card Update. Exact-message duplicate suppression remains validated by deterministic tests; live duplicate redelivery was not forced. The npm `beta` channel remains on `0.7.0-beta.1`. See [release verification](docs/VERIFICATION.md).
+
 ## 0.7.0-beta.1 (published prerelease)
 
 - Suppress duplicate Stream callbacks by `messageId` within one active Trigger lifecycle; duplicates still receive the immediate receipt ACK. Cache is bounded (10,000 entries), TTL-based (10 minutes), and explicitly not durable exactly-once across restart or instances.

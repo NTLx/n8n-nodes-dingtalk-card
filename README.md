@@ -2,13 +2,13 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**v0.6.0 is the stable release.** It promotes the production-accepted v0.6.0-beta.3 A2UI action callback params normalization without runtime changes. Connected-instance acceptance covered card delivery, the real callback, normalized params, and a successful A2UI Update. This does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n. See [release verification](docs/VERIFICATION.md).
+**v0.7.0 is the stable release.** It promotes the production-validated v0.7.0-beta.1 Event Handling & Reliability behavior without runtime changes. Connected-instance acceptance covered Create & Deliver, Trigger deactivation/reactivation, a real callback after reactivation, normalized event correlation, and card Update. Exact-message duplicate suppression is covered by deterministic tests; live duplicate redelivery was not forced. This does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n. See [release verification](docs/VERIFICATION.md).
 
 The published **v0.4.0-beta.2** established the functional baseline for stable v0.4.0. A true Presentation-mode status card rendered correctly in Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body; the final live Create & Deliver regression passed for alert, status, digest, action, and report. The package ships no DingTalk templates. See the [presentation contract](docs/PRESENTATION.md) and [release verification](docs/VERIFICATION.md).
 
 The published **v0.5.0-beta.1** remains available on the beta channel and is the functional baseline for stable v0.5.0. Its optional normalized Trigger envelope passed production acceptance for one real request-button/action-callback path, with existing downstream expressions continuing to work. Form and Selection remain unverified and deferred. See [release verification](docs/VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
 
-The npm `latest` dist-tag resolves to `0.6.0`; `beta` remains on `0.6.0-beta.3`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
+The npm `latest` dist-tag resolves to `0.7.0`; `beta` remains on `0.7.0-beta.1`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
@@ -109,7 +109,7 @@ npm run verify:package
 npm audit --omit=dev --audit-level=high
 ```
 
-Uses the official [n8n node CLI](https://docs.n8n.io/connect/create-nodes/build-your-node/using-the-n8n-node-tool.md) and current starter conventions, established in place without example nodes. The CLI is pinned to **0.54.2 beta** because the registry's stable 0.53.4 pins vulnerable Handlebars 4.7.9; the beta includes the patched upstream dependency without overrides. No CLI release script is provided: `n8n-node release` would publish to npm, which this beta process must not do. Tests use Node's built-in runner, mocked HTTP/sockets and real local TLS WebSocket fixtures (OpenSSL is required for tests). No live credentials are needed.
+Uses the official [n8n node CLI](https://docs.n8n.io/connect/create-nodes/build-your-node/using-the-n8n-node-tool.md) and current starter conventions, established in place without example nodes. The CLI is pinned to **0.54.2 beta** because the registry's stable 0.53.4 pins vulnerable Handlebars 4.7.9; the beta includes the patched upstream dependency without overrides. Releases use the repository's Trusted Publisher workflow; `n8n-node release` is not used. Tests use Node's built-in runner, mocked HTTP/sockets and real local TLS WebSocket fixtures (OpenSSL is required for tests). No live credentials are needed.
 
 Programmatic execution is intentional: shared token handling, strict 2xx/partial-delivery failure checks, generated identifier propagation and sanitized item-level errors are implemented once, separated from pure payload builders. The current custom credential-test context in `n8n-workflow` exposes only the legacy `request` helper; that single call has a documented lint exception and sanitized error boundary. Main execution uses `httpRequest`. Pure helper errors are converted to `NodeOperationError` at the execution boundary.
 

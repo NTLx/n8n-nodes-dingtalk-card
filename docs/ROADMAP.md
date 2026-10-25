@@ -4,7 +4,7 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap records the v0.4.0 onward milestones, including later releases documented below. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-The repository candidate version is **0.7.0-beta.1**; it is not published or tagged. v0.6.0 is stable and the public beta channel remains documented in the [verification record](VERIFICATION.md). The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0 promotes its beta.1 baseline without runtime changes. Its production acceptance covers only the request-button/action-callback path; Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
+v0.7.0 is the current stable release; beta.1 production and publication evidence is in the [verification record](VERIFICATION.md). v0.6.0 and earlier milestones remain documented below. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0 promotes its beta.1 baseline without runtime changes. Its production acceptance covers only the request-button/action-callback path; Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
 
 ## Vision and product principle
 
@@ -103,9 +103,9 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 
 **Compatibility and migration:** Additive `a2ui` Card Data Mode for Create & Deliver and Update. Preserve Form/JSON/Presentation behavior and the low-level raw JSON expert path. Update does not enable callbacks.
 
-### v0.7.0 — Event Handling & Reliability (current candidate scope)
+### v0.7.0 — Event Handling & Reliability (stable release)
 
-**Objective:** Make common card-to-automation loops reusable while keeping business logic in n8n.
+**Objective:** Make callback handling, reconnect lifecycle, outbound retry decisions, timeouts, and correlation predictable while keeping business logic in n8n.
 
 **Main deliverables:**
 
@@ -114,9 +114,9 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 - Bounded external request timeouts and sanitized operation/phase/retry/ambiguity/correlation error details.
 - Automatic retry only for an explicit invalid-token write rejection; ambiguous writes, including Create timeouts, are never retried by the node.
 
-**Acceptance gates:** Unit coverage for duplicate ACK/emit, TTL and bounded eviction, reconnect lifecycle, retry safety, timeout/error shape and correlation. Connected-instance validation must confirm callback replay behavior and operational reconnect/deactivation on the supported n8n runtime before stable promotion.
+**Acceptance gates:** Unit coverage for duplicate ACK/emit, TTL and bounded eviction, reconnect lifecycle, retry safety, timeout/error shape and correlation passed. Connected-instance validation passed for Create & Deliver, Trigger deactivation/reactivation, a real callback after reactivation, normalized correlation, and card Update. Exact-message duplicate suppression is unit-tested; live duplicate redelivery was not forced.
 
-**Non-goals / deferrals:** Do not hard-code business automation into the node. The kit does not claim delivery guarantees beyond the underlying node/platform behavior, and does not require ChatGPT for Direct actions.
+**Non-goals / deferrals:** No durable or distributed exactly-once guarantee, no persistent deduplication store, and no hard-coded business automation. Workflows own durable business idempotency.
 
 **Compatibility and migration:** Additive event/result/error fields only. Dedupe is bounded in-process and expires; it is not durable exactly-once across restart or multiple instances. Existing node identifiers and fields remain usable.
 
@@ -135,7 +135,7 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 
 **Non-goals / deferrals:** These are patterns and examples, not built-in external-service integrations or a generic content ingestion suite.
 
-**Compatibility and migration:** Build on the v0.4 presentation contract and v0.7 workflow kit. Keep existing raw JSON recipes available.
+**Compatibility and migration:** Build on the v0.4 presentation contract and v0.7 reliability primitives. Keep existing raw JSON recipes available.
 
 ### v0.9.0 — Production Hardening
 
