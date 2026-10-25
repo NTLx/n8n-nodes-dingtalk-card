@@ -1,5 +1,19 @@
 # Release verification record — 2026-10-24
 
+## v1.0.0-beta.1 connected-instance acceptance — 2026-10-25
+
+The maintainer completed the supported n8n Community Nodes UI upgrade to `1.0.0-beta.1` on the connected n8n 2.44.x instance. The upgraded instance loaded the DingTalk Card and DingTalk Card Trigger v1 schemas, including controlled A2UI and normalized interaction fields. The package-list Public API endpoint remained outside the available API-key permission boundary, so installed-version acceptance is based on the user-operated UI upgrade plus loaded runtime behavior rather than an internal package-database read.
+
+Three packaged reusable workflow patterns were instantiated as temporary acceptance copies with the operator's existing credential bound only inside n8n. Notification Hub and Report Hub each received typed sub-workflow input and completed a real group A2UI Create & Deliver followed by same-card replacement Update (`updateByKey=false`), with every external operation returning success. A separate direct-message gate completed A2UI Create & Deliver to the tested staff target and same-card replacement Update successfully. No private target, card, user, workflow, execution, conversation, message, or credential identifiers are recorded here.
+
+Action Router was first exercised with simulated Trigger input: an unknown action produced no downstream execution; `ACK` produced the deterministic contract; `SET_PRIORITY` preserved the allowlisted parameter value; and `ASK_WORKER` produced only the generic external-Worker handoff contract without invoking or hardwiring an owner-specific AI system. The saved Router was then published, unpublished, and republished. A real card request-action click after that deactivate/reactivate cycle produced one successful Stream callback. The normalized envelope exposed action `ACK` and params `{gate: v1-beta-action-router, source: 1.0.0-beta.1}`, and the deterministic branch completed successfully. The acceptance card did not change visually because the generic Router intentionally emits a contract and does not own card-update policy. The temporary listener was unpublished after verification.
+
+This connected acceptance closes the v1.0 reusable Hub/Router, group/DM, request-action callback, and Trigger lifecycle gates. Stream/Finalize transport behavior remains covered by earlier accepted production evidence and regression tests; `1.0.0-beta.1` introduced no plugin runtime behavior relative to those paths. Form and Selection remain deferred. Callback duplicate suppression remains process-local only; no durable exactly-once or Create-upsert guarantee is claimed.
+
+## v1.0.0 stable release preparation — 2026-10-25
+
+Stable promotion changes package version metadata, exact stable release-ref/publish policy, and acceptance documentation only. No plugin runtime source or dependency behavior changes relative to `1.0.0-beta.1`. The beta candidate already passed Node 24 quality CI, packed-artifact compatibility with `n8n-workflow` 2.44.0 and 2.44.2, production dependency audit, public npm provenance/tarball verification, and the connected-instance acceptance above. Stable publication must still pass the exact `v1.0.0` main CI, tag CI, Trusted Publisher/OIDC publish job, public npm dist-tag/tarball/provenance verification, and canonical GitHub release-asset identity checks before it is considered released.
+
 ## v0.9.0 stable production acceptance — 2026-10-25
 
 The maintainer reports that the parent ChatGPT independently observed the user's UI installation of `0.9.0-beta.1` on n8n **2.44.6**. Installed package metadata reported `0.9.0-beta.1`; `/healthz` and `/healthz/readiness` returned HTTP 200, the n8n service was healthy, and task runners were running. No production internals were accessed or changed for this repository release work; package installation actions remain user-operated through the n8n UI.

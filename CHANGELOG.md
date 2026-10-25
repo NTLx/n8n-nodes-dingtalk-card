@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0 (stable)
+
+Promotes `1.0.0-beta.1` after connected-instance acceptance of the reusable workflow layer and supported upgrade path. No plugin runtime implementation changes are added relative to beta.1. On the upgraded n8n 2.44.x instance, Notification Hub and Report Hub each completed real group A2UI Create plus same-card replacement Update; direct-message A2UI Create plus replacement Update also succeeded. Action Router accepted a real normalized `ACK` callback after Trigger deactivate/reactivate, while simulated gates covered deterministic `ACK`, parameterized `SET_PRIORITY`, generic `ASK_WORKER` handoff, and fail-closed unknown actions. The temporary listener was unpublished after acceptance. Form and Selection remain deferred; callback dedupe remains process-local; no durable exactly-once or Create-upsert guarantee is made. Stable `latest` moves to `1.0.0`; npm `beta` remains on `1.0.0-beta.1`.
+
 ## 1.0.0-beta.1 (convergence candidate)
 
 - Converge the validated presentation, request-action interaction, controlled A2UI, and reliability capabilities with reusable inactive Notification Hub, Report Hub, and Action Router examples. Workflow assets use typed inputs, explicit operation/action allowlists, A2UI Create and replacement Update, and contain no bound credentials or private target identifiers.

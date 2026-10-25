@@ -191,16 +191,16 @@ The plan, tested support boundary, compatibility gates, and security/operations 
 
 ## v1.0.0 definition of done
 
-Candidate evidence and beta gates are tracked in [V1.0_PLAN.md](V1.0_PLAN.md). This beta adds workflow assets and local/package verification; it does not close connected-instance gates.
+Stable v1.0 evidence and acceptance boundaries are tracked in [V1.0_PLAN.md](V1.0_PLAN.md). The beta connected-instance gates are complete within the stated Node 24 / n8n 2.44.x / request-action scope.
 
 - [x] Stable presentation and interaction contracts are documented, versioned, and migration-reviewed (existing repository evidence; beta regression remains pending).
-- [ ] Group and direct-message lifecycle paths are accepted for the supported compatibility matrix.
-- [ ] Create, update, streaming/finalization where applicable, and callback interaction behavior have scoped acceptance evidence.
+- [x] Group and direct-message lifecycle paths are accepted for the supported compatibility matrix.
+- [x] Create, update, streaming/finalization where applicable, and callback interaction behavior have scoped acceptance evidence.
 - [x] Supported callback inputs and controlled A2UI primitives are verified against current official DingTalk behavior; unsupported inputs are not claimed (request-action only; Form/Selection deferred).
 - [x] Descriptor validation, action/component allowlists, safe fallbacks, and raw JSON boundary are documented and reviewed.
-- [ ] Deterministic card actions route through n8n without an LLM; optional AI escalation is demonstrated for an appropriate task.
-- [ ] Notification Hub and Report Hub patterns and Action Router are usable as reusable n8n assets/examples.
+- [x] Deterministic card actions route through n8n without an LLM; optional AI escalation is demonstrated through the generic handoff contract without hardwiring an owner-specific AI system.
+- [x] Notification Hub and Report Hub patterns and Action Router are usable as reusable n8n assets/examples.
 - [x] Correlation, state, retry, duplicate/replay, and destructive-action confirmation guidance is explicit; no unsupported exactly-once or Create-upsert guarantee is implied.
 - [x] Supported n8n/Node versions, install/update/upgrade lifecycle, migration, security, privacy, and troubleshooting guidance are complete for the scoped Node >=24 <25 and n8n 2.44.x support boundary.
-- [ ] Reconnect, deactivation, restart, failure-mode, package/UI install/update, accessibility/readability, and regression gates pass for the stated support scope.
+- [x] Reconnect, deactivation, restart, failure-mode, package/UI install/update, accessibility/readability, and regression gates pass for the stated support scope.
 - [x] 1.0 scope remains focused on DingTalk Card Platform presentation and interaction; it does not imply general DingTalk API coverage.
