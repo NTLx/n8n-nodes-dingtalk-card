@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
-      - run: mkdir runtime-check && cd runtime-check && npm init -y && npm install --legacy-peer-deps --omit=dev --no-audit --no-fund ../n8n-nodes-dingtalk-card-*.tgz n8n-workflow@${{ matrix.n8n-workflow }}
+      - run: mkdir runtime-check && cd runtime-check && npm init -y && npm install --legacy-peer-deps --ignore-scripts --omit=dev --no-audit --no-fund ../n8n-nodes-dingtalk-card-*.tgz n8n-workflow@${{ matrix.n8n-workflow }}
       - run: cd runtime-check && EXPECTED_N8N_WORKFLOW=${{ matrix.n8n-workflow }} node ../scripts/verify-runtime-artifact.cjs node_modules/n8n-nodes-dingtalk-card
   quality:
     runs-on: ubuntu-latest
