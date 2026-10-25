@@ -141,6 +141,8 @@ The beta.2 correction uses the connected-instance-accepted A2UI `universal-v1` r
 
 ### v0.9.0 — Production Hardening
 
+The candidate plan, tested support boundary, compatibility gates, and security/operations review are in [V0.9_PLAN.md](V0.9_PLAN.md) and [COMPATIBILITY_SECURITY_OPERATIONS.md](COMPATIBILITY_SECURITY_OPERATIONS.md). This stage does not include a live production install or publication.
+
 **Objective:** Establish release, compatibility, security, lifecycle, and operational confidence for a stable contract.
 
 **Main deliverables:**

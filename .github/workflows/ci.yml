@@ -5,6 +5,24 @@ on:
 permissions:
   contents: read
 jobs:
+  compatibility:
+    needs: quality
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20.19.0', '22', '24']
+        n8n-workflow: ['2.44.0', '2.44.2']
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v6
+        with:
+          name: packed-plugin
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+      - run: mkdir runtime-check && cd runtime-check && npm init -y && npm install --omit=dev --no-audit --no-fund ../n8n-nodes-dingtalk-card-*.tgz n8n-workflow@${{ matrix.n8n-workflow }}
+      - run: cd runtime-check && EXPECTED_N8N_WORKFLOW=${{ matrix.n8n-workflow }} node ../scripts/verify-runtime-artifact.cjs node_modules/n8n-nodes-dingtalk-card
   quality:
     runs-on: ubuntu-latest
     steps:
@@ -20,3 +38,11 @@ jobs:
       - run: npm test
       - run: npm run verify:package
       - run: npm audit --omit=dev --audit-level=high
+      - run: node scripts/verify-release-ref.cjs --self-test
+      - run: GITHUB_REF_NAME=v0.9.0-beta.1 node scripts/verify-release-ref.cjs
+      - run: npm pack --pack-destination packed-artifact
+      - uses: actions/upload-artifact@v6
+        with:
+          name: packed-plugin
+          path: packed-artifact/*.tgz
+          if-no-files-found: error

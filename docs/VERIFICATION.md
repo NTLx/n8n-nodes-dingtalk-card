@@ -1,5 +1,13 @@
 # Release verification record — 2026-10-24
 
+## v0.9.0-beta.1 local production-hardening candidate — 2026-10-25
+
+This is local candidate evidence only. Package metadata is `0.9.0-beta.1`; only the exact `v0.9.0-beta.1` ref is accepted by the candidate release-ref policy. No tag was created, npm/GitHub release was not published, and production n8n was not accessed or changed.
+
+Node 24.22.1 is the contributor/build baseline. On Node 24.22.1 / npm 12.2.1, clean `npm ci`, lint, typecheck, build, all **75 tests**, `verify:package` (48 allowlisted package files; standalone registration passed), and `npm audit --omit=dev --audit-level=high` (**0 production vulnerabilities**) passed. Release-ref policy self-tests and exact beta.1 simulation passed; the self-test rejects beta.2. Workflow YAML parsed locally. The full install tree reported 23 audit findings (19 high, 4 moderate) and npm 12 reported blocked dependency lifecycle scripts; the production-only audit is clean.
+
+The candidate tarball's production-only runtime matrix passed all six combinations: Node **20.19.0**, **22.23.4**, and **24.22.1**, each with `n8n-workflow` **2.44.0** and **2.44.2**. Checks installed the packed plugin without dev dependencies and verified package registration, Trigger contract, and callback normalization. Node 20/22 installs reported `isolated-vm@7.0.1`'s `>=24.0.0` engine warning through `n8n-workflow`; these checks establish only this plugin's loaded path, not the unrelated isolated-vm path or full n8n server. The compatibility workflow will repeat these six checks on CI after push. `git diff --check` passed on the local candidate diff.
+
 ## v0.8.0-beta.2 public prerelease — 2026-10-25
 
 Connected-instance visual evidence from the beta.1 Automation Presentation exercise showed that the published Presentation v1 template used by those recipes is diagnostic-only and unsuitable as the canonical user-facing production surface. Adapter mapping/API transport success did not establish that visual suitability. Beta.2 corrects user-facing recipes to use the already production-accepted A2UI `universal-v1` rendering surface. Presentation v1 examples remain deterministic adapter/diagnostic contract fixtures. Every catalog Update replaces public card data (`updateByKey: false`) so switching between card families cannot retain stale fields. Summary/detail URLs are plain text because universal-v1 has no link action. No runtime/transport behavior, template-management feature, external ingestion, or Form/Selection claim was added. Only the existing request-button/action callback path is described as supported.

@@ -226,6 +226,24 @@ test('duplicate callbacks are ACKed once per messageId within the process and ex
 	assert.equal(f.events.filter(([type]) => type === 'emit').length, 2);
 });
 
+test('replay after stream reconstruction may emit again because dedupe state is per stream instance', async (t) => {
+	const clientId = randomUUID();
+	const callback = { ...frame('{"v":1}'), headers: { topic: CARD_TOPIC, messageId: 'restart-replay' } };
+	const first = fixture(t, {}, clientId);
+	first.stream.start();
+	await tick();
+	message(first.sockets[0], callback);
+	assert.equal(first.events.filter(([type]) => type === 'emit').length, 1);
+	first.stream.stop();
+
+	const restartedProcess = fixture(t, {}, clientId);
+	restartedProcess.stream.start();
+	await tick();
+	message(restartedProcess.sockets[0], callback);
+	assert.equal(restartedProcess.sent.length, 1);
+	assert.equal(restartedProcess.events.filter(([type]) => type === 'emit').length, 1);
+});
+
 test('dedupe cache evicts oldest entry at its fixed bound', async (t) => {
 	const f = fixture(t);
 	f.stream.start();
@@ -496,8 +514,13 @@ test('trigger registration and n8n lifecycle return cleanup while gateway is pen
 
 test('interaction workflow uses registered trigger and async outbound Update with callback outTrackId', () => {
 	const example = require('../examples/card-interaction.workflow.json');
+	const manifest = require('../package.json');
 	const trigger = example.nodes.find((n) => n.type.endsWith('.dingTalkCardTrigger'));
 	const update = example.nodes.find((n) => n.type.endsWith('.dingTalkCard'));
+	assert.equal(trigger.type, 'n8n-nodes-dingtalk-card.dingTalkCardTrigger');
+	assert.equal(update.type, 'n8n-nodes-dingtalk-card.dingTalkCard');
+	assert.ok(manifest.n8n.nodes.some((path) => path.endsWith('/DingTalkCardTrigger.node.js')));
+	assert.ok(manifest.n8n.nodes.some((path) => path.endsWith('/DingTalkCard.node.js')));
 	assert.equal(example.active, false);
 	assert.equal(trigger.typeVersion, 1);
 	assert.equal(update.parameters.operation, 'update');
