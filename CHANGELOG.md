@@ -1,11 +1,17 @@
 # Changelog
 
-## 0.6.0-beta.1 (candidate; unpublished)
+## 0.6.0-beta.2 (candidate; unpublished)
+
+- Add fixed `flowStatus: "3"` AI Card host compatibility metadata to A2UI Create & Deliver and Update mappings. Production evidence showed the published universal-v1 template renders in Mac DingTalk only with this completed-state value.
+- Keep `flowStatus` outside the `universal-v1` descriptor schema and variable contract; action-enabled Create still fails closed unless Stream callbacks are enabled.
+- Stable npm `latest` remains `0.5.0`; this beta candidate has not been published.
+
+## 0.6.0-beta.1 (published prerelease)
 
 - Add the template-first Controlled A2UI `universal-v1` descriptor mode for Create & Deliver and Update, mapped to fixed string variables.
 - Reject unknown descriptor/block/action fields and types, invalid bounds and unsupported actions; require Stream callbacks for action-enabled Create.
 - Preserve Form, JSON and Presentation modes. No importable DingTalk template is shipped because a current official NORMAL schema could not be verified; visual/live acceptance remains pending.
-- This candidate has not been published or production-installed. Stable npm `latest` remains `0.5.0`.
+- The beta.1 package was published as `beta`; stable npm `latest` remains `0.5.0`.
 
 ## 0.5.0 (stable)
 

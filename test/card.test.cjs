@@ -171,9 +171,13 @@ test('A2UI maps deterministically to only fixed template variables and plain tex
 	assert.deepEqual(mapped, {
 		a2uiVersion: '1', a2uiProfile: 'universal-v1', a2uiTitle: 'Status', a2uiSummary: 'Current',
 		a2uiTone: 'info', a2uiContent: 'Ready\nQueue: 2\n• one\n• two', a2uiActionId: 'refresh:1',
-		a2uiActionLabel: 'Refresh', a2uiActionParams: '{"a":true,"z":null}', a2uiActionVisible: 'true',
+		a2uiActionLabel: 'Refresh', a2uiActionParams: '{"a":true,"z":null}', a2uiActionVisible: 'true', flowStatus: '3',
 	});
-	assert.deepEqual(a2uiCardData({ version: '1', profile: 'universal-v1', title: 'T', tone: 'neutral', blocks: [{ type: 'text', text: 'x' }] }).cardParamMap.a2uiActionVisible, 'false');
+	const descriptor = { version: '1', profile: 'universal-v1', title: 'T', tone: 'neutral', blocks: [{ type: 'text', text: 'x' }] };
+	const minimalMap = a2uiCardData(descriptor).cardParamMap;
+	assert.equal(minimalMap.a2uiActionVisible, 'false');
+	assert.equal(minimalMap.flowStatus, '3');
+	assert.throws(() => a2uiCardData({ ...descriptor, flowStatus: '3' }), /Unknown A2UI descriptor field/);
 });
 test('A2UI rejects empty required display labels and preserves valid strings exactly', () => {
 	for (const descriptor of [
@@ -743,15 +747,18 @@ test('Form value mode defaults to String and guided JSON parameters reach create
 		});
 	}
 });
-test('Presentation mode maps descriptor through existing Create and Update request path', async () => {
-	for (const operation of ['createAndDeliver', 'update']) {
+test('Presentation and A2UI modes map descriptors through existing Create and Update request paths', async () => {
+	for (const [cardDataMode, descriptorName, descriptor, expected] of [
+		['presentation', 'presentationDescriptor', presentations.status, presentationCardData(presentations.status)],
+		['a2ui', 'a2uiDescriptor', { ...a2ui, actions: undefined }, a2uiCardData({ ...a2ui, actions: undefined })],
+	]) for (const operation of ['createAndDeliver', 'update']) {
 		const seen = [];
 		const params = {
 			operation,
 			inputMode: 'form',
 			outTrackId: 'track',
-			cardDataMode: 'presentation',
-			presentationDescriptor: JSON.stringify(presentations.status),
+			cardDataMode,
+			[descriptorName]: JSON.stringify(descriptor),
 			...(operation === 'createAndDeliver'
 				? { cardTemplateId: 'tpl', target: 'group', spaceId: 'destination' }
 				: { updateByKey: true }),
@@ -760,7 +767,7 @@ test('Presentation mode maps descriptor through existing Create and Update reque
 		const write = seen.find((request) => !request.url.endsWith('/accessToken'));
 		assert.deepEqual(
 			JSON.parse(JSON.stringify(write.body.cardData)),
-			JSON.parse(JSON.stringify(presentationCardData(presentations.status))),
+			JSON.parse(JSON.stringify(expected)),
 		);
 		assert.equal(write.body.cardData.cardParamMap.flowStatus, '3');
 	}

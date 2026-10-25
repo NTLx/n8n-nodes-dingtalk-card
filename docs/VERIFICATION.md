@@ -346,6 +346,12 @@ External production connected-instance evidence supplied for this record: the li
 
 No package version or npm release was changed, and production n8n was not changed by this repository task. Live template import, client rendering, and action callback acceptance remain open gates.
 
+## v0.6.0-beta.2 release preparation — 2026-10-25
+
+Production evidence supplied for this fix established the cause of the blank Mac DingTalk card: the published `universal-v1` template renders only when its `cardParamMap` includes `flowStatus: "3"`. This is the same AI Card host completed-state compatibility behavior already applied to Presentation. A2UI now injects that fixed host metadata for Create & Deliver and Update. It is not a `universal-v1` descriptor field or descriptor variable, and the descriptor contract remains unchanged. Action-enabled Create continues to fail closed unless Stream callbacks are explicitly enabled.
+
+Release target is `0.6.0-beta.2`; npm `latest` remains stable at `0.5.0`, while beta publication semantics remain prerelease-only. On Node **26.12.1** / npm **12.2.1**, the local release gates passed: clean `npm ci`; lint; typecheck; build; all **70 tests**; package verification with standalone packed class loading/registration (**34 allowlisted files**); production audit (**0 vulnerabilities**); `npm pack --dry-run` inspection (**34 files**, `0.6.0-beta.2`); release-ref policy self-test and beta.2 simulation; and `git diff --check`. The clean install reported 23 existing dependency advisories (**19 high, 4 moderate**), deprecations, and blocked optional install scripts. This change does not publish npm or GitHub releases, tag a commit, or modify production n8n. Remote CI remains required before any release tag or publication.
+
 ## v0.6.0-beta.1 public prerelease — 2026-10-25
 
 The annotated tag `v0.6.0-beta.1` (tag object `b81a4279eefd344125646a8e140dfb1d425071e0`) points to release commit `8b344592387c9e680deec78e9a5a60271af81ff2`. Main CI passed as run [40166046717](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40166046717), and tag CI passed as run [40166106727](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40166106727). The existing Trusted Publisher/OIDC publish workflow ran once and passed as run [40166179012](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40166179012).

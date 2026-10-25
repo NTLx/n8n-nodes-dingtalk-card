@@ -60,6 +60,7 @@ export function a2uiCardData(input: unknown): Json {
 	const map: Record<string, string> = {
 		a2uiVersion: '1', a2uiProfile: 'universal-v1', a2uiTitle: title,
 		a2uiTone: d.tone, a2uiContent: rendered,
+		flowStatus: '3',
 	};
 	if (summary !== undefined) map.a2uiSummary = summary;
 	if (d.actions !== undefined) {
