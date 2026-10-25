@@ -1,4 +1,4 @@
 {
   "descriptor": {"version":"1","family":"report","title":"Daily operations","summary":"Three services checked.","tone":"success","sections":[{"heading":"Availability","body":"All monitored services responded."},{"heading":"Follow-up","body":"Review the weekly maintenance window."}]},
-  "cardData": {"cardParamMap":{"presentationVersion":"1","presentationFamily":"report","title":"Daily operations","summary":"Three services checked.","tone":"success","sections":"[{\"heading\":\"Availability\",\"body\":\"All monitored services responded.\"},{\"heading\":\"Follow-up\",\"body\":\"Review the weekly maintenance window.\"}]"}}
+  "cardData": {"cardParamMap":{"presentationVersion":"1","presentationFamily":"report","flowStatus":"3","title":"Daily operations","summary":"Three services checked.","tone":"success","sections":"[{\"heading\":\"Availability\",\"body\":\"All monitored services responded.\"},{\"heading\":\"Follow-up\",\"body\":\"Review the weekly maintenance window.\"}]"}}
 }

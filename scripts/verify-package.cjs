@@ -3,6 +3,7 @@ const {
 	mkdtempSync,
 	readFileSync,
 	existsSync,
+	readdirSync,
 	mkdirSync,
 	symlinkSync,
 	realpathSync,
@@ -10,6 +11,70 @@ const {
 const { tmpdir } = require('node:os');
 const { join, resolve } = require('node:path');
 const assert = require('node:assert/strict');
+const { presentationCardData } = require('../dist/nodes/DingTalkCard/presentation');
+
+function jsonFiles(directory) {
+	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+		const path = join(directory, entry.name);
+		return entry.isDirectory() ? jsonFiles(path) : entry.isFile() && path.endsWith('.json') ? [path] : [];
+	});
+}
+
+const examples = jsonFiles('examples');
+function assertNoCredentialFields(value, path) {
+	if (Array.isArray(value)) {
+		value.forEach((entry, index) => assertNoCredentialFields(entry, `${path}[${index}]`));
+		return;
+	}
+	if (value === null || typeof value !== 'object') return;
+	for (const [key, entry] of Object.entries(value)) {
+		assert.doesNotMatch(
+			key,
+			/(?:clientSecret|accessToken|apiKey|password|privateKey)/i,
+			`${path}.${key} must not contain credential fields`,
+		);
+		assertNoCredentialFields(entry, `${path}.${key}`);
+	}
+}
+const exampleText = examples
+	.map((path) => {
+		const source = readFileSync(path, 'utf8');
+		assertNoCredentialFields(JSON.parse(source), path);
+		return source;
+	})
+	.join('\n');
+assert.doesNotMatch(
+	exampleText,
+	/(?:\bsk-[A-Za-z0-9_-]{16,}\b|\bgh[pousr]_[A-Za-z0-9]{20,}\b|\bAKIA[A-Z0-9]{16}\b|\bBearer\s+\S+)/,
+	'Example files must not contain obvious API secrets',
+);
+for (const path of jsonFiles('examples/presentation')) {
+	if (path.endsWith('patterns.json')) continue;
+	const example = JSON.parse(readFileSync(path, 'utf8'));
+	assert.equal(
+		JSON.stringify(example.cardData),
+		JSON.stringify(presentationCardData(example.descriptor)),
+		`${path} mapped cardData must match the Presentation v1 runtime mapper`,
+	);
+}
+const patterns = JSON.parse(readFileSync('examples/presentation/patterns.json', 'utf8'));
+const requiredPatterns = [
+	'error-notification',
+	'infrastructure-backup-ups-alert',
+	'service-status',
+	'long-running-task-progress',
+	'daily-digest',
+	'technical-digest',
+	'github-report-source-shape',
+	'rss-report-source-shape',
+	'changelog-report-source-shape',
+	'summary-detail-link',
+];
+assert.deepEqual(patterns.patterns.map(({ id }) => id), requiredPatterns);
+for (const pattern of patterns.patterns) {
+	for (const field of ['family', 'requiredTemplateVariables', 'create', 'update', 'callback', 'sensitivity'])
+		assert.ok(pattern[field], `${pattern.id} must define ${field}`);
+}
 const destination = mkdtempSync(join(tmpdir(), 'dingtalk-card-pack-'));
 const packed = JSON.parse(
 	execFileSync('npm', ['pack', '--json', '--ignore-scripts', '--pack-destination', destination], {
@@ -39,6 +104,14 @@ assert.ok(
 assert.ok(
 	pack.files.some(({ path }) => path === recoveryExample),
 	`${recoveryExample} must be published`,
+);
+for (const file of examples) {
+	const packagedPath = file.replaceAll('\\', '/');
+	assert.ok(pack.files.some(({ path }) => path === packagedPath), `${packagedPath} must be published`);
+}
+assert.ok(
+	pack.files.some(({ path }) => path === 'docs/AUTOMATION_PRESENTATION.md'),
+	'Automation Presentation guidance must be published',
 );
 assert.equal(
 	JSON.parse(readFileSync(join(root, recoveryExample), 'utf8')).createAndDeliver.parameters.operation,

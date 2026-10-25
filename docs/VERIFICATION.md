@@ -1,5 +1,15 @@
 # Release verification record — 2026-10-24
 
+## v0.8.0-beta.1 candidate — local verification
+
+This candidate is limited to workflow-layer examples/documentation, package-example validation, and beta release-ref support. No node runtime, transport, dependency, or production n8n behavior is changed. Package version is `0.8.0-beta.1`; release-ref validation accepts matching `v0.8.0-beta.N` tags and rejects stable `v0.8.0`. Stable publication remains disabled in the workflow.
+
+Local gates on Node 26.12.1/npm 12.2.1: clean `npm ci` succeeded (588 packages; npm reported the existing 23 development-tree advisories: 19 high and 4 moderate, plus deprecations and five blocked install scripts); lint, typecheck, build, and all **74 tests** passed; `verify:package` passed standalone class registration and verified **36 allowlisted files / 84,429 packed bytes**. The verifier parsed every example JSON, checked Presentation family payloads against the built runtime mapper, checked the expected pattern catalog and common exposed-token formats, and confirmed every JSON example plus the Automation Presentation guide is packaged. `npm audit --omit=dev --audit-level=high` found **0 production vulnerabilities**. Beta release-ref check and policy self-test passed. `git diff --check` passed.
+
+No commit, tag, publication, or connected-instance acceptance was performed. The candidate tarball was created only in a temporary local directory by package verification.
+
+Before a production-acceptance claim, install the exact beta through n8n's supported Community Nodes lifecycle and exercise representative Create & Deliver/Update patterns through a dedicated published template. Inspect template bindings as well as API success. A non-consequential request-button/action callback may be tested with Stream callbacks enabled; Form and Selection remain deferred. Do not infer external-service ingestion, universal rendering, or visual fidelity from these checks.
+
 ## v0.7.0-beta.1 public prerelease — 2026-10-25
 
 The annotated tag `v0.7.0-beta.1` (tag object `2b0fafa12e406b8cd829c4851ac81d8d9f87b287`) points to release commit `d598fc289c871d46f183692ae91eaee9ce4901f7`. Main CI [40173686130](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40173686130) passed on that exact commit. The repository’s manually dispatched [Trusted Publisher/OIDC publish workflow](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40173797932), dispatched on the release tag, reran npm ci, lint, typecheck, build, all 74 tests, package verification, production audit and release-ref validation before publication; all steps passed. The stable publish step was skipped. The tag push did not produce a separate CI workflow run; the same commit passed main CI and the tag-based publish run repeated the complete CI quality gates.

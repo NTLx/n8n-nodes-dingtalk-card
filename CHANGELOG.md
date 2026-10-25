@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0-beta.1 (candidate; not published)
+
+- Add placeholder-safe examples for the five existing Presentation families and reusable workflow-layer patterns for error, infrastructure/backup/UPS alerts, status, progress, daily/technical digest, GitHub/RSS/changelog report shapes, and summary plus detail link.
+- Document required variables, Create/Update flows, callback boundaries, and data-sensitivity guidance. External-source ingestion and DingTalk templates are not included.
+- No runtime or transport behavior changes. Only the existing request-button/action callback path is described as supported; Form and Selection remain deferred.
+- Beta release-ref and package validation support is prepared for `0.8.0-beta.1`; stable `0.8.0` remains disabled.
+
 ## 0.7.0 (stable)
 
 Promotes the production-validated v0.7.0-beta.1 Event Handling & Reliability behavior without runtime changes. Connected-instance acceptance covered Create & Deliver, Trigger deactivation/reactivation, a real callback after reactivation, normalized event correlation, and card Update. Exact-message duplicate suppression remains validated by deterministic tests; live duplicate redelivery was not forced. The npm `beta` channel remains on `0.7.0-beta.1`. See [release verification](docs/VERIFICATION.md).

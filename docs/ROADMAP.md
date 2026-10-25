@@ -120,7 +120,7 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 
 **Compatibility and migration:** Additive event/result/error fields only. Dedupe is bounded in-process and expires; it is not durable exactly-once across restart or multiple instances. Existing node identifiers and fields remain usable.
 
-### v0.8.0 — Automation Presentation Kit
+### v0.8.0 — Automation Presentation Kit (beta.1 candidate)
 
 **Objective:** Demonstrate polished, reusable presentation patterns for common automation outcomes.
 
@@ -136,6 +136,8 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 **Non-goals / deferrals:** These are patterns and examples, not built-in external-service integrations or a generic content ingestion suite.
 
 **Compatibility and migration:** Build on the v0.4 presentation contract and v0.7 reliability primitives. Keep existing raw JSON recipes available.
+
+The beta.1 candidate implements this milestone as placeholder-safe examples and workflow-layer pattern guidance only. It adds no transport/runtime behavior and ships no DingTalk templates or external-service ingestion. Connected-instance template and request-button acceptance remains required before any production-acceptance claim; Form and Selection remain deferred. See [Automation Presentation patterns](AUTOMATION_PRESENTATION.md) and [verification](VERIFICATION.md).
 
 ### v0.9.0 — Production Hardening
 

@@ -48,7 +48,7 @@ The adapter is stateless: it validates one descriptor and maps it to one `cardDa
 
 ## Examples
 
-Runnable descriptor JSON files and their mapped card data are in [`examples/presentation`](../examples/presentation/).
+Placeholder-safe descriptor JSON files and their mapped card data are in [`examples/presentation`](../examples/presentation/). Their `cardParamMap` includes the fixed `flowStatus: "3"` AI-host compatibility value added by the mapper. Workflow patterns using these families are documented in [Automation Presentation](AUTOMATION_PRESENTATION.md); they are not bundled DingTalk templates or ingestion integrations.
 
 ### Alert
 

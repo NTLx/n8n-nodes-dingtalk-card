@@ -1,4 +1,4 @@
 {
   "descriptor": {"version":"1","family":"status","title":"Nightly backup","summary":"Archive upload is running.","tone":"info","state":"running","details":"12 of 40 GB uploaded"},
-  "cardData": {"cardParamMap":{"presentationVersion":"1","presentationFamily":"status","title":"Nightly backup","summary":"Archive upload is running.","tone":"info","state":"running","details":"12 of 40 GB uploaded"}}
+  "cardData": {"cardParamMap":{"presentationVersion":"1","presentationFamily":"status","flowStatus":"3","title":"Nightly backup","summary":"Archive upload is running.","tone":"info","state":"running","details":"12 of 40 GB uploaded"}}
 }

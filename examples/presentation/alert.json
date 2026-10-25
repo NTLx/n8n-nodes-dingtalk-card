@@ -1,4 +1,4 @@
 {
   "descriptor": {"version":"1","family":"alert","title":"Disk full","summary":"Storage is above the configured threshold.","tone":"danger","source":"disk-monitor","occurredAt":"2026-10-25T08:30:00Z"},
-  "cardData": {"cardParamMap":{"presentationVersion":"1","presentationFamily":"alert","title":"Disk full","summary":"Storage is above the configured threshold.","tone":"danger","source":"disk-monitor","occurredAt":"2026-10-25T08:30:00Z"}}
+  "cardData": {"cardParamMap":{"presentationVersion":"1","presentationFamily":"alert","flowStatus":"3","title":"Disk full","summary":"Storage is above the configured threshold.","tone":"danger","source":"disk-monitor","occurredAt":"2026-10-25T08:30:00Z"}}
 }
