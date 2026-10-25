@@ -4,7 +4,7 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap records the v0.4.0 onward milestones, including later releases documented below. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-v0.7.0 is the current stable release; beta.1 production and publication evidence is in the [verification record](VERIFICATION.md). v0.6.0 and earlier milestones remain documented below. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0 promotes its beta.1 baseline without runtime changes. Its production acceptance covers only the request-button/action-callback path; Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
+v0.9.0 is the current stable release, promoting the production-accepted beta.1 without runtime implementation changes. Form and Selection remain deferred; no exactly-once callback claim or general DingTalk expansion is made. See [verification](VERIFICATION.md).
 
 ## Vision and product principle
 
@@ -141,7 +141,7 @@ The beta.2 correction uses the connected-instance-accepted A2UI `universal-v1` r
 
 ### v0.9.0 — Production Hardening
 
-The candidate plan, tested support boundary, compatibility gates, and security/operations review are in [V0.9_PLAN.md](V0.9_PLAN.md) and [COMPATIBILITY_SECURITY_OPERATIONS.md](COMPATIBILITY_SECURITY_OPERATIONS.md). This stage does not include a live production install or publication.
+The plan, tested support boundary, compatibility gates, and security/operations review are in [V0.9_PLAN.md](V0.9_PLAN.md) and [COMPATIBILITY_SECURITY_OPERATIONS.md](COMPATIBILITY_SECURITY_OPERATIONS.md). Stable v0.9.0 promotes beta.1 with no runtime implementation changes; production acceptance and release evidence are in [the verification record](VERIFICATION.md).
 
 **Objective:** Establish release, compatibility, security, lifecycle, and operational confidence for a stable contract.
 
@@ -153,11 +153,11 @@ The candidate plan, tested support boundary, compatibility gates, and security/o
 - Package/UI install and update end-to-end acceptance; migration and backward-compatibility documentation; complete docs.
 - Upgrade acceptance through n8n's supported Community Nodes lifecycle.
 
-**Acceptance gates:** Exercise the matrix and lifecycle paths, document unsupported combinations and limitations, and complete security and migration reviews. Acceptance procedures must use n8n's supported Community Nodes install/update lifecycle. They must not directly mutate the n8n database or internal community-node install directories; such access is permissible only if separately authorized for diagnosis, not as product acceptance.
+**Acceptance gates (complete for the scoped v0.9 contract):** Exercise the matrix and lifecycle paths, document unsupported combinations and limitations, and complete security and migration reviews. Acceptance procedures use n8n's supported Community Nodes install/update lifecycle. They do not directly mutate the n8n database or internal community-node install directories.
 
 **Non-goals / deferrals:** Do not broaden into a general DingTalk suite or claim exactly-once callback delivery. Unsupported n8n/Node versions remain clearly identified.
 
-**Compatibility and migration:** Publish the supported matrix and upgrade path before stable release. Test saved workflows across the planned stable contract; call out any required manual migration.
+**Compatibility and migration:** The supported matrix and upgrade path are published. An existing saved v0.8 workflow passed Create & Deliver and same-card Update on n8n 2.44.6 without migration. See [verification](VERIFICATION.md).
 
 ### v1.0.0 — Stable presentation and interaction surface
 

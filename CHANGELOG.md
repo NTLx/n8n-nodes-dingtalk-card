@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0 (stable)
+
+Promotes v0.9.0-beta.1 with no runtime implementation changes. Production acceptance on n8n 2.44.6 confirmed a healthy service and runners, successful health and readiness checks, and successful Create & Deliver followed by same-card Update from an existing saved v0.8 workflow without migration. The npm `beta` channel remains on `0.9.0-beta.1`. Form and Selection remain deferred; no exactly-once or broader DingTalk support claim is made. See [release verification](docs/VERIFICATION.md).
+
 ## 0.9.0-beta.1 (published prerelease)
 
 - Document the tested Node runtime and stable n8n 2.44.x package-compatibility matrix, contributor/build baseline, migration path, security/privacy boundaries, and operations guidance.

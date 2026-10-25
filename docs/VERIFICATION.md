@@ -1,5 +1,15 @@
 # Release verification record — 2026-10-24
 
+## v0.9.0 stable production acceptance — 2026-10-25
+
+The maintainer reports that the parent ChatGPT independently observed the user's UI installation of `0.9.0-beta.1` on n8n **2.44.6**. Installed package metadata reported `0.9.0-beta.1`; `/healthz` and `/healthz/readiness` returned HTTP 200, the n8n service was healthy, and task runners were running. No production internals were accessed or changed for this repository release work; package installation actions remain user-operated through the n8n UI.
+
+The existing saved workflow **DingTalk v0.8 Automation Presentation Gate** ran as execution **5925** without workflow migration. Create & Deliver and subsequent Update both succeeded on the same `outTrackId` `5616673c-0462-4f64-803f-abc92dd83cca`; both responses reported success and `correlation.outTrackId`. The existing Interaction E2E workflow `0f70a470-b660-45a3-aa01-fd1771e26df9` was published after the upgrade and then unpublished; its final state was `active=false` and `activeVersionId=null`. This evidence covers the stated host health, saved-workflow Create/Update, and publish/unpublish lifecycle scope; it does not establish Form/Selection behavior, exactly-once delivery, or broader DingTalk support.
+
+## v0.9.0 stable release preparation — 2026-10-25
+
+Stable preparation changes only package version metadata, exact v0.9.0 release-ref/publish policy, and release documentation. No runtime implementation or node source changes are included relative to v0.9.0-beta.1. Node support remains `>=24.0.0 <25`; the npm `beta` dist-tag remains on `0.9.0-beta.1`.
+
 ## v0.9.0-beta.1 public prerelease — 2026-10-25
 
 The annotated tag `v0.9.0-beta.1` points to release commit `ce2f635ee7a2a682414f3eac7e22dc9fe5e0e126`. Main CI [40184693621](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40184693621) and tag CI [40184836267](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40184836267) passed on that exact commit. Trusted Publisher/OIDC publish workflow [40184836016](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40184836016), attempt 1, passed its install, lint, typecheck, build, tests, package verification, production audit, release-ref check, beta publication, public dist-tag verification, and published metadata/tarball verification. Stable publication was skipped.
