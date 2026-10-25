@@ -1,16 +1,24 @@
 # Release verification record — 2026-10-24
 
-## v0.5.0-beta.1 local verification scope
+## v0.5.0-beta.1 local verification scope (historical, before production acceptance)
 
 This candidate adds normalized callback fields beside the existing output contract. Local verification exercises the existing request-button/action callback path, normalization precedence, optional fields, timestamps, raw-data control, privacy-safe diagnostics, and ACK-before-emit ordering. Form and selection interactions have not been live-verified and remain deferred. No production n8n was touched for this candidate. Stable release still requires scoped live acceptance before expanding interaction claims.
 
-## v0.5.0-beta.1 public prerelease — 2026-10-25
+## v0.5.0-beta.1 public prerelease — 2026-10-25 (historical, before production acceptance)
 
 - Annotated tag [`v0.5.0-beta.1`](https://github.com/NTLx/n8n-nodes-dingtalk-card/releases/tag/v0.5.0-beta.1) points to release commit `f95b20b25a2e51956034a6b739cd51f130c841ba`. Tag CI run [40162534352](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40162534352) passed; Trusted Publisher/OIDC publish run [40162610880](https://github.com/NTLx/n8n-nodes-dingtalk-card/actions/runs/40162610880) passed all release gates and public registry checks.
 - npm public dist-tags are `beta -> 0.5.0-beta.1` and `latest -> 0.4.0`. Published package metadata reports `gitHead` `f95b20b25a2e51956034a6b739cd51f130c841ba`, 30 files, and unpacked size 204,191 bytes. `npm audit signatures` verified registry signatures for all 94 packages in an isolated install and attestations for 6 packages.
 - The public SLSA provenance subject is `n8n-nodes-dingtalk-card@0.5.0-beta.1` with SHA-512 `2009bcb75cd0ec3e97885d82b3853fe711d16cf015d1fdbc3da1c5ad1cf6be232cddce6a0e16b4a9605961a54ad4df3220c0c38d7f109aa40c9c46e3b44f419f`. Provenance identifies `refs/tags/v0.5.0-beta.1`, the same release commit, `.github/workflows/publish.yml`, and publish run 40162610880 attempt 1.
 - The [GitHub prerelease](https://github.com/NTLx/n8n-nodes-dingtalk-card/releases/tag/v0.5.0-beta.1) is published with one canonical npm tarball asset. `n8n-nodes-dingtalk-card-0.5.0-beta.1.tgz` is 61,780 bytes and byte-identical to the public npm tarball; both have SHA-256 `0cd7b3f39f8ab071dbc88b1b4597797dfa07170e5d926f64ea9433719ec922a6`. SHA-1 is `7a199aabed820cae64e57863bbb80e5f2b97aefa`; npm integrity is `sha512-IAm8t1zQ7D6XiF2Cs4U/5xHRbPAV0f28PaHFrRz2viMs3c5qDha0qWBZYaVK1N8yIMDDjX8QmqQMnEbjtE9Bnw==`.
-- This is an additive normalized callback v1: existing top-level output fields remain; `rawData` defaults to true and can be omitted with the optional control; immediate ACK and asynchronous downstream handling are unchanged. Only the request-button/action callback path has been live-verified. Form and Selection remain unverified and deferred, and production beta acceptance is pending. No production n8n was changed during release.
+- This is an additive normalized callback v1: existing top-level output fields remain; `rawData` defaults to true and can be omitted with the optional control; immediate ACK and asynchronous downstream handling are unchanged. At publication, only the request-button/action callback path had been live-verified; Form and Selection remained unverified and deferred, and production beta acceptance was pending. No production n8n was changed during release. The pending status is superseded by the production acceptance below.
+
+## v0.5.0-beta.1 production acceptance — 2026-10-25
+
+Production n8n loaded the v0.5 Trigger schema, including optional `includeRawData` with default `true`. For the scoped live check, the existing legacy Interaction E2E workflow had Trigger parameters `{}` and was published temporarily. A new request-button card was delivered successfully. One real button click in Mac DingTalk produced a successful Trigger execution and downstream card update.
+
+The callback output had `normalized.schemaVersion="1"` and `interaction.type="actionCallback"`; `actionIds`, `params`, and `value` were present and correct. Actor `userId` and `userIdType` were populated only from source facts. Card `outTrackId`, conversation `spaceId` and `spaceType`, and correlation `messageId` and `topic` were present. `eventTime` was correctly converted from the Stream header `time` millisecond epoch. Legacy top-level `params`, `outTrackId`, and `rawData` remained present. Existing downstream expressions using `messageId`, `params`, and `outTrackId` continued to work and updated the card. The temporary listener was unpublished immediately after verification.
+
+This completes beta.1 production acceptance for the request-button/action-callback path and makes beta.1 eligible for stable promotion. Form and Selection interactions remain unverified and deferred; no live claim is made for them. This acceptance does not expand other template, reconnect, or failure-mode claims. No private IDs or secrets are recorded.
 
 ## v0.4.0-beta.2 production regression acceptance — 2026-10-25
 

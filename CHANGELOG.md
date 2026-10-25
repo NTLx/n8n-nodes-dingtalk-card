@@ -1,10 +1,10 @@
 # Changelog
 
-## 0.5.0-beta.1 (prerelease candidate)
+## 0.5.0-beta.1 (published beta; production acceptance complete)
 
 - Add the v1 normalized interaction envelope and configurable raw callback serialization.
 - Preserve existing top-level callback fields and callback extraction behavior.
-- Document verified scope and defer form/selection claims.
+- Production acceptance passed for the request-button/action-callback path, including the additive normalized envelope and legacy downstream expression compatibility. Form and Selection remain unverified and deferred. Beta.1 is eligible for stable promotion; see [verification](docs/VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
 
 ## 0.4.0 (stable)
 

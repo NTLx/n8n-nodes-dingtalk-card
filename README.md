@@ -6,7 +6,9 @@ Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Strea
 
 **v0.4.0-beta.2 remains available on the beta channel.** Its production acceptance established the functional baseline for stable v0.4.0. A true Presentation-mode status card rendered correctly in Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body; the final live Create & Deliver regression passed for alert, status, digest, action, and report. The package ships no DingTalk templates. See the [presentation contract](docs/PRESENTATION.md) and [release verification](docs/VERIFICATION.md).
 
-The npm `latest` dist-tag resolves to `0.4.0`; `beta` remains `0.4.0-beta.2`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
+The published **v0.5.0-beta.1** adds an optional normalized Trigger envelope. Production acceptance passed for one real request-button/action-callback path, with existing downstream expressions continuing to work. Form and Selection remain unverified; beta.1 is eligible for stable promotion. See [release verification](docs/VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
+
+The npm `latest` dist-tag resolves to `0.4.0`; `beta` resolves to `0.5.0-beta.1`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 
