@@ -154,6 +154,26 @@ test('normalized contract preserves precedence, validates actionIds, parses valu
 	assert.equal(preserved.rawData, 'exact raw');
 });
 
+test('normalizes the A2UI serialized params wrapper without changing callback source data', () => {
+	const raw = JSON.stringify({ cardPrivateData: { params: { params: '{"source":"v0.6-beta.2"}' } } });
+	const result = normalizeCallback(frame(raw));
+	assert.deepEqual(result.normalized.interaction.params, { source: 'v0.6-beta.2' });
+	assert.deepEqual(result.params, { params: '{"source":"v0.6-beta.2"}' });
+	assert.equal(result.rawData, raw);
+	assert.deepEqual(result.data.cardPrivateData.params, result.params);
+
+	for (const params of [
+		{ params: '{invalid-json' },
+		{ params: '["not","an","object"]' },
+		{ params: '"scalar"' },
+		{ params: '{"nested":true}', other: 'preserve' },
+		{ source: 'ordinary-callback' },
+	]) {
+		const callback = normalizeCallback(frame({ cardPrivateData: { params } }));
+		assert.deepEqual(callback.normalized.interaction.params, params);
+	}
+});
+
 test('only exact CALLBACK topic is emitted as one item, after empty 200 ACK; malformed data also ACKs', async (t) => {
 	const f = fixture(t);
 	f.stream.start();

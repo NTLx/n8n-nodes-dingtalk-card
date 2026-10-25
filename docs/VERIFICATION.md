@@ -1,5 +1,13 @@
 # Release verification record — 2026-10-24
 
+## v0.6.0-beta.3 candidate: serialized A2UI action params normalization — 2026-10-25
+
+The production callback received on beta.2 exposed descriptor params as `cardPrivateData.params = {"params":"{\"source\":\"v0.6-beta.2\"}"}`, so workflows had to parse the nested string. Beta.3 changes only `normalized.interaction.params` for this exact one-key wrapper when its value parses as a JSON object. Local tests cover the observed shape, malformed JSON, JSON non-objects, additional wrapper keys, ordinary params, and preservation of top-level params and raw callback data. The change passed lint, typecheck, build, all 71 unit tests, packed-package standalone loading/registration (34 allowlisted files), and `git diff --check` at package version `0.6.0-beta.2`. No production n8n was changed. Live confirmation of the normalized result remains part of release validation.
+
+## v0.6.0-beta.3 release preparation — 2026-10-25
+
+Release target is `0.6.0-beta.3`, a prerelease successor to the published beta.2. The fix addresses the wrapper observed in a real beta.2 production callback; it does not claim that the updated package has yet been installed or live-validated. On Node **26.12.1** / npm **12.2.1**, clean `npm ci`, lint, typecheck, build, all **71 tests**, package verification (standalone packed class loading/registration; **34 allowlisted files**), production audit (**0 vulnerabilities**), release-ref policy self-test and beta.3 simulation, `npm pack --dry-run` (**34 files**), and `git diff --check` passed. Clean install reported 23 existing advisories (**19 high, 4 moderate**), deprecations, and blocked optional install scripts. The existing publish workflow restricts stable publication to exact stable tags and publishes beta tags with Trusted Publisher/OIDC provenance under npm `beta`; because stable `0.5.0` exists, the workflow must leave npm `latest` unchanged. Production n8n remains untouched. Remote main/tag CI, the OIDC publish run, GitHub prerelease asset, public npm metadata/dist-tags, tarball, and provenance checks are pending.
+
 ## v0.5.0-beta.1 local verification scope (historical, before production acceptance)
 
 This candidate adds normalized callback fields beside the existing output contract. Local verification exercises the existing request-button/action callback path, normalization precedence, optional fields, timestamps, raw-data control, privacy-safe diagnostics, and ACK-before-emit ordering. Form and selection interactions have not been live-verified and remain deferred. No production n8n was touched for this candidate. Stable release still requires scoped live acceptance before expanding interaction claims.

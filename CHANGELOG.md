@@ -1,10 +1,14 @@
 # Changelog
 
-## 0.6.0-beta.2 (candidate; unpublished)
+## 0.6.0-beta.3 (candidate; unpublished)
+
+- Fix A2UI request-action callback params so the NORMALIZED event exposes the descriptor params object directly. The wrapper was observed in the production callback for beta.2; original top-level and raw callback fields remain preserved.
+- Stable npm `latest` remains `0.5.0`; beta.3 has not been published.
+
+## 0.6.0-beta.2 (published prerelease)
 
 - Add fixed `flowStatus: "3"` AI Card host compatibility metadata to A2UI Create & Deliver and Update mappings. Production evidence showed the published universal-v1 template renders in Mac DingTalk only with this completed-state value.
 - Keep `flowStatus` outside the `universal-v1` descriptor schema and variable contract; action-enabled Create still fails closed unless Stream callbacks are enabled.
-- Stable npm `latest` remains `0.5.0`; this beta candidate has not been published.
 
 ## 0.6.0-beta.1 (published prerelease)
 

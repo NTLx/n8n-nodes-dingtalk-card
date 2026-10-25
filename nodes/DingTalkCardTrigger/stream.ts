@@ -24,6 +24,11 @@ function parse(value: unknown): unknown {
 		return value;
 	}
 }
+function normalizedParams(value: unknown): unknown {
+	if (!object(value) || Object.keys(value).length !== 1 || typeof value.params !== 'string') return parse(value);
+	const parsed = parse(value.params);
+	return object(parsed) ? parsed : value;
+}
 export function normalizeCallback(frame: Json, receivedAt = new Date().toISOString(), includeRawData = true): Json {
 	const headers = object(frame.headers) ? frame.headers : {};
 	const data = parse(frame.data);
@@ -59,7 +64,7 @@ export function normalizeCallback(frame: Json, receivedAt = new Date().toISOStri
 	const interactionType = body.type ?? details.type;
 	if (typeof interactionType === 'string') normalizedInteraction.type = interactionType;
 	if (object(selectedPrivate) && Array.isArray(selectedPrivate.actionIds) && selectedPrivate.actionIds.every((id) => typeof id === 'string')) normalizedInteraction.actionIds = selectedPrivate.actionIds;
-	if (params !== undefined) normalizedInteraction.params = parse(params);
+	if (params !== undefined) normalizedInteraction.params = normalizedParams(parse(params));
 	const value = body.value ?? details.value;
 	if (value !== undefined) normalizedInteraction.value = parse(value);
 	const actor: Record<string, unknown> = {};
