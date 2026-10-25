@@ -2,13 +2,13 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**v0.4.0 is the stable release.** It adds the Presentation Contract & Template Kit, including five descriptor families and deterministic mapping, while preserving the existing lifecycle behavior. Production acceptance is recorded in [release verification](docs/VERIFICATION.md). This does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n.
+**v0.5.0 is the stable release.** It promotes the v0.5.0-beta.1 normalized Trigger envelope without runtime changes. Production acceptance covers the request-button/action-callback path only; Form and Selection remain unverified and deferred. This does not certify v1.0 or untested platform/runtime behavior. This project is not n8n-verified and is not affiliated with DingTalk or n8n. See [release verification](docs/VERIFICATION.md).
 
-**v0.4.0-beta.2 remains available on the beta channel.** Its production acceptance established the functional baseline for stable v0.4.0. A true Presentation-mode status card rendered correctly in Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body; the final live Create & Deliver regression passed for alert, status, digest, action, and report. The package ships no DingTalk templates. See the [presentation contract](docs/PRESENTATION.md) and [release verification](docs/VERIFICATION.md).
+The published **v0.4.0-beta.2** established the functional baseline for stable v0.4.0. A true Presentation-mode status card rendered correctly in Mac DingTalk without workflow-supplied `flowStatus` or a JSON request body; the final live Create & Deliver regression passed for alert, status, digest, action, and report. The package ships no DingTalk templates. See the [presentation contract](docs/PRESENTATION.md) and [release verification](docs/VERIFICATION.md).
 
-The published **v0.5.0-beta.1** adds an optional normalized Trigger envelope. Production acceptance passed for one real request-button/action-callback path, with existing downstream expressions continuing to work. Form and Selection remain unverified; beta.1 is eligible for stable promotion. See [release verification](docs/VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
+The published **v0.5.0-beta.1** remains available on the beta channel and is the functional baseline for stable v0.5.0. Its optional normalized Trigger envelope passed production acceptance for one real request-button/action-callback path, with existing downstream expressions continuing to work. Form and Selection remain unverified and deferred. See [release verification](docs/VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
 
-The npm `latest` dist-tag resolves to `0.4.0`; `beta` resolves to `0.5.0-beta.1`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
+The npm `latest` dist-tag resolves to `0.5.0`; `beta` remains `0.5.0-beta.1`. Releases use GitHub Actions Trusted Publisher/OIDC with provenance. Beta publication leaves `latest` unchanged now that a stable version exists.
 
 It provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise app credential. It does not implement OA, todo, tables or general robot messaging, and does not depend on `@cryozerolabs/n8n-nodes-dingtalk`. Robot delivery fields here exist only to deliver Card Platform instances.
 

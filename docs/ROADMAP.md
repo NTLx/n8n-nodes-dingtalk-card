@@ -4,7 +4,7 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap starts from the published **v0.4.0** stable state. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-The repository package version is **0.5.0-beta.1**. npm `latest` remains `0.4.0`; beta candidates use the `beta` tag. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0-beta.1 production acceptance is complete for the request-button/action-callback path and the beta is eligible for stable promotion; Form and Selection remain unverified. See [verification](VERIFICATION.md).
+The repository package version is **0.5.0**. npm `latest` tracks `0.5.0`; beta remains `0.5.0-beta.1`. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0 promotes the beta.1 baseline without runtime changes. Its production acceptance covers only the request-button/action-callback path; Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
 
 ## Vision and product principle
 

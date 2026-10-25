@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-dingtalk-card",
-  "version": "0.5.0-beta.1",
+  "version": "0.5.0",
   "description": "DingTalk Card Platform lifecycle nodes for n8n",
   "license": "MIT",
   "homepage": "https://github.com/NTLx/n8n-nodes-dingtalk-card#readme",

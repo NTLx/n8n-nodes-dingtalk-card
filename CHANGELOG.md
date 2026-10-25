@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 (stable)
+
+Promotes the production-accepted v0.5.0-beta.1 normalized Trigger envelope without runtime changes. Production acceptance covers one request-button/action-callback path, including legacy downstream expression compatibility. Form and Selection remain unverified and deferred; no broader live interaction claim is made. The npm `beta` channel remains on `0.5.0-beta.1`.
+
 ## 0.5.0-beta.1 (published beta; production acceptance complete)
 
 - Add the v1 normalized interaction envelope and configurable raw callback serialization.
