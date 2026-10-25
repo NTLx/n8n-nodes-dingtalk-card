@@ -7,7 +7,7 @@ const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const workflowManifest = JSON.parse(readFileSync(join(process.cwd(), 'node_modules/n8n-workflow/package.json'), 'utf8'));
 assert.equal(workflowManifest.version, process.env.EXPECTED_N8N_WORKFLOW);
 assert.equal(manifest.name, 'n8n-nodes-dingtalk-card');
-assert.match(manifest.engines.node, /^>=20\.19\.0 <25$/);
+assert.match(manifest.engines.node, /^>=24\.0\.0 <25$/);
 assert.ok(manifest.peerDependencies['n8n-workflow']);
 
 const registrations = [];

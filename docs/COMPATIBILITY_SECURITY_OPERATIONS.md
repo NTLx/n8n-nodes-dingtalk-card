@@ -2,7 +2,7 @@
 
 ## Compatibility and support
 
-See the [v0.9 support matrix and gates](V0.9_PLAN.md#evidence-based-support-matrix). The plugin runtime target is Node 20.19 through 24.x and stable n8n 2.44.x; CI checks the packed plugin contract with `n8n-workflow` 2.44.0 and 2.44.2. Node 24 is the separate contributor/build baseline. This does not claim that dev tools or the full n8n server were exercised on Node 20/22, and the `isolated-vm` dependency warning is described in the matrix notes. n8n 2.44.6 is the production version recorded in the repository's connected-instance history; this work does not access or modify that instance. Form and Selection callback inputs remain unverified and unsupported.
+See the [v0.9 support matrix and gates](V0.9_PLAN.md#evidence-based-support-matrix). The n8n Community Node support contract is Node >=24.0.0 <25 and checks `n8n-workflow` 2.44.0 and 2.44.2. Node 24 is also the contributor/build baseline. n8n 2.44.6 and the expression-runtime's `isolated-vm@7.0.1` dependency require Node >=24. n8n 2.44.6 is the production version recorded in the repository's connected-instance history; this work does not access or modify that instance. Form and Selection callback inputs remain unverified and unsupported.
 
 Saved workflow compatibility is checked by `npm test`, specifically the inactive `examples/card-interaction.workflow.json` fixture against the built package manifest. It checks registered node identifiers and the existing callback-to-Update expression. This is a local contract fixture, not proof of every historical customer workflow or every n8n editor/runtime version.
 
