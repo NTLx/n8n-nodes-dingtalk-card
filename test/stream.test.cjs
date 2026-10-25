@@ -181,9 +181,9 @@ test('only exact CALLBACK topic is emitted as one item, after empty 200 ACK; mal
 	const s = f.sockets[0];
 	s.readyState = 1;
 	s.onopen();
-	for (const data of ['{"outTrackId":"fixture-track"}', '{invalid-json']) {
+	for (const [index, data] of ['{"outTrackId":"fixture-track"}', '{invalid-json'].entries()) {
 		f.events.length = 0;
-		message(s, frame(data));
+		message(s, { ...frame(data), headers: { topic: CARD_TOPIC, messageId: `fixture-message-${index}` } });
 		assert.deepEqual(
 			f.events.map(([type]) => type),
 			['ack', 'emit'],
@@ -193,7 +193,7 @@ test('only exact CALLBACK topic is emitted as one item, after empty 200 ACK; mal
 		assert.deepEqual(f.sent.at(-1), {
 			code: 200,
 			message: 'OK',
-			headers: { messageId: 'fixture-message', contentType: 'application/json' },
+			headers: { messageId: `fixture-message-${index}`, contentType: 'application/json' },
 			data: '{}',
 		});
 	}
@@ -208,6 +208,35 @@ test('only exact CALLBACK topic is emitted as one item, after empty 200 ACK; mal
 	s.onmessage({ data: '{broken-envelope' });
 	assert.equal(f.events.length, count);
 	assert.equal(f.logs.length, 0);
+});
+
+test('duplicate callbacks are ACKed once per messageId within the process and expire after TTL', async (t) => {
+	let now = 1000;
+	const f = fixture(t, { now: () => now });
+	f.stream.start();
+	await tick();
+	const s = f.sockets[0];
+	const callback = { ...frame('{"v":1}'), headers: { topic: CARD_TOPIC, messageId: 'dedupe-id' } };
+	message(s, callback);
+	message(s, callback);
+	assert.equal(f.sent.length, 2);
+	assert.equal(f.events.filter(([type]) => type === 'emit').length, 1);
+	now += 10 * 60 * 1000;
+	message(s, callback);
+	assert.equal(f.events.filter(([type]) => type === 'emit').length, 2);
+});
+
+test('dedupe cache evicts oldest entry at its fixed bound', async (t) => {
+	const f = fixture(t);
+	f.stream.start();
+	await tick();
+	const s = f.sockets[0];
+	for (let i = 0; i < 10000; i++)
+		message(s, { ...frame('{}'), headers: { topic: CARD_TOPIC, messageId: `id-${i}` } });
+	message(s, { ...frame('{}'), headers: { topic: CARD_TOPIC, messageId: 'id-10000' } });
+	const before = f.events.filter(([type]) => type === 'emit').length;
+	message(s, { ...frame('{}'), headers: { topic: CARD_TOPIC, messageId: 'id-0' } });
+	assert.equal(f.events.filter(([type]) => type === 'emit').length, before + 1);
 });
 
 test('Trigger keeps raw callback data by default for legacy contexts and omits only rawData when disabled', async (t) => {

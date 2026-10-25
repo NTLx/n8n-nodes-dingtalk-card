@@ -19,6 +19,10 @@ export interface CardErrorDetails {
 	retryable: boolean;
 	mayHaveSucceeded: boolean;
 	httpStatus?: number;
+	operation?: string;
+	phase?: string;
+	attemptCount: number;
+	ambiguousOutcome: boolean;
 }
 
 function safeCode(value: unknown): string {
@@ -45,6 +49,10 @@ export class CardError extends Error {
 	readonly retryable: boolean;
 	readonly mayHaveSucceeded: boolean;
 	readonly httpStatus?: number;
+	readonly operation?: string;
+	readonly phase?: string;
+	readonly attemptCount: number;
+	readonly ambiguousOutcome: boolean;
 
 	constructor(
 		message: string,
@@ -57,6 +65,10 @@ export class CardError extends Error {
 		this.retryable = metadata.retryable ?? false;
 		this.mayHaveSucceeded = metadata.mayHaveSucceeded ?? false;
 		this.httpStatus = validHttpStatus(metadata.httpStatus);
+		this.operation = typeof metadata.operation === 'string' ? metadata.operation : undefined;
+		this.phase = typeof metadata.phase === 'string' ? metadata.phase : undefined;
+		this.attemptCount = typeof metadata.attemptCount === 'number' ? metadata.attemptCount : 1;
+		this.ambiguousOutcome = metadata.ambiguousOutcome ?? this.mayHaveSucceeded;
 	}
 }
 export function object(value: unknown): value is Json {
@@ -163,12 +175,9 @@ async function send(request: Request, options: IHttpRequestOptions): Promise<unk
 			code,
 			{
 				category,
-				retryable:
-					(!tokenRequest && invalidToken) ||
-					(tokenRequest &&
-						!invalidToken &&
-						(status === undefined || status === 408 || status === 429 || status >= 500)),
+				retryable: (!tokenRequest && invalidToken) || (tokenRequest && !invalidToken && (status === undefined || status === 408 || status === 429 || status >= 500)),
 				mayHaveSucceeded: !tokenRequest && !invalidToken && !authenticationStatus,
+				ambiguousOutcome: !tokenRequest && !invalidToken && !authenticationStatus,
 				httpStatus: status,
 			},
 		);
@@ -243,8 +252,24 @@ export function createClient(request: Request, appKey: string, appSecret: string
 		}
 	}
 	const call = async (method: 'POST' | 'PUT', path: string, body: Json): Promise<Json> => {
+		const operation = path.endsWith('/createAndDeliver')
+			? 'createAndDeliver'
+			: path.endsWith('/streaming')
+				? (body.isFinalize === true ? 'finalize' : 'stream')
+				: 'update';
 		for (let attempt = 0; ; attempt++) {
-			const auth = await token();
+			let auth: Token;
+			try {
+				auth = await token();
+			} catch (error) {
+				if (error instanceof CardError)
+					throw new CardError(error.message, error.code, {
+						category: error.category, retryable: error.retryable, mayHaveSucceeded: false,
+						httpStatus: error.httpStatus, operation,
+						phase: 'token', attemptCount: 1, ambiguousOutcome: false,
+					});
+				throw error;
+			}
 			try {
 				const response = checkBusinessResponse(
 					await send(request, {
@@ -275,6 +300,13 @@ export function createClient(request: Request, appKey: string, appSecret: string
 				if (attempt === 0 && error instanceof CardError && invalidTokens.has(error.code)) {
 					if (tokens.get(cacheKey) === auth) tokens.delete(cacheKey);
 					continue;
+				}
+				if (error instanceof CardError) {
+					throw new CardError(error.message, error.code, {
+						category: error.category, retryable: error.retryable, mayHaveSucceeded: error.mayHaveSucceeded,
+						httpStatus: error.httpStatus, operation,
+						phase: 'write', attemptCount: attempt + 1, ambiguousOutcome: error.ambiguousOutcome,
+					});
 				}
 				throw error;
 			}

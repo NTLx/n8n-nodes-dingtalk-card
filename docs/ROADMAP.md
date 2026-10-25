@@ -2,9 +2,9 @@
 
 This roadmap is subordinate to the project's [design baseline](DESIGN.md), which governs architecture, scope, non-goals, and acceptance boundaries. Roadmap items may sequence work within those boundaries but cannot override them; resolve conflicts by updating the proposal to fit the baseline or deliberately revising the baseline first.
 
-This roadmap starts from the published **v0.4.0** stable state. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
+This roadmap records the v0.4.0 onward milestones, including later releases documented below. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-The repository candidate version is **0.6.0-beta.1**. npm `latest` remains `0.5.0`; this candidate has not been published. The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0 promotes the beta.1 baseline without runtime changes. Its production acceptance covers only the request-button/action-callback path; Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
+The repository candidate version is **0.7.0-beta.1**; it is not published or tagged. v0.6.0 is stable and the public beta channel remains documented in the [verification record](VERIFICATION.md). The v0.4.0 Presentation Contract & Template Kit is implemented and production acceptance is complete. v0.5.0 promotes its beta.1 baseline without runtime changes. Its production acceptance covers only the request-button/action-callback path; Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
 
 ## Vision and product principle
 
@@ -103,23 +103,22 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 
 **Compatibility and migration:** Additive `a2ui` Card Data Mode for Create & Deliver and Update. Preserve Form/JSON/Presentation behavior and the low-level raw JSON expert path. Update does not enable callbacks.
 
-### v0.7.0 — n8n Action & Workflow Kit
+### v0.7.0 — Event Handling & Reliability (current candidate scope)
 
 **Objective:** Make common card-to-automation loops reusable while keeping business logic in n8n.
 
 **Main deliverables:**
 
-- Reusable example/subworkflow contracts for Notification Hub, Report Hub, and Action Router.
-- Action classes: **Direct** (deterministic, no LLM), **Parameterized** (collect/validate needed inputs), and **Intelligent** (optional ChatGPT Worker).
-- Standard `outTrackId`, correlation, idempotency, and state model; acknowledgement, retry, refresh, run, ignore, and open patterns.
-- Explicit confirmation and authorization patterns for destructive actions.
-- Documented paths from callback to deterministic subworkflow or optional AI worker.
+- Bounded process-local callback duplicate suppression keyed by DingTalk `messageId`.
+- Predictable Stream reconnect/deactivation lifecycle using the existing native WebSocket transport.
+- Bounded external request timeouts and sanitized operation/phase/retry/ambiguity/correlation error details.
+- Automatic retry only for an explicit invalid-token write rejection; ambiguous writes, including Create timeouts, are never retried by the node.
 
-**Acceptance gates:** Examples make deterministic routing the default, show bounded retry and duplicate/replay handling, and avoid blind Create replay. Destructive examples require explicit confirmation/authorization. Keep the kit portable as reusable n8n assets/examples.
+**Acceptance gates:** Unit coverage for duplicate ACK/emit, TTL and bounded eviction, reconnect lifecycle, retry safety, timeout/error shape and correlation. Connected-instance validation must confirm callback replay behavior and operational reconnect/deactivation on the supported n8n runtime before stable promotion.
 
 **Non-goals / deferrals:** Do not hard-code business automation into the node. The kit does not claim delivery guarantees beyond the underlying node/platform behavior, and does not require ChatGPT for Direct actions.
 
-**Compatibility and migration:** Track state and idempotency explicitly in the workflow layer; do not imply the current plugin has a persistent deduplication store. Existing node identifiers and fields remain usable.
+**Compatibility and migration:** Additive event/result/error fields only. Dedupe is bounded in-process and expires; it is not durable exactly-once across restart or multiple instances. Existing node identifiers and fields remain usable.
 
 ### v0.8.0 — Automation Presentation Kit
 

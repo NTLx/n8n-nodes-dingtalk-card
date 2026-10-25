@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0-beta.1 (unpublished candidate)
+
+- Suppress duplicate Stream callbacks by `messageId` within one active Trigger lifecycle; duplicates still receive the immediate receipt ACK. Cache is bounded (10,000 entries), TTL-based (10 minutes), and explicitly not durable exactly-once across restart or instances.
+- Preserve the existing native WebSocket reconnect/backoff and shutdown lifecycle; no competing SDK/transport was introduced.
+- Normalize outbound error operation, phase, attempts, ambiguity and correlation fields. Only explicit invalid-token rejection is automatically retried for writes; network/timeout/5xx outcomes remain ambiguous and non-retryable, preventing blind Create replay.
+- Package and lockfile identify this unpublished prerelease candidate as `0.7.0-beta.1`; no tag or publication was created.
+
 ## 0.6.0 (stable)
 
 Promotes the production-accepted v0.6.0-beta.3 A2UI callback params normalization without runtime changes. Connected-instance acceptance passed for delivery, callback normalization, and the original card A2UI Update. The npm `beta` channel remains on `0.6.0-beta.3`.

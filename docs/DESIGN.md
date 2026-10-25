@@ -39,6 +39,12 @@ Each layer owns a distinct responsibility:
 6. **Reusable automation patterns:** provide workflow-layer examples and assets that users can adapt without coupling the generic plugin to one owner's business systems.
 7. **Verifiable claims:** specific platform features, templates, callback behaviors, and compatibility claims require current documentation and suitable acceptance evidence.
 
+## Event and write reliability boundary
+
+The Stream Trigger acknowledges valid callbacks promptly and suppresses repeated `messageId` values only within its active process lifecycle using bounded TTL memory. This reduces duplicate executions but is not durable exactly-once delivery; restart, eviction, another process/instance, and downstream failure remain outside that guarantee. Workflows own durable business idempotency and state.
+
+The existing native WebSocket transport owns reconnect, backoff, and deactivation. Outbound calls have bounded timeouts. The card client retries a write only after an explicit invalid-token rejection, preserving its payload and identifiers. A timeout or other uncertain write result is reported as potentially ambiguous and is never automatically replayed; `outTrackId` is a correlation key, not a Create deduplication/upsert contract.
+
 ## Controlled presentation and action contract
 
 The high-level contract is a versioned descriptor, not arbitrary UI. Validation must be deterministic and reject unknown versions, unknown fields where unsafe, unapproved components, and actions outside the allowlist. Rendering must use only verified template/component mappings and safe primitives. Invalid input needs a documented safe failure/fallback. Inputs and resulting actions should remain auditable and bounded by the contract.

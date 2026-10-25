@@ -427,6 +427,8 @@ test('transient token acquisition failure is retryable before any write', async 
 		assert.equal(error.category, 'network');
 		assert.equal(error.retryable, true);
 		assert.equal(error.mayHaveSucceeded, false);
+		assert.equal(error.phase, 'token');
+		assert.equal(error.operation, 'update');
 		assert.doesNotMatch(JSON.stringify(error), /credential secret|card payload/);
 		return true;
 	});
@@ -469,11 +471,34 @@ test('timeout, HTTP 5xx, and business write failures are not automatically repla
 			assert.equal(error.category, failure.category, failure.name);
 			assert.equal(error.retryable, false, failure.name);
 			assert.equal(error.mayHaveSucceeded, true, failure.name);
+			assert.equal(error.operation, 'update', failure.name);
+			assert.equal(error.phase, 'write', failure.name);
+			assert.equal(error.attemptCount, 1, failure.name);
+			assert.equal(error.ambiguousOutcome, true, failure.name);
 			assert.doesNotMatch(JSON.stringify(error), /private timeout detail|private server detail|private business detail|private card value/);
 			return true;
 		});
 		assert.equal(writes, 1, failure.name);
 	}
+});
+test('Create & Deliver timeout is ambiguous, non-retryable and retains its outTrackId correlation', async () => {
+	let writes = 0;
+	const api = createClient(async (options) => {
+		if (options.url.endsWith('/accessToken')) return { accessToken: 't', expireIn: 7200 };
+		writes++;
+		throw new Error('private timeout detail');
+	}, randomUUID(), 'secret');
+	await assert.rejects(api('POST', '/v1.0/card/instances/createAndDeliver', { outTrackId: 'stable-track' }), (error) => {
+		assert.equal(error.operation, 'createAndDeliver');
+		assert.equal(error.phase, 'write');
+		assert.equal(error.attemptCount, 1);
+		assert.equal(error.retryable, false);
+		assert.equal(error.ambiguousOutcome, true);
+		assert.equal(error.mayHaveSucceeded, true);
+		assert.doesNotMatch(JSON.stringify(error), /private timeout detail|secret/);
+		return true;
+	});
+	assert.equal(writes, 1);
 });
 test('auth acquires, caches across clients, refreshes before expiry and isolates rotated credentials', async () => {
 	const requests = [];
@@ -668,6 +693,7 @@ test('execute guided group and robot mapping, identifiers, raw result and paired
 	assert.equal(writes[1].body.openSpaceId, 'dtv1.card//IM_ROBOT.destination');
 	assert.equal(writes[1].body.imRobotOpenDeliverModel.spaceType, 'IM_ROBOT');
 	assert.equal(result[0][0].json.outTrackId, writes[0].body.outTrackId);
+	assert.deepEqual(result[0][0].json.correlation, { outTrackId: writes[0].body.outTrackId });
 	assert.equal(result[0][0].json.raw.success, true);
 });
 test('guided Create & Deliver defaults Robot Code from the bound credential and preserves overrides', async () => {
@@ -893,6 +919,7 @@ test('continueOnFail preserves failed identifier and processes later items', asy
 		category: 'validation',
 		retryable: false,
 		mayHaveSucceeded: false,
+		operation: 'update', phase: 'request', attemptCount: 1, ambiguousOutcome: false,
 	});
 	assert.deepEqual(result[0][0].pairedItem, { item: 0 });
 	assert.equal(result[0][1].json.success, true);
@@ -912,6 +939,7 @@ test('unexpected non-CardError uses a safe internal fallback without write ambig
 		category: 'internal',
 		retryable: false,
 		mayHaveSucceeded: false,
+		operation: 'update', phase: 'validation', attemptCount: 0, ambiguousOutcome: false,
 	});
 	assert.doesNotMatch(JSON.stringify(result), /private parameter error/);
 });

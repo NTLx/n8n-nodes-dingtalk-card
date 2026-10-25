@@ -15,7 +15,10 @@ interface Dependencies {
 	socket?: (url: string) => Socket;
 	setTimer?: typeof setTimeout;
 	clearTimer?: typeof clearTimeout;
+	now?: () => number;
 }
+const DEDUPE_TTL_MS = 10 * 60 * 1000;
+const DEDUPE_MAX_ENTRIES = 10000;
 function parse(value: unknown): unknown {
 	if (typeof value !== 'string') return value;
 	try {
@@ -125,6 +128,20 @@ export function createCardStream(clientId: string, clientSecret: string, deps: D
 	let reconnect: ReturnType<typeof setTimeout> | undefined;
 	let watchdog: ReturnType<typeof setTimeout> | undefined;
 	let attempts = 0;
+	const seenMessages = new Map<string, number>();
+	const now = deps.now ?? Date.now;
+	function duplicate(messageId: string): boolean {
+		const time = now();
+		for (const [id, expiresAt] of seenMessages) {
+			if (expiresAt > time) break;
+			seenMessages.delete(id);
+		}
+		if (seenMessages.has(messageId)) return true;
+		while (seenMessages.size >= DEDUPE_MAX_ENTRIES)
+			seenMessages.delete(seenMessages.keys().next().value!);
+		seenMessages.set(messageId, time + DEDUPE_TTL_MS);
+		return false;
+	}
 
 	function clearWatchdog() {
 		if (watchdog !== undefined) clearTimer(watchdog);
@@ -233,6 +250,7 @@ export function createCardStream(clientId: string, clientSecret: string, deps: D
 						// ACK must be queued before normalization/emit, never after downstream processing.
 						acknowledge(current, messageId, {});
 						attempts = 0;
+						if (duplicate(messageId)) return;
 						deps.emit(normalizeCallback(frame, new Date().toISOString(), deps.includeRawData !== false));
 					}
 				} catch {

@@ -430,6 +430,7 @@ export class DingTalkCard implements INodeType {
 						outTrackId: body.outTrackId as string,
 						...(body.guid ? { guid: body.guid as string } : {}),
 						success: true,
+						correlation: { outTrackId: body.outTrackId as string, ...(body.guid ? { guid: body.guid as string } : {}) },
 						raw: raw as INodeExecutionData['json'],
 					},
 					pairedItem: { item: i },
@@ -445,12 +446,20 @@ export class DingTalkCard implements INodeType {
 							retryable: cardError.retryable,
 							mayHaveSucceeded: cardError.mayHaveSucceeded,
 							...(cardError.httpStatus === undefined ? {} : { httpStatus: cardError.httpStatus }),
+							operation,
+							phase: cardError.phase ?? 'request',
+							attemptCount: cardError.attemptCount,
+							ambiguousOutcome: cardError.ambiguousOutcome,
 						}
 					: {
 							code: 'DINGTALK_ERROR',
 							category: 'internal',
 							retryable: false,
 							mayHaveSucceeded: false,
+							operation,
+							phase: 'validation',
+							attemptCount: 0,
+							ambiguousOutcome: false,
 						};
 				const outTrackId = typeof body.outTrackId === 'string' ? body.outTrackId : '';
 				if (this.continueOnFail()) {
@@ -459,6 +468,7 @@ export class DingTalkCard implements INodeType {
 							operation,
 							outTrackId,
 							...(body.guid ? { guid: body.guid as string } : {}),
+							correlation: { outTrackId, ...(body.guid ? { guid: body.guid as string } : {}) },
 							success: false,
 							error: message,
 							errorDetails,
@@ -468,11 +478,11 @@ export class DingTalkCard implements INodeType {
 				} else
 					throw new NodeOperationError(this.getNode(), message, {
 						itemIndex: i,
-						description: `Operation: ${operation}. Error code: ${errorDetails.code}. Category: ${errorDetails.category}. Retryable: ${errorDetails.retryable}. May have succeeded: ${errorDetails.mayHaveSucceeded}.${
+						description: `Operation: ${operation}. Phase: ${errorDetails.phase ?? 'request'}. Attempt count: ${errorDetails.attemptCount}. Error code: ${errorDetails.code}. Category: ${errorDetails.category}. Retryable: ${errorDetails.retryable}. Ambiguous outcome: ${errorDetails.ambiguousOutcome}. May have succeeded: ${errorDetails.mayHaveSucceeded}.${
 							errorDetails.httpStatus === undefined
 								? ''
 								: ` HTTP status: ${errorDetails.httpStatus}.`
-						} Out Track ID: ${outTrackId || '(not assigned)'}. Preserve this identifier when investigating partial delivery.`,
+						} Out Track ID: ${outTrackId || '(not assigned)'}.${body.guid ? ` GUID: ${String(body.guid)}.` : ''} Preserve these identifiers when investigating partial delivery.`,
 					});
 			}
 		}
