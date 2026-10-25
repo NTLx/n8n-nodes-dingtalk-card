@@ -4,7 +4,7 @@ This roadmap is subordinate to the project's [design baseline](DESIGN.md), which
 
 This roadmap records the v0.4.0 onward milestones, including later releases documented below. It describes intended milestones, not released capabilities. The current release and its tested limits remain documented in the [README](../README.md), [API contracts](API.md), and [verification record](VERIFICATION.md). Dates are omitted; milestones are semantic versions, not calendar commitments.
 
-v0.9.0 is the current stable release, promoting the production-accepted beta.1 without runtime implementation changes. Form and Selection remain deferred; no exactly-once callback claim or general DingTalk expansion is made. See [verification](VERIFICATION.md).
+**v1.0.0 is the current stable release.** The v1.0 milestone is complete for its documented Node 24 / n8n 2.44.x and request-action scope. Form and Selection remain deferred; no exactly-once callback claim or general DingTalk expansion is made. See [verification](VERIFICATION.md).
 
 ## Vision and product principle
 
@@ -66,7 +66,7 @@ The implementation is a deterministic stateless adapter to the existing Form-mod
 
 **Compatibility and migration:** The contract is additive and versioned. Existing Form and whole-body JSON modes continue to work; no existing request body is silently reinterpreted. Beta.2 was published and production-installed through the supported UI. Transport, lifecycle, and Presentation acceptance are complete for the documented paths.
 
-### v0.5.0 — Interaction Contract & Normalized Trigger (beta.1 production acceptance complete)
+### v0.5.0 — Interaction Contract & Normalized Trigger (stable release)
 
 **Objective:** Give workflows a stable, safe representation of card actions.
 
@@ -84,9 +84,9 @@ The implementation is a deterministic stateless adapter to the existing Form-mod
 
 **Compatibility and migration:** Add normalized fields without removing or renaming current fields such as `params`, `outTrackId`, or `rawData`. Publish a migration note before any breaking envelope change.
 
-The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), with phases and acceptance criteria in [V0.5_PLAN.md](V0.5_PLAN.md). Production acceptance passed for the existing request-button/action callback path, including compatibility with legacy downstream expressions. Form and selection remain unverified and deferred. Beta.1 is eligible for stable promotion; see [verification](VERIFICATION.md#v050-beta1-production-acceptance--2026-10-25).
+The stable implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), with historical phases in [V0.5_PLAN.md](V0.5_PLAN.md). Production acceptance passed for the existing request-button/action callback path, including compatibility with legacy downstream expressions. Form and Selection remain unverified and deferred. See [verification](VERIFICATION.md).
 
-### v0.6.0 — Controlled A2UI Runtime (beta.1 candidate)
+### v0.6.0 — Controlled A2UI Runtime (stable release)
 
 **Objective:** Add a constrained template-first descriptor adapter without a runtime DOM. The frozen `universal-v1` contract is in [V0.6_PLAN.md](V0.6_PLAN.md) and [A2UI.md](A2UI.md).
 
@@ -97,7 +97,7 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 - No arbitrary code or HTML. Model-generated descriptors are acceptable only after deterministic validation.
 - No runtime DOM, business router/state/deduplication, or LLM behavior.
 
-**Candidate gates:** Pure mapping and node-level action policy are locally covered. The current official NORMAL schemaVersion 3.0.0 examples evidence the component bindings, but a consistent transformed wrapper cannot be produced until `widgetInfo` regeneration is documented or accepted. Tone styling and arbitrary dynamic parameter expansion remain unsupported by the evidence. Live DingTalk import, client rendering, and callback acceptance remain production beta gates; candidate files must stay outside the package.
+**Historical candidate investigation:** Pure mapping and node-level action policy were locally covered. The official NORMAL schemaVersion 3.0.0 examples did not document `widgetInfo` regeneration, so no transformed template export was shipped. Tone styling and arbitrary dynamic parameter expansion remain unsupported. The stable feature is the controlled descriptor mapping and runtime validation; users provide their own compatible published template.
 
 **Non-goals / deferrals:** No arbitrary LLM-generated DingTalk request bodies, executable UI, or general-purpose visual builder.
 
@@ -159,7 +159,7 @@ The plan, tested support boundary, compatibility gates, and security/operations 
 
 **Compatibility and migration:** The supported matrix and upgrade path are published. An existing saved v0.8 workflow passed Create & Deliver and same-card Update on n8n 2.44.6 without migration. See [verification](VERIFICATION.md).
 
-### v1.0.0 — Stable presentation and interaction surface
+### v1.0.0 — Stable presentation and interaction surface (released)
 
 **Objective:** Release a stable, documented contract for DingTalk card presentation and lightweight control of n8n automation.
 
@@ -171,11 +171,11 @@ The plan, tested support boundary, compatibility gates, and security/operations 
 - Notification and Report Hubs demonstrated as reusable n8n assets.
 - Clear compatibility, security, installation, upgrade, and migration documentation.
 
-**Acceptance gates:** Complete the Definition of Done below; no beta-only caveat may stand in for an untested stable contract. Preserve scoped claims for platform and n8n compatibility.
+**Acceptance gates (complete):** The Definition of Done below was met for the documented compatibility and request-action scope. See the [v1.0 acceptance plan](V1.0_PLAN.md) and [stable release record](VERIFICATION.md#v100-stable-public-release-2026-10-25).
 
 **Non-goals / deferrals:** 1.0 does not mean general DingTalk API coverage. OA, contacts, docs, generic robot APIs, and arbitrary UI remain out of scope.
 
-**Compatibility and migration:** Publish the supported n8n/Node matrix and stable contract changes. Provide a clear path from v0.x workflows and explain any manual changes before release.
+**Compatibility and migration:** The supported n8n/Node matrix and stable contract changes are published. Existing saved-workflow and UI upgrade acceptance is recorded in verification.
 
 ## Cross-cutting design principles
 
@@ -191,9 +191,9 @@ The plan, tested support boundary, compatibility gates, and security/operations 
 
 ## v1.0.0 definition of done
 
-Stable v1.0 evidence and acceptance boundaries are tracked in [V1.0_PLAN.md](V1.0_PLAN.md). The beta connected-instance gates are complete within the stated Node 24 / n8n 2.44.x / request-action scope.
+Stable v1.0 evidence and acceptance boundaries are tracked in [V1.0_PLAN.md](V1.0_PLAN.md). Connected-instance gates are complete within the stated Node 24 / n8n 2.44.x / request-action scope.
 
-- [x] Stable presentation and interaction contracts are documented, versioned, and migration-reviewed (existing repository evidence; beta regression remains pending).
+- [x] Stable presentation and interaction contracts are documented, versioned, and migration-reviewed.
 - [x] Group and direct-message lifecycle paths are accepted for the supported compatibility matrix.
 - [x] Create, update, streaming/finalization where applicable, and callback interaction behavior have scoped acceptance evidence.
 - [x] Supported callback inputs and controlled A2UI primitives are verified against current official DingTalk behavior; unsupported inputs are not claimed (request-action only; Form/Selection deferred).

@@ -27,7 +27,7 @@ For supported A2UI/Presentation outputs, lead with a short title and clear state
 
 ## Supported Community Nodes lifecycle
 
-n8n's [official GUI installation guide](https://docs.n8n.io/integrations/community-nodes/installation-and-management/gui-installation.md) documents installing a package name with an optional version or dist-tag (for example `n8n-nodes-dingtalk-card@0.9.0-beta.1`), updating to latest with **Update**, and selecting another version by uninstalling then reinstalling with the target version. To downgrade, uninstall and reinstall the chosen older version. Dist-tags resolve to a specific version when installed. Only self-hosted n8n supports unverified npm community nodes, and n8n requires an Owner or Admin to manage them.
+n8n's [official GUI installation guide](https://docs.n8n.io/integrations/community-nodes/installation-and-management/gui-installation.md) documents installing a package name with an optional version or dist-tag (for example `n8n-nodes-dingtalk-card@1.0.0-beta.1`), updating to latest with **Update**, and selecting another version by uninstalling then reinstalling with the target version. To downgrade, uninstall and reinstall the chosen older version. Dist-tags resolve to a specific version when installed. Only self-hosted n8n supports unverified npm community nodes, and n8n requires an Owner or Admin to manage them.
 
 Use these supported UI operations for acceptance. Do not directly modify n8n database records or internal community-node directories. This v0.9 hardening task does not install or update the production instance.
 

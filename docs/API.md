@@ -1,8 +1,8 @@
 # API contracts checked 2026-10-24
 
-## Controlled A2UI (v0.6.0-beta.1 candidate)
+## Controlled A2UI (stable since v0.6.0)
 
-Form input on Create & Deliver or Update can select Card Data Mode `a2ui` and provide `a2uiDescriptor`. It maps the frozen `universal-v1` contract to fixed `cardParamMap` string variables. See [A2UI.md](A2UI.md) and the [candidate plan](V0.6_PLAN.md). Create with an action requires Stream callbacks enabled; Update maps data and does not enable callback routing. No current importable template asset is claimed.
+Form input on Create & Deliver or Update can select Card Data Mode `a2ui` and provide `a2uiDescriptor`. It maps the frozen `universal-v1` contract to fixed `cardParamMap` string variables. See [A2UI.md](A2UI.md) and the [v0.6 plan](V0.6_PLAN.md). Create with an action requires Stream callbacks enabled; Update maps data and does not enable callback routing. The package does not ship a DingTalk template.
 
 ## Presentation Card Data Mode (v0.4.0 development)
 
@@ -52,7 +52,7 @@ On 2026-10-24, a real connected n8n 2.44.x runtime with a DingTalk enterprise ap
 
 The [DingTalk-Real-AI SDK contract, pinned at the inspected commit](https://github.com/DingTalk-Real-AI/dingtalk-channel-sdk-python/blob/6f42d37ab22b0d872450148efe01c7b4b82d1e78/SPEC.zh-CN.md#5-ai-卡片协议五步) corroborates this public template, streaming key and states. Its spacing guidance is approximately 500ms around frames, with at least 800ms between streaming updates; the example uses 1 second. These are template/client conventions, not generic API validation or automatic scheduling in this node. SDK content-size handling differs from the API documentation above; this release does not change payload limits or add truncation.
 
-Beta.6 changes only the guided Streaming Update/Finalize key default to `msgContent`. Custom template keys remain overrideable; existing saved keys and whole-body JSON are unchanged. Generic Finalize sends only a terminal streaming frame with mutually exclusive terminal flags. For visual completion of this public template, follow it with Update merging `flowStatus: "3"` and final `msgContent`. The [lifecycle payload recipe](../examples/public-ai-lifecycle.payload.json) includes the state parameters, full snapshots and waits.
+The v0.6.0-beta.3 prerelease changed the guided Streaming Update/Finalize key default to `msgContent`; this behavior is part of the stable package. Custom template keys remain overrideable; existing saved keys and whole-body JSON are unchanged. Generic Finalize sends only a terminal streaming frame with mutually exclusive terminal flags. For visual completion of this public template, follow it with Update merging `flowStatus: "3"` and final `msgContent`. The [lifecycle payload recipe](../examples/public-ai-lifecycle.payload.json) includes the state parameters, full snapshots and waits.
 
 ## v0.2.0-beta.1 prerelease: narrow Card Stream transport
 

@@ -1,6 +1,6 @@
 # Presentation descriptor v1
 
-This remains a deterministic adapter/diagnostic contract. Connected-instance visual evidence showed that the published Presentation v1 template used for earlier checks is diagnostic-only and unsuitable as the canonical user-facing production surface. For the v0.8 Automation Presentation recipes, use the production-accepted A2UI `universal-v1` surface documented in [A2UI](A2UI.md) and [Automation Presentation](AUTOMATION_PRESENTATION.md).
+Presentation v1 is a deterministic adapter/diagnostic contract. Connected-instance visual evidence showed that the published Presentation v1 template used for earlier checks is diagnostic-only and unsuitable as the canonical user-facing production surface. For the stable Automation Presentation recipes, use the production-accepted A2UI `universal-v1` surface documented in [A2UI](A2UI.md) and [Automation Presentation](AUTOMATION_PRESENTATION.md).
 
 The Presentation Card Data Mode is a stateless adapter from a small, versioned descriptor to the existing Form-mode `cardData.cardParamMap` boundary. It does not render a card or verify DingTalk template components. The package does **not** ship DingTalk platform templates. Users must create, publish, and associate templates whose variables match the mappings below.
 
@@ -88,4 +88,4 @@ Presentation mode is opt-in under Form input for Create & Deliver and Update. It
 
 When updating a card with a different family or variable set, disable Update by Key (`updateCardDataByKey: false`) so old public fields are replaced rather than retained. This adapter does not clear stale variables on its own.
 
-This is a deterministic adapter, not a renderer or template registry. The v0.5 normalized Trigger envelope and v0.6 controlled A2UI renderer are separate existing capabilities; neither is implemented by this Presentation adapter. Use the A2UI `universal-v1` contract for the v0.8 user-facing recipes. Form and Selection callbacks remain deferred. Presentation v1 itself provides no executable action routing, arbitrary HTML/code, arbitrary styling, persistent state, or general component runtime.
+This is a deterministic adapter, not a renderer or template registry. The v0.5 normalized Trigger envelope and v0.6 controlled A2UI renderer are separate stable capabilities; neither is implemented by this Presentation adapter. Use the A2UI `universal-v1` contract for the stable user-facing recipes. Form and Selection callbacks remain deferred. Presentation v1 itself provides no executable action routing, arbitrary HTML/code, arbitrary styling, persistent state, or general component runtime.
