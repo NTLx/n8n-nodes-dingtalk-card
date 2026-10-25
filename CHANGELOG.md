@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0-beta.1 (prerelease candidate)
+
+- Add the v1 normalized interaction envelope and configurable raw callback serialization.
+- Preserve existing top-level callback fields and callback extraction behavior.
+- Document verified scope and defer form/selection claims.
+
 ## 0.4.0 (stable)
 
 Promotes the production-accepted v0.4.0-beta.2 Presentation Contract & Template Kit to stable. No functional changes from beta.2: adds the fixed AI-host compatibility value `flowStatus: "3"` to Presentation `cardParamMap`, preserving all 13 Presentation contract fields. Production acceptance passed for true Presentation-mode status rendering and Create & Deliver across alert, status, digest, action, and report. No private identifiers are recorded. The package ships no DingTalk templates. The npm `beta` channel remains on `0.4.0-beta.2`.
@@ -61,8 +67,3 @@ Published to npm as `0.1.0-beta.2` with the README included, community-node meta
 First outbound Card Platform beta: enterprise app credentials with centralized token caching/refresh; guided and JSON Create & Deliver, Update, Streaming Update and Finalize; propagated outTrackId/GUID; sanitized item errors and 2xx/partial-delivery failure detection; mocked transport/payload/node tests; official n8n CLI tooling; CI and error-notification fixtures.
 
 Live DingTalk enterprise app/card E2E and full current-stable n8n runtime compatibility remain unverified. No inbound trigger. GitHub prerelease only; no npm publication or stable v0.1.0 tag.
-# 0.5.0-beta.1
-
-- Add the v1 normalized interaction envelope and configurable raw callback serialization.
-- Preserve existing top-level callback fields and callback extraction behavior.
-- Document verified scope and defer form/selection claims.

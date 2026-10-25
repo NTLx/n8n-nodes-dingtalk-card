@@ -190,6 +190,58 @@ test('only exact CALLBACK topic is emitted as one item, after empty 200 ACK; mal
 	assert.equal(f.logs.length, 0);
 });
 
+test('Trigger keeps raw callback data by default for legacy contexts and omits only rawData when disabled', async (t) => {
+	const originalWebSocket = global.WebSocket;
+	const sockets = [];
+	global.WebSocket = class {
+		constructor(url) {
+			this.url = url;
+			this.readyState = 0;
+			this.sent = [];
+			sockets.push(this);
+		}
+		send(data) {
+			this.sent.push(JSON.parse(data));
+		}
+		close() {}
+	};
+	t.after(() => {
+		global.WebSocket = originalWebSocket;
+	});
+	async function invokeTrigger(includeRawData) {
+		const emitted = [];
+		const context = {
+			getCredentials: async () => ({ appKey: 'fixture-app', appSecret: 'fixture-secret' }),
+			helpers: {
+				httpRequest: async () => ({ endpoint: 'wss://example.invalid/connect', ticket: 'fixture-ticket' }),
+			},
+			emit: (items) => emitted.push(items[0][0].json),
+			logger: { warn() {} },
+			getNode: () => ({}),
+		};
+		if (includeRawData !== undefined) context.getNodeParameter = () => includeRawData;
+		const response = await DingTalkCardTrigger.prototype.trigger.call(context);
+		await tick();
+		const socket = sockets.at(-1);
+		socket.readyState = 1;
+		socket.onopen();
+		const callback = frame('{"kind":"fixture"}');
+		socket.onmessage({ data: JSON.stringify(callback) });
+		await response.closeFunction();
+		return { callback, emitted: emitted[0] };
+	}
+
+	const legacy = await invokeTrigger(undefined);
+	assert.equal(legacy.emitted.rawData, legacy.callback.data);
+	assert.equal(legacy.emitted.normalized.schemaVersion, '1');
+
+	const disabled = await invokeTrigger(false);
+	assert.equal(Object.hasOwn(disabled.emitted, 'rawData'), false);
+	assert.equal(typeof disabled.emitted.receivedAt, 'string');
+	const comparable = ({ rawData: _rawData, receivedAt: _receivedAt, ...item }) => item;
+	assert.deepEqual(comparable(disabled.emitted), comparable(legacy.emitted));
+});
+
 test('gateway contract is scoped; validates endpoint before ticket and preserves URL encoding', async (t) => {
 	const f = fixture(t);
 	f.stream.start();

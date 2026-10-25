@@ -38,7 +38,7 @@ Outbound node errors use a normalized safe detail object: `code`, `category`, `r
 
 Auth cache is bounded and process-local. Workers/restarts can fetch additional tokens. Explicit recognized invalid-token codes permit one auth refresh/replay; other errors never automatically replay writes. There is no distributed retry/idempotency database. The v0.2.0-beta.1 prerelease adds the separate Card Trigger transport below.
 
-# Tooling decision
+## Tooling decision
 
 The [official n8n starter](https://github.com/n8n-io/n8n-nodes-starter) and [CLI guide](https://docs.n8n.io/connect/create-nodes/build-your-node/using-the-n8n-node-tool.md) were checked. The package adopts the official CLI, scripts, strict node registration, peer dependency and ESLint conventions in place. Programmatic execution serves the required centralized auth/partial-failure/error behavior; payload construction is pure and tested. There are no starter product nodes.
 
@@ -63,6 +63,6 @@ For exact-type/topic CALLBACK envelopes with a message ID, first send `{code:200
 Form Create & Deliver adds `callbackType:"STREAM"` only when Enable Stream Callbacks is true; default/false omits callbackType. Whole-body JSON remains passthrough. The listener must use the same Client ID as creation; DingTalk’s card examples require one Stream service per Client ID. The process-local lock cannot coordinate other processes/services. No HTTP callback mode, synchronous local-update ACK, persistent deduplication or downstream-dependent response exists in this prerelease. Follow ACK with normal asynchronous Update calls as needed.
 
 Security decision: avoid the upstream SDK due the previously verified ticket-log risk; do not import/copy its implementation or patch global console. Fixed generic diagnostics intentionally discard connection/gateway errors even if they contain apparently useful codes. Native construction, handshake errors and pending/active shutdown are covered with sentinel secrets and real local TLS subprocess tests. The tracked-timer lint exception exists because pinned n8n-workflow 2.44.2 has no exported `sleepWithAbort`; plain `sleep` cannot cancel these lifecycle timers.
-# Trigger callback normalization
+## Trigger callback normalization
 
 The Trigger preserves its existing top-level callback fields and adds the versioned `normalized` envelope. Existing workflows require no migration to keep using those fields. See the [v1 interaction contract](INTERACTIONS.md). The **Include Raw Callback Data** option defaults to true; disabling it removes only top-level `rawData` and reduces duplicate serialization, not sensitive content.
