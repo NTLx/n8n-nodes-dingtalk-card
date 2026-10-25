@@ -1,9 +1,13 @@
 # Changelog
 
-## 0.6.0-beta.3 (published prerelease)
+## 0.6.0 (stable)
+
+Promotes the production-accepted v0.6.0-beta.3 A2UI callback params normalization without runtime changes. Connected-instance acceptance passed for delivery, callback normalization, and the original card A2UI Update. The npm `beta` channel remains on `0.6.0-beta.3`.
+
+## 0.6.0-beta.3 (published prerelease; production acceptance complete)
 
 - Fix A2UI request-action callback params so the NORMALIZED event exposes the descriptor params object directly. The wrapper was observed in the production callback for beta.2; original top-level and raw callback fields remain preserved.
-- Published on npm as `beta`; stable npm `latest` remains `0.5.0`. Live confirmation of the normalized callback on the connected instance remains pending.
+- Published on npm as `beta`; production connected-instance acceptance completed before stable promotion. See [verification](docs/VERIFICATION.md).
 
 ## 0.6.0-beta.2 (published prerelease)
 
