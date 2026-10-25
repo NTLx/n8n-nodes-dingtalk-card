@@ -20,6 +20,12 @@ Stable promotion changes package and release metadata only. The Presentation imp
 
 The local clean install, lint, typecheck, build, 60 tests, package verification, production audit (0 findings), release-ref self-test and `git diff --check` all passed. No production n8n installation was changed during this release task.
 
+## v0.4.0 stable production post-install acceptance — 2026-10-25
+
+After the stable release, production n8n reported the installed `n8n-nodes-dingtalk-card` package metadata as exactly **0.4.0**. Production n8n and its external runners were healthy on **2.44.6**; `/healthz` and `/healthz/readiness` both returned HTTP 200. The live node schema continued to expose `cardDataMode=presentation` and `presentationDescriptor`.
+
+A temporary true Presentation-mode status Create & Deliver smoke workflow succeeded without workflow-supplied `flowStatus`. The n8n execution succeeded, and the DingTalk response had top-level `success=true` and `deliverResults[].success=true`. The temporary workflow was archived. This closes the stable production install and status Create & Deliver smoke acceptance; it does not extend the documented template or client-rendering claims. No private template, group, card, workflow, execution, credential, or other private identifiers are recorded.
+
 ## v0.4.0-beta.2 real Mac DingTalk visual acceptance — 2026-10-25
 
 Real Mac DingTalk visual acceptance passed with the user's published AI-card template when `flowStatus=3` was supplied. All 13 Presentation contract fields and the summary rendered. The Presentation adapter supplies the fixed public `flowStatus: "3"` compatibility field while retaining the 13 contract variables. No private template IDs or group/card identifiers are recorded.
