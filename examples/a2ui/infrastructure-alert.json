@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Infrastructure alert",
+  "summary": "A monitored resource crossed a configured threshold.",
+  "tone": "warning",
+  "blocks": [
+    { "type": "keyValue", "label": "Source", "value": "REPLACE_WITH_INFRA_BACKUP_OR_UPS_LABEL" },
+    { "type": "keyValue", "label": "State", "value": "REPLACE_WITH_SAFE_STATE" }
+  ]
+}

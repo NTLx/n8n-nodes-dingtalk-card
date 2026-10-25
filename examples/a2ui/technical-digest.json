@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Technical digest",
+  "summary": "A short engineering update assembled upstream.",
+  "tone": "neutral",
+  "blocks": [
+    { "type": "keyValue", "label": "Change", "value": "REPLACE_WITH_APPROVED_CHANGE" },
+    { "type": "text", "text": "REPLACE_WITH_SHORT_IMPACT_SUMMARY" }
+  ]
+}

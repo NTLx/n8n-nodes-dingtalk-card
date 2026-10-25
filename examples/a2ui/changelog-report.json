@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Changelog report",
+  "summary": "A release summary prepared by an upstream workflow.",
+  "tone": "info",
+  "blocks": [
+    { "type": "keyValue", "label": "Release", "value": "REPLACE_WITH_APPROVED_VERSION_LABEL" },
+    { "type": "text", "text": "REPLACE_WITH_APPROVED_CHANGE_SUMMARY" }
+  ]
+}

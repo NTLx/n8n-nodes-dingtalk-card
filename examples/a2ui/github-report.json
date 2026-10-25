@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Repository report",
+  "summary": "A concise repository update prepared by an upstream workflow.",
+  "tone": "info",
+  "blocks": [
+    { "type": "keyValue", "label": "Repository", "value": "REPLACE_WITH_APPROVED_REPOSITORY_LABEL" },
+    { "type": "list", "items": ["REPLACE_WITH_CHANGE_SUMMARY"] }
+  ]
+}

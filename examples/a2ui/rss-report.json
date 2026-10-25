@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Feed report",
+  "summary": "Selected feed entries prepared by an upstream workflow.",
+  "tone": "neutral",
+  "blocks": [
+    { "type": "keyValue", "label": "Entry", "value": "REPLACE_WITH_ENTRY_TITLE" },
+    { "type": "text", "text": "REPLACE_WITH_SAFE_SHORT_EXCERPT" }
+  ]
+}

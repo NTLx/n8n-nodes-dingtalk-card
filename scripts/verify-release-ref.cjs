@@ -16,6 +16,7 @@ function selfTest() {
 	assert.equal(releaseChannel('0.6.0-beta.1', 'v0.6.0-beta.1'), 'beta');
 	assert.equal(releaseChannel('0.7.0-beta.1', 'v0.7.0-beta.1'), 'beta');
 	assert.equal(releaseChannel('0.8.0-beta.1', 'v0.8.0-beta.1'), 'beta');
+	assert.equal(releaseChannel('0.8.0-beta.2', 'v0.8.0-beta.2'), 'beta');
 	assert.equal(releaseChannel('0.3.0', 'v0.3.0'), 'latest');
 	assert.equal(releaseChannel('0.4.0', 'v0.4.0'), 'latest');
 	assert.equal(releaseChannel('0.5.0', 'v0.5.0'), 'latest');

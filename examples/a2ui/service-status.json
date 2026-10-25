@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Service status",
+  "summary": "Current service state.",
+  "tone": "info",
+  "blocks": [
+    { "type": "keyValue", "label": "Service", "value": "REPLACE_WITH_SAFE_SERVICE_LABEL" },
+    { "type": "keyValue", "label": "State", "value": "running" },
+    { "type": "text", "text": "REPLACE_WITH_SHORT_STATUS_DETAIL" }
+  ]
+}

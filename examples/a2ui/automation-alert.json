@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Workflow failure",
+  "summary": "A workflow failed; review the sanitized details.",
+  "tone": "danger",
+  "blocks": [
+    { "type": "keyValue", "label": "Workflow", "value": "REPLACE_WITH_SAFE_WORKFLOW_NAME" },
+    { "type": "text", "text": "REPLACE_WITH_REDACTED_FAILURE_SUMMARY" }
+  ]
+}

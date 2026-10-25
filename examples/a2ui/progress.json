@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Task progress",
+  "summary": "REPLACE_WITH_SHORT_PROGRESS_SUMMARY",
+  "tone": "info",
+  "blocks": [
+    { "type": "keyValue", "label": "Task", "value": "REPLACE_WITH_SAFE_TASK_LABEL" },
+    { "type": "keyValue", "label": "Progress", "value": "REPLACE_WITH_STEP_OR_PERCENT" },
+    { "type": "text", "text": "REPLACE_WITH_CURRENT_STEP" }
+  ]
+}

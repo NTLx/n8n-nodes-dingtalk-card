@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Detailed report available",
+  "summary": "REPLACE_WITH_SHORT_REPORT_SUMMARY",
+  "tone": "neutral",
+  "blocks": [
+    { "type": "text", "text": "REPLACE_WITH_ONE_OR_TWO_SENTENCE_SUMMARY" },
+    { "type": "keyValue", "label": "Details URL (plain text)", "value": "REPLACE_WITH_ACCESS_CONTROLLED_HTTPS_URL" }
+  ]
+}

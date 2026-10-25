@@ -1,0 +1,10 @@
+{
+  "version": "1",
+  "profile": "universal-v1",
+  "title": "Daily digest",
+  "summary": "A concise roll-up of the reporting period.",
+  "tone": "neutral",
+  "blocks": [
+    { "type": "list", "items": ["REPLACE_WITH_FIRST_ITEM", "REPLACE_WITH_SECOND_ITEM"] }
+  ]
+}

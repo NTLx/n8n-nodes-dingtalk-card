@@ -120,7 +120,7 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 
 **Compatibility and migration:** Additive event/result/error fields only. Dedupe is bounded in-process and expires; it is not durable exactly-once across restart or multiple instances. Existing node identifiers and fields remain usable.
 
-### v0.8.0 — Automation Presentation Kit (beta.1 candidate)
+### v0.8.0 — Automation Presentation Kit (beta.2 candidate)
 
 **Objective:** Demonstrate polished, reusable presentation patterns for common automation outcomes.
 
@@ -137,7 +137,7 @@ The beta.1 implementation is specified in [INTERACTIONS.md](INTERACTIONS.md), wi
 
 **Compatibility and migration:** Build on the v0.4 presentation contract and v0.7 reliability primitives. Keep existing raw JSON recipes available.
 
-The beta.1 candidate implements this milestone as placeholder-safe examples and workflow-layer pattern guidance only. It adds no transport/runtime behavior and ships no DingTalk templates or external-service ingestion. Connected-instance template and request-button acceptance remains required before any production-acceptance claim; Form and Selection remain deferred. See [Automation Presentation patterns](AUTOMATION_PRESENTATION.md) and [verification](VERIFICATION.md).
+The beta.2 candidate corrects the user-facing examples to use the connected-instance-accepted A2UI `universal-v1` rendering surface. Connected visual evidence showed the Presentation v1 template used for earlier recipes is diagnostic-only and unsuitable as the canonical user-facing presentation; Presentation v1 examples remain as deterministic adapter/diagnostic fixtures. Pattern Updates replace public card data to avoid retaining fields from a prior family. This remains a workflow-layer examples/docs release: no runtime, transport, template-management, or ingestion behavior is added. Form and Selection remain deferred, and the summary-detail example displays URL text without claiming it is clickable. See [Automation Presentation patterns](AUTOMATION_PRESENTATION.md) and [verification](VERIFICATION.md).
 
 ### v0.9.0 — Production Hardening
 

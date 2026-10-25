@@ -12,6 +12,7 @@ const { tmpdir } = require('node:os');
 const { join, resolve } = require('node:path');
 const assert = require('node:assert/strict');
 const { presentationCardData } = require('../dist/nodes/DingTalkCard/presentation');
+const { a2uiCardData } = require('../dist/nodes/DingTalkCard/a2ui');
 
 function jsonFiles(directory) {
 	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -39,7 +40,9 @@ function assertNoCredentialFields(value, path) {
 const exampleText = examples
 	.map((path) => {
 		const source = readFileSync(path, 'utf8');
-		assertNoCredentialFields(JSON.parse(source), path);
+	const parsed = JSON.parse(source);
+	assertNoCredentialFields(parsed, path);
+	if (parsed.profile === 'universal-v1') a2uiCardData(parsed);
 		return source;
 	})
 	.join('\n');
@@ -68,12 +71,25 @@ const requiredPatterns = [
 	'github-report-source-shape',
 	'rss-report-source-shape',
 	'changelog-report-source-shape',
-	'summary-detail-link',
+	'summary-detail-reference',
+	'report-to-status-family-switch',
 ];
 assert.deepEqual(patterns.patterns.map(({ id }) => id), requiredPatterns);
+const requiredA2uiVariables = patterns.requiredTemplateVariables;
 for (const pattern of patterns.patterns) {
-	for (const field of ['family', 'requiredTemplateVariables', 'create', 'update', 'callback', 'sensitivity'])
+	for (const field of ['family', 'descriptorExample', 'requiredTemplateVariables', 'create', 'update', 'stateFlow', 'callback', 'sensitivity'])
 		assert.ok(pattern[field], `${pattern.id} must define ${field}`);
+	assert.ok(pattern.descriptorExample.startsWith('examples/a2ui/'), `${pattern.id} must use an A2UI descriptor example`);
+	assert.ok(pattern.requiredTemplateVariables.includes('a2uiContent'));
+	assert.ok(pattern.requiredTemplateVariables.includes('flowStatus'));
+	assert.deepEqual(pattern.requiredTemplateVariables, requiredA2uiVariables);
+	assert.equal(pattern.update.operation, 'update');
+	assert.equal(pattern.update.cardDataMode, 'a2ui');
+	assert.equal(pattern.update.updateByKey, false, `${pattern.id} must replace card data to clear stale fields`);
+	assert.equal(pattern.update.replacesPublicCardData, true);
+	a2uiCardData(JSON.parse(readFileSync(pattern.descriptorExample, 'utf8')));
+	if (pattern.previousDescriptorExample)
+		a2uiCardData(JSON.parse(readFileSync(pattern.previousDescriptorExample, 'utf8')));
 }
 const destination = mkdtempSync(join(tmpdir(), 'dingtalk-card-pack-'));
 const packed = JSON.parse(
