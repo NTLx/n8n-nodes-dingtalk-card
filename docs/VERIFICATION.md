@@ -1,5 +1,13 @@
 # Release verification record — 2026-10-24
 
+## v1.1.0 stable promotion — 2026-10-26
+
+Beta.3 completed final client-side visual acceptance with clean template `5c501297-24d3-4545-b31f-734a8ddfb285.schema`: the blue query icon and redundant top/template separators were removed, the plugin no longer inserts a Markdown `---` before the footer, wide desktop layout remains active, Markdown and clickable links render correctly, and the copy affordance / AI disclosure remain visible. Manual execution **7248** completed `success` with `streamFinalized=true`, successful Create and Stream responses, and every `deliverResults[].success=true`.
+
+The clean-template dual-route draft was then published as active workflow version `dba8d193-b7c5-48be-8725-edcb1c80f05c`. Final production-webhook executions **7249** (`universal-v2`) and **7250** (`universal-v1`) both completed `success`; v2 again reported `streamFinalized=true`, successful Create and Stream responses, and successful delivery, while v1 remained on the legacy template/normalizer path and delivered successfully. This closes visual, production routing, lifecycle, and backward-compatibility gates for stable 1.1.0. No n8n service upgrade, restart, database/container mutation, or service configuration change was performed.
+
+ServerFS Repo Ops now exposes deterministic `tag_release` and `publish_npm` actions scoped to `NTLx/n8n-nodes-dingtalk-card`, with HEAD-only semver tag validation, no force behavior, exact-tag conflict checks, and the existing `publish.yml` Trusted Publisher/OIDC workflow. This removes the former need to invoke a server AI Agent for normal tag/publish operations.
+
 ## v1.1.0-beta.2 official AI Markdown lifecycle candidate — 2026-10-26
 
 Beta.1 proved that API-level delivery success is not sufficient to validate a hand-authored DingTalk runtime template: four `universal-v2` direct-message deliveries completed successfully but rendered as empty card shells because the imported custom template bindings were invalid. The replacement template `bfa8586b-57c0-4840-b178-ff9c66261032.schema` was imported from DingTalk's official AI Markdown card export so the editor-generated runtime tree remains authoritative.

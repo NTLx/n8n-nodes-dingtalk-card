@@ -1,10 +1,16 @@
 # Changelog
 
-## 1.1.0-beta.3 (candidate)
+## 1.1.0
+
+Promotes the validated v1.1 prerelease line to stable after connected production acceptance. Stable 1.1.0 includes `universal-v2`, official AI Markdown Create → Stream → Finalize lifecycle handling, wide desktop auto-layout, validated clickable HTTP(S) links, the cleaned importable DingTalk template, and preserved `universal-v1` compatibility. Production executions 7249 (v2) and 7250 (v1) both completed successfully after the clean-template route was published, and client-side visual acceptance confirmed no redundant query icon or separator lines.
 
 - Remove the redundant Markdown horizontal rule previously inserted before the `universal-v2` footer so the clean AI Markdown template can render without an extra separator line.
 - Add the cleaned importable DingTalk AI Markdown template derived from the official export, removing the query icon, unused preparations/charts regions, and surrounding template dividers while preserving streaming `content`, `flowStatus`, `config.autoLayout`, copy affordance, and AI disclosure.
 - Keep transport, validation, v1 compatibility, Create → Stream → Finalize behavior, and n8n service configuration unchanged.
+
+## 1.1.0-beta.3 (published prerelease; promoted to 1.1.0)
+
+- Final prerelease candidate used for clean-template visual acceptance and stable promotion.
 
 ## 1.1.0-beta.2 (published prerelease; superseded by beta.3)
 
