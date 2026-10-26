@@ -1,0 +1,24 @@
+Removed from completed/status=3 editorData:
+- node_oclyk0ghwrv — query BaseText
+- node_oclyk0ghwrw — Divider before preparations
+- node_oclyrbda831 — preparations Loop
+- node_oclyk0gvmkc — Divider before MarkdownBlock
+- node_oclyk0ghwrq — Divider after MarkdownBlock
+- node_oclyk0ghwrn — charts Loop
+
+Removed matching widgetInfo subtrees (userId):
+- node_oclyk0ghwrv — query LinearLayout with question icon and query text
+- node_oclyk0ghwrw — query/preparations Divider View
+- node_oclyrbda831 — preparations LinearLayout/ListLayout
+- node_oclyk0gvmkc — preparations/MarkdownBlock Divider View
+- node_oclyk0ghwrq — MarkdownBlock/charts Divider View
+- node_oclyk0ghwrn — charts LinearLayout/ListLayout
+
+Validation:
+- Outer JSON parses; embedded editorData JSON parses.
+- schemaVersion is 3.0.0.
+- Completed branch retains MarkdownBlock bound to global markdown variable content; the variable metadata describes streaming Markdown.
+- Completed branch retains AICardContainer/flowStatus, Feedback with copy action, and AIGenerationProcessing.
+- mockData.cardData.config.autoLayout remains true.
+- widgetInfo retains balanced DSL element nesting and the official export string format.
+- Source comparison confirms only the listed completed-state editorData nodes and their matching widgetInfo subtrees were removed; other editor/runtime content is unchanged.

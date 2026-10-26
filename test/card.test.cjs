@@ -249,6 +249,7 @@ test('A2UI universal-v2 maps to the published wide rich template contract', () =
 	assert.match(mapped.content, /\[查看邮件\]\(https:\/\/example\.com\/mail\/1\)/);
 	assert.match(mapped.content, /\[查看完整报告\]\(https:\/\/example\.com\/report\)/);
 	assert.match(mapped.content, /ChatGPT · `universal-v2`/);
+	assert.doesNotMatch(mapped.content, /---\nChatGPT · `universal-v2`/);
 	assert.equal(mapped.flowStatus, '3');
 	assert.equal(mapped.config, '{"autoLayout":true}');
 	assert.ok(Object.values(mapped).every((value) => typeof value === 'string'));

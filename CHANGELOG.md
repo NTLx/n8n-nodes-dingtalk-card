@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.1.0-beta.2 (candidate)
+## 1.1.0-beta.3 (candidate)
+
+- Remove the redundant Markdown horizontal rule previously inserted before the `universal-v2` footer so the clean AI Markdown template can render without an extra separator line.
+- Add the cleaned importable DingTalk AI Markdown template derived from the official export, removing the query icon, unused preparations/charts regions, and surrounding template dividers while preserving streaming `content`, `flowStatus`, `config.autoLayout`, copy affordance, and AI disclosure.
+- Keep transport, validation, v1 compatibility, Create → Stream → Finalize behavior, and n8n service configuration unchanged.
+
+## 1.1.0-beta.2 (published prerelease; superseded by beta.3)
 
 - Replace the beta.1 hand-authored wide-template variable contract with DingTalk's official AI Markdown card lifecycle. `universal-v2` still accepts the same bounded semantic descriptor, but now compiles it to one validated Markdown `content` string plus fixed `flowStatus="3"` and `config={"autoLayout":true}`.
 - For `Create & Deliver`, automatically perform the official two-stage transport internally: create the AI card with empty `content`, then send a full `content` Streaming Update with `isFinalize=true`. The caller still performs one n8n node operation and receives success only after both writes succeed; successful output adds `streamFinalized=true` and retains both raw responses.

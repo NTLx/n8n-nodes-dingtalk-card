@@ -2,7 +2,7 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**v1.0.0 is the current stable release.** The worktree is preparing `1.1.0-beta.2`, which keeps the additive semantic `universal-v2` A2UI profile but targets DingTalk's official AI Markdown streaming lifecycle: one Create & Deliver call automatically creates the wide card, streams the compiled Markdown, and finalizes it. npm `latest` remains `1.0.0` until connected acceptance and stable promotion. The package provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise-app credential. It is not n8n-verified and is not affiliated with DingTalk or n8n.
+**v1.0.0 is the current stable release.** The worktree is preparing `1.1.0-beta.3`, which keeps the additive semantic `universal-v2` A2UI profile and DingTalk's official AI Markdown streaming lifecycle, while removing the redundant Markdown footer separator so the clean published template can render without extra horizontal rules. npm `latest` remains `1.0.0` until connected acceptance and stable promotion. The package provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise-app credential. It is not n8n-verified and is not affiliated with DingTalk or n8n.
 
 The plugin owns credential-safe transport and bounded card/callback primitives. Reusable workflows own business state, routing, persistence, authorization, and optional AI orchestration. Fixed actions should route deterministically; involve an AI Worker only when interpretation or reasoning is actually needed.
 

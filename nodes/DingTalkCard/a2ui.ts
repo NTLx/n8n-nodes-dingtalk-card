@@ -207,7 +207,7 @@ function universalV2(d: Record<string, unknown>): Json {
 	];
 	if (body) contentParts.push(body);
 	if (actions) contentParts.push(actions);
-	if (footer) contentParts.push(`---\n${footer}`);
+	if (footer) contentParts.push(footer);
 	const content = contentParts.join('\n\n');
 	if (content.length > 12000)
 		throw new CardError('A2UI universal-v2 rendered Markdown content must be at most 12000 characters.');
