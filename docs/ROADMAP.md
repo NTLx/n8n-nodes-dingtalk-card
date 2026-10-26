@@ -177,6 +177,25 @@ The plan, tested support boundary, compatibility gates, and security/operations 
 
 **Compatibility and migration:** The supported n8n/Node matrix and stable contract changes are published. Existing saved-workflow and UI upgrade acceptance is recorded in verification.
 
+### v1.1.0 — Wide rich notification surface
+
+**Objective:** Add a richer, desktop-friendly notification/report surface without breaking the stable v1.0 lifecycle or callback contracts.
+
+**Main deliverables:**
+
+- Additive A2UI `universal-v2` profile bound to the published wide NORMAL template contract.
+- Native rich Markdown sections and validated HTTP(S) links instead of flattening all report content into one plain-text variable.
+- Fixed four-cell KPI mapping for concise operational metrics.
+- Always emit the stringified wide-layout host config `{"autoLayout":true}` for the v2 template contract.
+- Preserve `universal-v1` byte-compatible behavior and its accepted request-action callback surface.
+- Harden the reusable ChatGPT gateway normalizer for legacy typed `keyValue.items[]` input without weakening the frozen v1 plugin validator.
+
+**Acceptance gates:** CI/package gates remain green on the supported Node 24 / n8n 2.44.x boundary; the new published template passes live direct-message Create & Deliver with verified DingTalk delivery results; desktop rendering is visually wide, hierarchy is rich rather than flattened, links are clickable, and all four KPI cells render. Legacy v1 and the existing request-action path must regress cleanly. See [the v1.1 plan](V1.1_PLAN.md).
+
+**Non-goals / deferrals:** No arbitrary UI/component JSON, HTML/CSS/JS renderer, Form/Selection expansion, or service-level n8n changes. v2 URL links are presentation links, not request callbacks.
+
+**Compatibility and migration:** Additive profile only. Existing saved workflows remain on `universal-v1` unless explicitly moved to v2. The plugin does not hard-code a DingTalk template ID; workflow owners choose the published template during Create & Deliver.
+
 ## Cross-cutting design principles
 
 - **Deterministic by default:** Route fixed actions through n8n logic; invoke an LLM only for genuine interpretation, generation, reasoning, or agent work.

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0-beta.1 (candidate)
+
+- Add additive Controlled A2UI `universal-v2` for the published wide rich notification/report template while preserving `universal-v1` unchanged. v2 maps title, summary/meta Markdown, exactly four KPI cells, deterministic Markdown sections, validated clickable HTTP(S) links, footer content, and fixed `config={"autoLayout":true}` into string-valued `cardParamMap` entries.
+- Keep v2 bounded and fail-closed: unknown fields, malformed collections, non-HTTP(S) links, embedded URL credentials, HTML tags, Markdown-authored links outside structured `links[]`, and oversized rendered content are rejected. v2 does not add arbitrary component JSON, HTML/CSS/JS, Form/Selection support, or a new callback action surface.
+- Prepare release-ref/CI/Trusted Publisher policy for `1.1.0-beta.1` and future stable `1.1.0` without changing the supported Node 24 / n8n 2.44.x compatibility boundary.
+- Connected template transport probe passed before package installation by using the existing v1.0 node in JSON Card Data Mode against template `12a9c7d8-2a47-4750-9959-2069b9df490b.schema`: manual execution `6955` completed successfully, the DingTalk node returned `success=true`, and every `deliverResults[].success=true`. This proves the new template ID/variable payload is accepted by Card Platform; desktop width, rich rendering and link clickability still require client-side visual acceptance.
+- No n8n service upgrade, restart, database change, container mutation, or service configuration change is part of this release.
+
 ## 1.0.0 (stable)
 
 Promotes `1.0.0-beta.1` after connected-instance acceptance of the reusable workflow layer and supported upgrade path. No plugin runtime implementation changes are added relative to beta.1. On the upgraded n8n 2.44.x instance, Notification Hub and Report Hub each completed real group A2UI Create plus same-card replacement Update; direct-message A2UI Create plus replacement Update also succeeded. Action Router accepted a real normalized `ACK` callback after Trigger deactivate/reactivate, while simulated gates covered deterministic `ACK`, parameterized `SET_PRIORITY`, generic `ASK_WORKER` handoff, and fail-closed unknown actions. The temporary listener was unpublished after acceptance. Form and Selection remain deferred; callback dedupe remains process-local; no durable exactly-once or Create-upsert guarantee is made. Stable `latest` moves to `1.0.0`; npm `beta` remains on `1.0.0-beta.1`.

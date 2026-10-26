@@ -6,6 +6,16 @@ The Action Router reads the canonical `normalized.interaction.actionIds` and `.p
 
 The earlier Presentation v1 examples under [`examples/presentation/`](../examples/presentation/) remain useful for the deterministic adapter contract and diagnostics. They are **not the recommended production visual surface**: connected-instance visual evidence showed the published Presentation v1 template used for those checks is diagnostic-only and unsuitable for canonical user-facing presentation. API transport or adapter success does not prove that a template is an appropriate rendering surface.
 
+## v1.1 candidate: wide rich notifications
+
+The v1.1 candidate adds the opt-in **A2UI `universal-v2`** profile for desktop-friendly notification/report cards. It is intentionally additive: the stable catalog and request-action examples below remain on `universal-v1` until v1.1 connected acceptance and stable promotion are complete.
+
+`universal-v2` replaces the flattened `a2uiContent` presentation with fixed template variables for a rich summary, exactly four KPI cells, Markdown sections, structured clickable HTTP(S) links, and footer metadata. The mapper always emits `config={"autoLayout":true}` for the v2 template contract. See [`wide-rich-digest-v2.json`](../examples/a2ui/wide-rich-digest-v2.json) and [the v1.1 plan](V1.1_PLAN.md).
+
+The published template currently under connected acceptance is `12a9c7d8-2a47-4750-9959-2069b9df490b.schema`. A real direct-message transport probe already passed through the existing v1.0 node's JSON Card Data Mode with the new variable map. That establishes template/API acceptance only; desktop width, Markdown rendering quality, KPI layout, and link clickability remain client-visual acceptance gates before v1.1 stable promotion.
+
+For v2, author navigation through structured `links[]`; do not embed ad-hoc Markdown links in section/summary/footer fields. This keeps URL scheme validation deterministic. v2 clickable URLs are navigation links, not request callbacks. Continue to use `universal-v1` when a request-action callback is required until a future bounded v2 callback contract is explicitly designed and accepted.
+
 ## A2UI contract and template variables
 
 Each user-facing descriptor is validated by the existing runtime against the frozen `universal-v1` schema. Allowed blocks are plain text, key/value, and lists; one optional action is a constrained request action. The mapper produces these fixed public template variables:

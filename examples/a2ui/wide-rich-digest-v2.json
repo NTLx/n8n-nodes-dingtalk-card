@@ -1,0 +1,34 @@
+{
+  "version": "2",
+  "profile": "universal-v2",
+  "title": "Daily automation digest",
+  "summary": "Two items need attention; all monitored services are healthy.",
+  "summaryMarkdown": "**Today:** two items need attention; all monitored services are healthy.",
+  "tone": "success",
+  "status": "SUCCESS",
+  "generatedAt": "2026-10-26 08:00",
+  "source": "ChatGPT Daily",
+  "metrics": [
+    { "label": "Scanned", "value": "42" },
+    { "label": "Action", "value": "2" },
+    { "label": "Info", "value": "5" },
+    { "label": "Failures", "value": "0" }
+  ],
+  "sections": [
+    {
+      "title": "Needs attention",
+      "markdown": "1. **Review the release candidate.**\n2. Confirm the connected acceptance result.",
+      "links": [
+        { "label": "Open project", "url": "https://example.com/project" }
+      ]
+    },
+    {
+      "title": "Status",
+      "markdown": "- API healthy\n- Delivery healthy"
+    }
+  ],
+  "links": [
+    { "label": "View full report", "url": "https://example.com/report" }
+  ],
+  "footer": "ChatGPT · n8n · DingTalk · `universal-v2`"
+}

@@ -39,7 +39,7 @@ jobs:
       - run: npm run verify:package
       - run: npm audit --omit=dev --audit-level=high
       - run: node scripts/verify-release-ref.cjs --self-test
-      - run: GITHUB_REF_NAME=v1.0.0 node scripts/verify-release-ref.cjs
+      - run: GITHUB_REF_NAME=v1.1.0-beta.1 node scripts/verify-release-ref.cjs
       - run: mkdir -p packed-artifact
       - run: npm pack --pack-destination packed-artifact
       - uses: actions/upload-artifact@v6

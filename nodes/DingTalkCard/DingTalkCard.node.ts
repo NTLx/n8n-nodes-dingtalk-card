@@ -83,7 +83,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: { inputMode: ['form'], operation: operations, cardDataMode: ['a2ui'] },
 		},
-		description: 'Constrained universal-v1 descriptor mapped to fixed A2UI template variables',
+		description: 'Constrained universal-v1 or universal-v2 descriptor mapped to fixed A2UI template variables',
 	},
 	{
 		displayName: 'Request Body',

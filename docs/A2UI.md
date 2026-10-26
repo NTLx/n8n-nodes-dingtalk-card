@@ -30,3 +30,75 @@ The official [`open-dingtalk/dingtalk-card-examples` NORMAL loop example](https:
 For Create & Deliver, an action fails closed unless **Enable Stream Callbacks** is true. Update only changes card data: it cannot turn on callback routing for an existing card. Callback routing belongs to the originally created card. The mapper emits only the fixed string-valued variables above, the fixed AI Card host metadata, and no arbitrary card structure.
 
 The `universal-v1` descriptor and its fixed visual template surface have connected-instance acceptance recorded in [release verification](VERIFICATION.md). This is scoped to the tested published template/client and supported request-button/action callback path; it does not certify arbitrary templates or all clients. A2UI is the user-facing surface used by the stable automation patterns; Presentation v1 remains a deterministic adapter and diagnostic contract. Form and Selection inputs remain unverified and deferred.
+
+## Controlled A2UI v2 — wide rich notification profile
+
+v1.1 adds a second, additive profile for the published wide notification/report template. It does not replace or silently reinterpret `universal-v1`.
+
+Use:
+
+```json
+{
+  "version": "2",
+  "profile": "universal-v2",
+  "title": "Mail Daily",
+  "summary": "2 件需要处理",
+  "summaryMarkdown": "**今天的结论：** 有 2 件需要处理。",
+  "tone": "success",
+  "status": "SUCCESS",
+  "generatedAt": "2026-10-26 08:00",
+  "source": "ChatGPT Mail Daily",
+  "metrics": [
+    {"label":"扫描","value":"42"},
+    {"label":"需处理","value":"2"},
+    {"label":"值得了解","value":"1"},
+    {"label":"风险","value":"0"}
+  ],
+  "sections": [
+    {
+      "title": "需要处理",
+      "markdown": "1. **CI failed**",
+      "links": [{"label":"查看邮件","url":"https://example.com/mail/1"}]
+    }
+  ],
+  "links": [{"label":"查看完整报告","url":"https://example.com/report"}],
+  "footer": "ChatGPT Mail Daily · Gmail / Outlook / DingTalk"
+}
+```
+
+### Fixed v2 template contract
+
+The v2 mapper emits only string-valued entries for the published template:
+
+| Variable | Meaning |
+| --- | --- |
+| `title` | card header title |
+| `summary_text` | compact forwarding/summary text |
+| `meta_markdown` | tone/status/time/source line |
+| `summary_markdown` | summary body |
+| `metric1_label` / `metric1_value` | KPI cell 1 |
+| `metric2_label` / `metric2_value` | KPI cell 2 |
+| `metric3_label` / `metric3_value` | KPI cell 3 |
+| `metric4_label` / `metric4_value` | KPI cell 4 |
+| `body_markdown` | deterministic section rendering |
+| `actions_markdown` | validated clickable quick links |
+| `footer_markdown` | footer metadata |
+| `config` | fixed JSON string `{"autoLayout":true}` |
+
+The production template currently under acceptance is `12a9c7d8-2a47-4750-9959-2069b9df490b.schema`. The plugin does not hard-code that template ID; callers still choose the published template during Create & Deliver.
+
+### v2 validation and safety
+
+- `title` is required and limited to 200 characters.
+- `summary` is required plain text and limited to 1000 characters; it feeds `summary_text`.
+- optional `summaryMarkdown` is limited to 1000 characters and feeds `summary_markdown`; when omitted, `summary` is safely escaped for Markdown rendering.
+- `tone` remains `neutral|info|success|warning|danger`.
+- `status`, `generatedAt`, and `source` are bounded optional metadata. If `status` is absent, the upper-case tone is used.
+- `metrics` must contain exactly four non-empty `{label,value}` objects because the current wide template has a fixed four-cell KPI region.
+- `sections` is optional and limited to eight entries. Each entry has a required title, Markdown body, and optional validated links.
+- root and per-section links are limited to eight entries each. URLs must be absolute `http` or `https` URLs and may not contain embedded credentials.
+- Rich Markdown strings reject HTML tags and ad-hoc Markdown links. Navigation is accepted only through the structured `links[]` fields so URL validation cannot be bypassed.
+- rendered body and quick-link surfaces have aggregate size limits and fail closed when exceeded.
+- v2 currently provides clickable URL presentation. The existing `universal-v1` request action remains the accepted callback/action surface; v2 does not pretend that a Markdown URL is a request callback.
+
+The v2 template itself uses NORMAL card variables. Unlike the accepted v1 AI-card compatibility path, this fixed v2 mapping does not add `flowStatus`; it adds the stringified `config` object required by the wide template instead.

@@ -226,6 +226,100 @@ test('A2UI enforces aggregate content and action parameter size boundaries', () 
 	const oversizedParams = { ...exactParams, h: 'x'.repeat(944) };
 	assert.throws(() => a2uiCardData({ ...base, actions: action(oversizedParams) }), /serialized action params.*8000/);
 });
+test('A2UI universal-v2 maps to the published wide rich template contract', () => {
+	const descriptor = {
+		version: '2', profile: 'universal-v2', title: 'Mail Daily', summary: '2 件需要处理',
+		summaryMarkdown: '**今天的结论：** 有 2 件需要处理。',
+		tone: 'success', status: 'SUCCESS', generatedAt: '2026-10-26 08:00', source: 'ChatGPT Mail Daily',
+		metrics: [
+			{ label: '扫描', value: '42' }, { label: '需处理', value: '2' },
+			{ label: '值得了解', value: '1' }, { label: '风险', value: '0' },
+		],
+		sections: [{ title: '需要处理', markdown: '1. **CI failed**', links: [{ label: '查看邮件', url: 'https://example.com/mail/1' }] }],
+		links: [{ label: '查看完整报告', url: 'https://example.com/report' }],
+		footer: 'ChatGPT · `universal-v2`',
+	};
+	const mapped = a2uiCardData(descriptor).cardParamMap;
+	assert.equal(mapped.title, 'Mail Daily');
+	assert.equal(mapped.summary_text, '2 件需要处理');
+	assert.equal(mapped.summary_markdown, '**今天的结论：** 有 2 件需要处理。');
+	assert.match(mapped.meta_markdown, /SUCCESS/);
+	assert.equal(mapped.metric1_label, '扫描');
+	assert.equal(mapped.metric4_value, '0');
+	assert.match(mapped.body_markdown, /\[查看邮件\]\(https:\/\/example\.com\/mail\/1\)/);
+	assert.match(mapped.actions_markdown, /\[查看完整报告\]\(https:\/\/example\.com\/report\)/);
+	assert.equal(mapped.footer_markdown, 'ChatGPT · `universal-v2`');
+	assert.equal(mapped.config, '{"autoLayout":true}');
+	assert.ok(Object.values(mapped).every((value) => typeof value === 'string'));
+});
+test('A2UI universal-v2 rejects unsafe links, HTML and unknown structure', () => {
+	const base = {
+		version: '2', profile: 'universal-v2', title: 'T', summary: 'S', tone: 'info',
+		metrics: Array.from({ length: 4 }, (_, i) => ({ label: `L${i}`, value: `V${i}` })),
+	};
+	for (const descriptor of [
+		{ ...base, extra: true },
+		{ ...base, links: [{ label: 'bad', url: 'javascript:alert(1)' }] },
+		{ ...base, links: [{ label: 'bad', url: 'https://user:pass@example.com/' }] },
+		{ ...base, summaryMarkdown: '<b>html</b>' },
+		{ ...base, summaryMarkdown: '[bad](javascript:alert(1))' },
+		{ ...base, sections: [{ title: 'x', markdown: '<b>html</b>' }] },
+		{ ...base, sections: [{ title: 'x', markdown: '[bad](javascript:alert(1))' }] },
+		{ ...base, sections: [{ title: 'x', markdown: 'ok', surprise: true }] },
+		{ ...base, links: [{ label: 'x', url: 'https://example.com/', extra: 1 }] },
+	]) assert.throws(() => a2uiCardData(descriptor));
+});
+test('A2UI universal-v2 enforces fixed KPI and bounded section/link contracts', () => {
+	const base = {
+		version: '2', profile: 'universal-v2', title: 'T', summary: 'S', tone: 'neutral',
+		metrics: Array.from({ length: 4 }, (_, i) => ({ label: `L${i}`, value: `V${i}` })),
+	};
+	assert.throws(() => a2uiCardData({ ...base, metrics: base.metrics.slice(0, 3) }), /exactly 4/);
+	assert.throws(() => a2uiCardData({ ...base, metrics: [...base.metrics, { label: 'L4', value: 'V4' }] }), /exactly 4/);
+	assert.throws(() => a2uiCardData({ ...base, sections: Array(9).fill({ title: 'x', markdown: 'y' }) }), /at most 8/);
+	assert.throws(() => a2uiCardData({ ...base, links: Array(9).fill({ label: 'x', url: 'https://example.com/' }) }), /at most 8/);
+	assert.throws(() => a2uiCardData({ ...base, metrics: [{ label: '', value: 'v' }, ...base.metrics.slice(1)] }));
+});
+test('A2UI universal-v2 enforces rendered body and quick-link aggregate limits', () => {
+	const base = {
+		version: '2', profile: 'universal-v2', title: 'T', summary: 'S', tone: 'neutral',
+		metrics: [
+			{ label: 'A', value: '1' }, { label: 'B', value: '2' },
+			{ label: 'C', value: '3' }, { label: 'D', value: '4' },
+		],
+	};
+	assert.throws(() => a2uiCardData({
+		...base,
+		sections: [
+			{ title: 'A', markdown: 'x'.repeat(3000) },
+			{ title: 'B', markdown: 'x'.repeat(3000) },
+			{ title: 'C', markdown: 'x'.repeat(3000) },
+		],
+	}), /rendered body.*8000/);
+	const longUrl = (suffix) => `https://example.com/${suffix}${'a'.repeat(980)}`;
+	assert.throws(() => a2uiCardData({
+		...base,
+		links: [
+			{ label: 'First', url: longUrl('one/') },
+			{ label: 'Second', url: longUrl('two/') },
+		],
+	}), /rendered links.*2000/);
+});
+test('A2UI universal-v2 defaults status from tone and allows summary-only cards', () => {
+	const mapped = a2uiCardData({
+		version: '2', profile: 'universal-v2', title: 'Status', summary: 'All good', tone: 'success',
+		metrics: [
+			{ label: 'A', value: '1' }, { label: 'B', value: '2' },
+			{ label: 'C', value: '3' }, { label: 'D', value: '4' },
+		],
+	}).cardParamMap;
+	assert.match(mapped.meta_markdown, /SUCCESS/);
+	assert.equal(mapped.summary_text, 'All good');
+	assert.equal(mapped.summary_markdown, 'All good');
+	assert.equal(mapped.body_markdown, '');
+	assert.equal(mapped.actions_markdown, '');
+	assert.equal(mapped.footer_markdown, '');
+});
 test('presentation maps all five families into string-valued cardParamMap deterministically', () => {
 	for (const [family, descriptor] of Object.entries(presentations)) {
 		const first = presentationCardData(descriptor);

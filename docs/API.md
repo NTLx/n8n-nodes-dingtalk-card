@@ -1,8 +1,8 @@
 # API contracts checked 2026-10-24
 
-## Controlled A2UI (stable since v0.6.0)
+## Controlled A2UI (stable v1 plus additive v2 candidate)
 
-Form input on Create & Deliver or Update can select Card Data Mode `a2ui` and provide `a2uiDescriptor`. It maps the frozen `universal-v1` contract to fixed `cardParamMap` string variables. See [A2UI.md](A2UI.md) and the [v0.6 plan](V0.6_PLAN.md). Create with an action requires Stream callbacks enabled; Update maps data and does not enable callback routing. The package does not ship a DingTalk template.
+Form input on Create & Deliver or Update can select Card Data Mode `a2ui` and provide `a2uiDescriptor`. Stable `version:"1"` / `profile:"universal-v1"` keeps its frozen fixed-variable contract and accepted request-action callback path. The v1.1 candidate adds `version:"2"` / `profile:"universal-v2"`, which maps the published wide notification/report contract to string-valued `cardParamMap` fields for Markdown hierarchy, four KPI cells, validated clickable HTTP(S) links, footer metadata, and fixed `config={"autoLayout":true}`. See [A2UI.md](A2UI.md), the [v0.6 plan](V0.6_PLAN.md), and the [v1.1 plan](V1.1_PLAN.md). v1 Create with an action still requires Stream callbacks enabled; v2 URL links are navigation links, not request callbacks. Update maps data and does not enable callback routing. The plugin does not hard-code or publish DingTalk template IDs.
 
 ## Presentation Card Data Mode (v0.4.0 development)
 

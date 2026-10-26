@@ -123,7 +123,7 @@ const exampleText = examples
 		const source = readFileSync(path, 'utf8');
 	const parsed = JSON.parse(source);
 	assertNoCredentialFields(parsed, path);
-	if (parsed.profile === 'universal-v1') a2uiCardData(parsed);
+	if (parsed.profile === 'universal-v1' || parsed.profile === 'universal-v2') a2uiCardData(parsed);
 		return source;
 	})
 	.join('\n');
@@ -211,6 +211,7 @@ assert.ok(
 	'Automation Presentation guidance must be published',
 );
 assert.ok(pack.files.some(({ path }) => path === 'docs/V1.0_PLAN.md'), 'v1.0 candidate plan must be published');
+assert.ok(pack.files.some(({ path }) => path === 'docs/V1.1_PLAN.md'), 'v1.1 candidate plan must be published');
 for (const path of workflowAssets) assert.ok(pack.files.some(({ path: packagedPath }) => packagedPath === path), `${path} must be published`);
 assert.equal(
 	JSON.parse(readFileSync(join(root, recoveryExample), 'utf8')).createAndDeliver.parameters.operation,
