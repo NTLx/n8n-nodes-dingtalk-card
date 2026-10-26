@@ -196,25 +196,28 @@ function universalV2(d: Record<string, unknown>): Json {
 	const meta = [`${icons[tone]} **${escapeMarkdown(status)}**`];
 	if (generatedAt) meta.push(escapeMarkdown(generatedAt));
 	if (source) meta.push(escapeMarkdown(source));
-	const map: Record<string, string> = {
-		title,
-		summary_text: summary,
-		meta_markdown: meta.join('　·　'),
-		summary_markdown: summaryMarkdown,
-		metric1_label: metrics[0].label,
-		metric1_value: metrics[0].value,
-		metric2_label: metrics[1].label,
-		metric2_value: metrics[1].value,
-		metric3_label: metrics[2].label,
-		metric3_value: metrics[2].value,
-		metric4_label: metrics[3].label,
-		metric4_value: metrics[3].value,
-		body_markdown: body,
-		actions_markdown: actions,
-		footer_markdown: footer,
-		config: JSON.stringify({ autoLayout: true }),
+	const metricLine = metrics
+		.map((metric) => `**${escapeMarkdown(metric.label)}** ${escapeMarkdown(metric.value)}`)
+		.join('　　');
+	const contentParts = [
+		`# ${escapeMarkdown(title)}`,
+		meta.join('　·　'),
+		summaryMarkdown,
+		`### 📊 核心指标\n${metricLine}`,
+	];
+	if (body) contentParts.push(body);
+	if (actions) contentParts.push(actions);
+	if (footer) contentParts.push(`---\n${footer}`);
+	const content = contentParts.join('\n\n');
+	if (content.length > 12000)
+		throw new CardError('A2UI universal-v2 rendered Markdown content must be at most 12000 characters.');
+	return {
+		cardParamMap: {
+			content,
+			flowStatus: '3',
+			config: JSON.stringify({ autoLayout: true }),
+		},
 	};
-	return { cardParamMap: map };
 }
 
 /** Validate a supported fixed A2UI profile and map only to its published template variable contract. */

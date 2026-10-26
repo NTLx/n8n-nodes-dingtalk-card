@@ -66,39 +66,37 @@ Use:
 }
 ```
 
-### Fixed v2 template contract
+### Fixed v2 template and lifecycle contract
 
-The v2 mapper emits only string-valued entries for the published template:
+`universal-v2` targets the official DingTalk AI Markdown card lifecycle rather than a hand-authored NORMAL runtime tree. The published template currently under connected acceptance is `bfa8586b-57c0-4840-b178-ff9c66261032.schema`, imported from the official `open-dingtalk/dingtalk-card-examples` AI-card export. The plugin does not hard-code this template ID; callers still select it during Create & Deliver.
+
+The mapper emits exactly three string-valued public variables:
 
 | Variable | Meaning |
 | --- | --- |
-| `title` | card header title |
-| `summary_text` | compact forwarding/summary text |
-| `meta_markdown` | tone/status/time/source line |
-| `summary_markdown` | summary body |
-| `metric1_label` / `metric1_value` | KPI cell 1 |
-| `metric2_label` / `metric2_value` | KPI cell 2 |
-| `metric3_label` / `metric3_value` | KPI cell 3 |
-| `metric4_label` / `metric4_value` | KPI cell 4 |
-| `body_markdown` | deterministic section rendering |
-| `actions_markdown` | validated clickable quick links |
-| `footer_markdown` | footer metadata |
-| `config` | fixed JSON string `{"autoLayout":true}` |
+| `content` | complete validated Markdown compiled from the semantic descriptor |
+| `flowStatus` | fixed completed-state compatibility value `3` |
+| `config` | fixed JSON string `{"autoLayout":true}` for desktop adaptive width |
 
-The production template currently under acceptance is `12a9c7d8-2a47-4750-9959-2069b9df490b.schema`. The plugin does not hard-code that template ID; callers still choose the published template during Create & Deliver.
+For `Create & Deliver` with `version:"2" / profile:"universal-v2"`, the node hides the two-step AI-card transport from callers:
+
+1. Compile the semantic descriptor to complete Markdown.
+2. Create and deliver the AI card with `content=""` so the official streaming component initializes correctly.
+3. Immediately call the DingTalk Streaming API with `key="content"`, `isFull=true`, `isFinalize=true`, and the complete Markdown.
+4. Return success only after both Create & Deliver and the final streaming write succeed; successful output includes `streamFinalized=true` and retains both raw responses.
+
+Ordinary `Update` is rejected for `universal-v2` because `content` is a streaming variable. Existing cards continue to use the node's explicit Streaming Update / Finalize operations. `universal-v1`, Presentation, Form and raw JSON behavior remain unchanged.
 
 ### v2 validation and safety
 
 - `title` is required and limited to 200 characters.
-- `summary` is required plain text and limited to 1000 characters; it feeds `summary_text`.
-- optional `summaryMarkdown` is limited to 1000 characters and feeds `summary_markdown`; when omitted, `summary` is safely escaped for Markdown rendering.
+- `summary` is required plain text and limited to 1000 characters.
+- optional `summaryMarkdown` is limited to 1000 characters; when omitted, `summary` is safely escaped for Markdown rendering.
 - `tone` remains `neutral|info|success|warning|danger`.
 - `status`, `generatedAt`, and `source` are bounded optional metadata. If `status` is absent, the upper-case tone is used.
-- `metrics` must contain exactly four non-empty `{label,value}` objects because the current wide template has a fixed four-cell KPI region.
+- `metrics` must contain exactly four non-empty `{label,value}` objects; the compiler renders them into one wide Markdown KPI line.
 - `sections` is optional and limited to eight entries. Each entry has a required title, Markdown body, and optional validated links.
 - root and per-section links are limited to eight entries each. URLs must be absolute `http` or `https` URLs and may not contain embedded credentials.
-- Rich Markdown strings reject HTML tags and ad-hoc Markdown links. Navigation is accepted only through the structured `links[]` fields so URL validation cannot be bypassed.
-- rendered body and quick-link surfaces have aggregate size limits and fail closed when exceeded.
-- v2 currently provides clickable URL presentation. The existing `universal-v1` request action remains the accepted callback/action surface; v2 does not pretend that a Markdown URL is a request callback.
-
-The v2 template itself uses NORMAL card variables. Unlike the accepted v1 AI-card compatibility path, this fixed v2 mapping does not add `flowStatus`; it adds the stringified `config` object required by the wide template instead.
+- Rich Markdown strings reject HTML tags and ad-hoc Markdown links. Navigation is accepted only through structured `links[]` fields so URL validation cannot be bypassed.
+- rendered body, quick-link and final Markdown surfaces have aggregate size limits and fail closed when exceeded.
+- v2 currently provides clickable URL presentation. The existing `universal-v1` request action remains the accepted callback/action surface; v2 does not reinterpret Markdown URLs as request callbacks.

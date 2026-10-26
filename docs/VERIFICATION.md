@@ -1,5 +1,15 @@
 # Release verification record — 2026-10-24
 
+## v1.1.0-beta.2 official AI Markdown lifecycle candidate — 2026-10-26
+
+Beta.1 proved that API-level delivery success is not sufficient to validate a hand-authored DingTalk runtime template: four `universal-v2` direct-message deliveries completed successfully but rendered as empty card shells because the imported custom template bindings were invalid. The replacement template `bfa8586b-57c0-4840-b178-ff9c66261032.schema` was imported from DingTalk's official AI Markdown card export so the editor-generated runtime tree remains authoritative.
+
+Connected acceptance isolated the official lifecycle requirement. Manual execution **7056** created and delivered the replacement AI card successfully (`success=true`; every `deliverResults[].success=true`) but, with Create only, the client showed the expected empty AI-card shell. The official example documents `content` as a streaming Markdown variable. Manual execution **7064** then performed Create followed by a full Streaming Update with `key="content"`, `isFull=true`, and `isFinalize=true`; both writes succeeded. Desktop DingTalk rendered the wide card with Markdown headings, bold text, lists, quote styling, and clickable HTTP(S) links. This closes the template/rendering-path question.
+
+The beta.2 implementation keeps the semantic `version:"2" / profile:"universal-v2"` descriptor but changes only its template adapter and lifecycle: the mapper compiles one validated Markdown `content` string plus fixed `flowStatus="3"` and `config={"autoLayout":true}`; guided Create & Deliver sends empty `content`, then automatically performs the finalized streaming write before reporting success. Ordinary v2 Update fails closed because `content` is a streaming variable; explicit Streaming Update / Finalize remain available for existing cards. `universal-v1`, Presentation, Form, JSON, Trigger and request-action behavior are unchanged. No n8n service/runtime/database/container/configuration mutation is part of this work.
+
+Repository CI, public beta.2 publication, supported UI upgrade, shared-gateway switch and final multi-scenario connected acceptance remain release gates at this point.
+
 ## v1.1.0-beta.1 wide rich candidate — 2026-10-26
 
 The working tree is preparing `1.1.0-beta.1` as an additive release over stable `1.0.0`. The candidate adds controlled A2UI `version:"2"` / `profile:"universal-v2"` while preserving the frozen `universal-v1` mapping and existing lifecycle/request-action surfaces. The v2 mapper targets the newly published wide NORMAL template `12a9c7d8-2a47-4750-9959-2069b9df490b.schema` through fixed string-valued variables for a plain forwarding summary plus optional rich summary Markdown, four KPI cells, Markdown sections, validated HTTP(S) links, footer content, and `config={"autoLayout":true}`. It rejects unknown structure, malformed collections, non-HTTP(S) URLs, embedded URL credentials, HTML tags, and author-supplied Markdown links outside the structured `links[]` fields. No arbitrary component tree, HTML/CSS/JS renderer, Form/Selection expansion, or new callback action primitive is added.

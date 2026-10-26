@@ -1,6 +1,14 @@
 # Changelog
 
-## 1.1.0-beta.1 (candidate)
+## 1.1.0-beta.2 (candidate)
+
+- Replace the beta.1 hand-authored wide-template variable contract with DingTalk's official AI Markdown card lifecycle. `universal-v2` still accepts the same bounded semantic descriptor, but now compiles it to one validated Markdown `content` string plus fixed `flowStatus="3"` and `config={"autoLayout":true}`.
+- For `Create & Deliver`, automatically perform the official two-stage transport internally: create the AI card with empty `content`, then send a full `content` Streaming Update with `isFinalize=true`. The caller still performs one n8n node operation and receives success only after both writes succeed; successful output adds `streamFinalized=true` and retains both raw responses.
+- Reject ordinary `Update` for `universal-v2` because the official template binds `content` as a streaming variable. Existing cards use the node's explicit Streaming Update / Finalize operations. `universal-v1`, Presentation, Form, raw JSON and request-action callback behavior remain unchanged.
+- Connected acceptance with published template `bfa8586b-57c0-4840-b178-ff9c66261032.schema` proved the required sequence. Create-only execution `7056` produced the expected empty AI-card shell; Create → Stream(finalize) execution `7064` rendered wide Markdown, headings, lists, blockquote styling and clickable HTTP(S) links in desktop DingTalk.
+- No n8n service upgrade, restart, database change, container mutation, or service configuration change is part of this release.
+
+## 1.1.0-beta.1 (published prerelease; superseded by beta.2)
 
 - Add additive Controlled A2UI `universal-v2` for the published wide rich notification/report template while preserving `universal-v1` unchanged. v2 maps title, summary/meta Markdown, exactly four KPI cells, deterministic Markdown sections, validated clickable HTTP(S) links, footer content, and fixed `config={"autoLayout":true}` into string-valued `cardParamMap` entries.
 - Keep v2 bounded and fail-closed: unknown fields, malformed collections, non-HTTP(S) links, embedded URL credentials, HTML tags, Markdown-authored links outside structured `links[]`, and oversized rendered content are rejected. v2 does not add arbitrary component JSON, HTML/CSS/JS, Form/Selection support, or a new callback action surface.

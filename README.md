@@ -2,13 +2,13 @@
 
 Focused n8n community nodes for the **DingTalk Card Platform lifecycle and Stream card callbacks**.
 
-**v1.0.0 is the current stable release.** The worktree is preparing `1.1.0-beta.1`, which adds the additive wide rich `universal-v2` A2UI profile; npm `latest` remains `1.0.0` until connected acceptance and stable promotion. The package provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise-app credential. It is not n8n-verified and is not affiliated with DingTalk or n8n.
+**v1.0.0 is the current stable release.** The worktree is preparing `1.1.0-beta.2`, which keeps the additive semantic `universal-v2` A2UI profile but targets DingTalk's official AI Markdown streaming lifecycle: one Create & Deliver call automatically creates the wide card, streams the compiled Markdown, and finalizes it. npm `latest` remains `1.0.0` until connected acceptance and stable promotion. The package provides **DingTalk Card**, **DingTalk Card Trigger**, and the shared **DingTalk Card API** enterprise-app credential. It is not n8n-verified and is not affiliated with DingTalk or n8n.
 
 The plugin owns credential-safe transport and bounded card/callback primitives. Reusable workflows own business state, routing, persistence, authorization, and optional AI orchestration. Fixed actions should route deterministically; involve an AI Worker only when interpretation or reasoning is actually needed.
 
 ## Scope and support
 
-- Card operations: Create & Deliver, Update, Streaming Update, and Finalize. Form and whole-body JSON inputs are supported; Form also offers deterministic Presentation and controlled A2UI card data. Stable `universal-v1` remains supported; the v1.1 candidate adds `universal-v2` for wide Markdown/KPI/link notification cards.
+- Card operations: Create & Deliver, Update, Streaming Update, and Finalize. Form and whole-body JSON inputs are supported; Form also offers deterministic Presentation and controlled A2UI card data. Stable `universal-v1` remains supported; the v1.1 candidate adds `universal-v2` for wide Markdown/KPI/link notification cards and automatically performs the official AI-card Create → Stream → Finalize lifecycle on Create & Deliver.
 - Trigger: DingTalk Stream request-action callbacks, with a versioned normalized envelope alongside the existing raw/top-level fields.
 - Reusable workflow assets: [Notification Hub](examples/workflows/dingtalk-notification-hub.json), [Report Hub](examples/workflows/dingtalk-report-hub.json), and [Action Router](examples/workflows/dingtalk-action-router.json). They are inactive, credential-unbound examples. Hubs accept explicit Create/Update operations and use replacement Update semantics; the Router allowlists action IDs and offers a generic external Worker handoff.
 - Supported boundary: Node.js `>=24.0.0 <25` and n8n 2.44.x. CI checks packed artifacts against `n8n-workflow` 2.44.0 and 2.44.2. See [compatibility, security, and operations](docs/COMPATIBILITY_SECURITY_OPERATIONS.md).

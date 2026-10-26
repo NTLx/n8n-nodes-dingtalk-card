@@ -240,15 +240,16 @@ test('A2UI universal-v2 maps to the published wide rich template contract', () =
 		footer: 'ChatGPT · `universal-v2`',
 	};
 	const mapped = a2uiCardData(descriptor).cardParamMap;
-	assert.equal(mapped.title, 'Mail Daily');
-	assert.equal(mapped.summary_text, '2 件需要处理');
-	assert.equal(mapped.summary_markdown, '**今天的结论：** 有 2 件需要处理。');
-	assert.match(mapped.meta_markdown, /SUCCESS/);
-	assert.equal(mapped.metric1_label, '扫描');
-	assert.equal(mapped.metric4_value, '0');
-	assert.match(mapped.body_markdown, /\[查看邮件\]\(https:\/\/example\.com\/mail\/1\)/);
-	assert.match(mapped.actions_markdown, /\[查看完整报告\]\(https:\/\/example\.com\/report\)/);
-	assert.equal(mapped.footer_markdown, 'ChatGPT · `universal-v2`');
+	assert.deepEqual(Object.keys(mapped).sort(), ['config', 'content', 'flowStatus']);
+	assert.match(mapped.content, /^# Mail Daily/m);
+	assert.match(mapped.content, /SUCCESS/);
+	assert.match(mapped.content, /\*\*今天的结论：\*\* 有 2 件需要处理。/);
+	assert.match(mapped.content, /\*\*扫描\*\* 42/);
+	assert.match(mapped.content, /\*\*风险\*\* 0/);
+	assert.match(mapped.content, /\[查看邮件\]\(https:\/\/example\.com\/mail\/1\)/);
+	assert.match(mapped.content, /\[查看完整报告\]\(https:\/\/example\.com\/report\)/);
+	assert.match(mapped.content, /ChatGPT · `universal-v2`/);
+	assert.equal(mapped.flowStatus, '3');
 	assert.equal(mapped.config, '{"autoLayout":true}');
 	assert.ok(Object.values(mapped).every((value) => typeof value === 'string'));
 });
@@ -313,12 +314,12 @@ test('A2UI universal-v2 defaults status from tone and allows summary-only cards'
 			{ label: 'C', value: '3' }, { label: 'D', value: '4' },
 		],
 	}).cardParamMap;
-	assert.match(mapped.meta_markdown, /SUCCESS/);
-	assert.equal(mapped.summary_text, 'All good');
-	assert.equal(mapped.summary_markdown, 'All good');
-	assert.equal(mapped.body_markdown, '');
-	assert.equal(mapped.actions_markdown, '');
-	assert.equal(mapped.footer_markdown, '');
+	assert.match(mapped.content, /^# Status/m);
+	assert.match(mapped.content, /SUCCESS/);
+	assert.match(mapped.content, /All good/);
+	assert.match(mapped.content, /\*\*A\*\* 1/);
+	assert.equal(mapped.flowStatus, '3');
+	assert.equal(mapped.config, '{"autoLayout":true}');
 });
 test('presentation maps all five families into string-valued cardParamMap deterministically', () => {
 	for (const [family, descriptor] of Object.entries(presentations)) {
@@ -891,6 +892,58 @@ test('Presentation and A2UI modes map descriptors through existing Create and Up
 		);
 		assert.equal(write.body.cardData.cardParamMap.flowStatus, '3');
 	}
+});
+test('A2UI universal-v2 Create & Deliver automatically streams and finalizes rendered Markdown', async () => {
+	const seen = [];
+	const descriptor = {
+		version: '2', profile: 'universal-v2', title: 'Mail Daily', summary: '2 件需要处理',
+		tone: 'success', metrics: [
+			{ label: '扫描', value: '42' }, { label: '需处理', value: '2' },
+			{ label: '值得了解', value: '1' }, { label: '风险', value: '0' },
+		],
+		sections: [{ title: '需要处理', markdown: '1. **CI failed**' }],
+		links: [{ label: '查看报告', url: 'https://example.com/report' }],
+	};
+	const params = {
+		operation: 'createAndDeliver', inputMode: 'form', outTrackId: 'track-v2',
+		cardTemplateId: 'official-ai-template', cardDataMode: 'a2ui',
+		a2uiDescriptor: JSON.stringify(descriptor), target: 'robot', spaceId: 'destination',
+	};
+	const result = await new DingTalkCard().execute.call(context([params], mockApi(seen)));
+	const writes = seen.filter((request) => !request.url.endsWith('/accessToken'));
+	assert.equal(writes.length, 2);
+	assert.ok(writes[0].url.endsWith('/createAndDeliver'));
+	assert.equal(writes[0].body.cardData.cardParamMap.content, '');
+	assert.equal(writes[0].body.cardData.cardParamMap.flowStatus, '3');
+	assert.equal(writes[0].body.cardData.cardParamMap.config, '{"autoLayout":true}');
+	assert.ok(writes[1].url.endsWith('/streaming'));
+	assert.equal(writes[1].body.outTrackId, 'track-v2');
+	assert.equal(writes[1].body.key, 'content');
+	assert.match(writes[1].body.content, /^# Mail Daily/m);
+	assert.match(writes[1].body.content, /\[查看报告\]\(https:\/\/example\.com\/report\)/);
+	assert.equal(writes[1].body.isFull, true);
+	assert.equal(writes[1].body.isFinalize, true);
+	assert.equal(writes[1].body.isError, false);
+	assert.equal(result[0][0].json.success, true);
+	assert.equal(result[0][0].json.streamFinalized, true);
+	assert.equal(result[0][0].json.raw.create.success, true);
+	assert.equal(result[0][0].json.raw.stream.success, true);
+});
+test('A2UI universal-v2 rejects ordinary Update because content is a streaming variable', async () => {
+	const descriptor = {
+		version: '2', profile: 'universal-v2', title: 'T', summary: 'S', tone: 'info',
+		metrics: [
+			{ label: 'A', value: '1' }, { label: 'B', value: '2' },
+			{ label: 'C', value: '3' }, { label: 'D', value: '4' },
+		],
+	};
+	await assert.rejects(
+		new DingTalkCard().execute.call(context([{
+			operation: 'update', inputMode: 'form', outTrackId: 'track-v2', cardDataMode: 'a2ui',
+			a2uiDescriptor: JSON.stringify(descriptor), updateByKey: true,
+		}], mockApi([]))),
+		/Create & Deliver only/,
+	);
 });
 test('defaulted Robot Code does not leak credential values in failures', async () => {
 	for (const continueOnFail of [false, true]) {

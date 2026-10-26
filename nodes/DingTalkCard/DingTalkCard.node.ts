@@ -360,6 +360,7 @@ export class DingTalkCard implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			const operation = this.getNodeParameter('operation', i) as Operation;
 			let body: Json = {};
+			let autoFinalizeContent: string | undefined;
 			try {
 				if (this.getNodeParameter('inputMode', i) === 'json')
 					body = jsonObject(this.getNodeParameter('requestBody', i), 'Request Body');
@@ -382,6 +383,18 @@ export class DingTalkCard implements INodeType {
 												valueMode?: string;
 										}>,
 									);
+						if (cardDataMode === 'a2ui') {
+							const descriptor = jsonObject(this.getNodeParameter('a2uiDescriptor', i), 'A2UI Descriptor');
+							if (descriptor.version === '2' && descriptor.profile === 'universal-v2') {
+								if (operation === 'update')
+									throw new CardError('A2UI universal-v2 uses the AI streaming lifecycle and is Create & Deliver only. Use Streaming Update or Finalize for an existing card.');
+								const map = (body.cardData as { cardParamMap?: Record<string, string> }).cardParamMap;
+								if (!map?.content)
+									throw new CardError('A2UI universal-v2 must render non-empty Markdown content.');
+								autoFinalizeContent = map.content;
+								map.content = '';
+							}
+						}
 						if (operation === 'createAndDeliver') {
 							body.cardTemplateId = this.getNodeParameter('cardTemplateId', i);
 							const enableStreamCallbacks = this.getNodeParameter('enableStreamCallbacks', i, false);
@@ -423,6 +436,19 @@ export class DingTalkCard implements INodeType {
 				const request = buildRequest(operation, body);
 				body = request.body;
 				const raw = await api(request.method, request.path, body);
+				let streamRaw: unknown;
+				if (operation === 'createAndDeliver' && autoFinalizeContent !== undefined) {
+					const streamRequest = buildRequest('stream', {
+						outTrackId: body.outTrackId,
+						key: 'content',
+						content: autoFinalizeContent,
+						guid: '',
+						isFull: true,
+						isFinalize: true,
+						isError: false,
+					});
+					streamRaw = await api(streamRequest.method, streamRequest.path, streamRequest.body);
+				}
 				// Raw API data is retained on success only; it contains no request credentials.
 				output.push({
 					json: {
@@ -430,8 +456,9 @@ export class DingTalkCard implements INodeType {
 						outTrackId: body.outTrackId as string,
 						...(body.guid ? { guid: body.guid as string } : {}),
 						success: true,
+						...(streamRaw === undefined ? {} : { streamFinalized: true }),
 						correlation: { outTrackId: body.outTrackId as string, ...(body.guid ? { guid: body.guid as string } : {}) },
-						raw: raw as INodeExecutionData['json'],
+						raw: (streamRaw === undefined ? raw : { create: raw, stream: streamRaw }) as INodeExecutionData['json'],
 					},
 					pairedItem: { item: i },
 				});
