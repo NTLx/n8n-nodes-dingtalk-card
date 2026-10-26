@@ -132,6 +132,23 @@ assert.doesNotMatch(
 	/(?:\bsk-[A-Za-z0-9_-]{16,}\b|\bgh[pousr]_[A-Za-z0-9]{20,}\b|\bAKIA[A-Z0-9]{16}\b|\bBearer\s+\S+)/,
 	'Example files must not contain obvious API secrets',
 );
+const universalV2Template = 'examples/templates/dingtalk-universal-v2-clean.json';
+assert.ok(existsSync(universalV2Template), `${universalV2Template} must exist`);
+const universalV2Export = JSON.parse(readFileSync(universalV2Template, 'utf8'));
+assert.equal(universalV2Export.type, 'im', 'universal-v2 template export type');
+assert.equal(universalV2Export.mode, 'card', 'universal-v2 template export mode');
+assert.ok(typeof universalV2Export.widgetInfo === 'string' && universalV2Export.widgetInfo.length > 0, 'universal-v2 template must include widgetInfo');
+assert.ok(typeof universalV2Export.editorData === 'string' && universalV2Export.editorData.length > 0, 'universal-v2 template must include editorData');
+const universalV2Editor = JSON.parse(universalV2Export.editorData);
+const universalV2Variables = new Map(universalV2Editor.variableList.map((variable) => [variable.name, variable]));
+assert.equal(universalV2Variables.get('content')?.type, 'markdown', 'universal-v2 content must remain a Markdown variable');
+assert.equal(universalV2Variables.get('flowStatus')?.type, 'string', 'universal-v2 flowStatus must remain a string variable');
+assert.equal(universalV2Variables.get('config')?.type, 'object', 'universal-v2 config must remain an object variable');
+assert.equal(
+	universalV2Variables.get('config')?.schema?.find(({ name }) => name === 'autoLayout')?.type,
+	'boolean',
+	'universal-v2 config.autoLayout must remain boolean',
+);
 for (const path of jsonFiles('examples/presentation')) {
 	if (path.endsWith('patterns.json')) continue;
 	const example = JSON.parse(readFileSync(path, 'utf8'));
@@ -201,6 +218,10 @@ assert.ok(
 assert.ok(
 	pack.files.some(({ path }) => path === recoveryExample),
 	`${recoveryExample} must be published`,
+);
+assert.ok(
+	pack.files.some(({ path }) => path === universalV2Template),
+	`${universalV2Template} must be published`,
 );
 for (const file of examples) {
 	const packagedPath = file.replaceAll('\\', '/');

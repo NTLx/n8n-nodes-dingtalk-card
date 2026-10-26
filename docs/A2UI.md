@@ -68,7 +68,9 @@ Use:
 
 ### Fixed v2 template and lifecycle contract
 
-`universal-v2` targets the official DingTalk AI Markdown card lifecycle rather than a hand-authored NORMAL runtime tree. The published template currently under connected acceptance is `bfa8586b-57c0-4840-b178-ff9c66261032.schema`, imported from the official `open-dingtalk/dingtalk-card-examples` AI-card export. The plugin does not hard-code this template ID; callers still select it during Create & Deliver.
+`universal-v2` targets the official DingTalk AI Markdown card lifecycle rather than a hand-authored NORMAL runtime tree. The validated clean export used for stable acceptance is included as [`examples/templates/dingtalk-universal-v2-clean.json`](../examples/templates/dingtalk-universal-v2-clean.json). Import that JSON into your own DingTalk Card Platform workspace and publish it there; DingTalk will assign the template ID that callers select during Create & Deliver. The plugin does not hard-code a template ID.
+
+The bundled export preserves DingTalk's editor-generated runtime structure and exposes the lifecycle variables required by this adapter, including streaming Markdown `content`, `flowStatus`, and `config.autoLayout`. Keep the export unchanged when importing; customize a copied template only if you also preserve the required variable contract.
 
 The mapper emits exactly three string-valued public variables:
 

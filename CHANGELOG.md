@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Restore the validated importable `universal-v2` DingTalk AI Markdown template export as `examples/templates/dingtalk-universal-v2-clean.json`, document its import path, and make package verification fail if the template or its required `content` / `flowStatus` / `config.autoLayout` contract is missing.
+
 ## 1.1.0
 
 Promotes the validated v1.1 prerelease line to stable after connected production acceptance. Stable 1.1.0 includes `universal-v2`, official AI Markdown Create → Stream → Finalize lifecycle handling, wide desktop auto-layout, validated clickable HTTP(S) links, the cleaned importable DingTalk template, and preserved `universal-v1` compatibility. Production executions 7249 (v2) and 7250 (v1) both completed successfully after the clean-template route was published, and client-side visual acceptance confirmed no redundant query icon or separator lines.

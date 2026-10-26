@@ -13,7 +13,7 @@ The plugin owns credential-safe transport and bounded card/callback primitives. 
 - Reusable workflow assets: [Notification Hub](examples/workflows/dingtalk-notification-hub.json), [Report Hub](examples/workflows/dingtalk-report-hub.json), and [Action Router](examples/workflows/dingtalk-action-router.json). They are inactive, credential-unbound examples. Hubs accept explicit Create/Update operations and use replacement Update semantics; the Router allowlists action IDs and offers a generic external Worker handoff.
 - Supported boundary: Node.js `>=24.0.0 <25` and n8n 2.44.x. CI checks packed artifacts against `n8n-workflow` 2.44.0 and 2.44.2. See [compatibility, security, and operations](docs/COMPATIBILITY_SECURITY_OPERATIONS.md).
 
-Form submissions and Selection inputs remain deferred. Trigger duplicate suppression is bounded and process-local, not durable or distributed. Create with a repeated `outTrackId` does not guarantee deduplication or upsert; there is no exactly-once delivery guarantee. The package does not include or publish DingTalk templates. See [API limits](docs/API.md), [interaction contract](docs/INTERACTIONS.md), and [verification record](docs/VERIFICATION.md).
+Form submissions and Selection inputs remain deferred. Trigger duplicate suppression is bounded and process-local, not durable or distributed. Create with a repeated `outTrackId` does not guarantee deduplication or upsert; there is no exactly-once delivery guarantee. The repository includes the validated, importable [`universal-v2` DingTalk AI Markdown template](examples/templates/dingtalk-universal-v2-clean.json); import and publish it in your own DingTalk Card Platform workspace, then use the resulting template ID in Create & Deliver. The plugin never hard-codes a template ID. See [API limits](docs/API.md), [interaction contract](docs/INTERACTIONS.md), and [verification record](docs/VERIFICATION.md).
 
 The scope is DingTalk Card Platform lifecycle and interactions. It does not provide OA, todo, tables, or general robot messaging.
 
@@ -25,7 +25,7 @@ After installation, create a DingTalk enterprise internal application, grant the
 
 ## Guides and examples
 
-- [Controlled A2UI contracts](docs/A2UI.md), [v1.1 wide rich plan](docs/V1.1_PLAN.md), and [user-facing automation patterns](docs/AUTOMATION_PRESENTATION.md)
+- Importable [`universal-v2` DingTalk AI Markdown template](examples/templates/dingtalk-universal-v2-clean.json), plus [Controlled A2UI contracts](docs/A2UI.md), [v1.1 wide rich plan](docs/V1.1_PLAN.md), and [user-facing automation patterns](docs/AUTOMATION_PRESENTATION.md)
 - [Presentation descriptor contract](docs/PRESENTATION.md)
 - [Stream callback interaction contract](docs/INTERACTIONS.md)
 - [Product scope and architecture](docs/DESIGN.md) and [roadmap](docs/ROADMAP.md)
