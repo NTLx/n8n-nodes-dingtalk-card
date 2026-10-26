@@ -386,11 +386,15 @@ export class DingTalkCard implements INodeType {
 						if (cardDataMode === 'a2ui') {
 							const descriptor = jsonObject(this.getNodeParameter('a2uiDescriptor', i), 'A2UI Descriptor');
 							if (descriptor.version === '2' && descriptor.profile === 'universal-v2') {
-								if (operation === 'update')
+								if (operation === 'update') {
+									// eslint-disable-next-line n8n-nodes-base/node-execute-block-wrong-error-thrown -- Pure validation is converted to NodeOperationError at the item boundary.
 									throw new CardError('A2UI universal-v2 uses the AI streaming lifecycle and is Create & Deliver only. Use Streaming Update or Finalize for an existing card.');
+								}
 								const map = (body.cardData as { cardParamMap?: Record<string, string> }).cardParamMap;
-								if (!map?.content)
+								if (!map?.content) {
+									// eslint-disable-next-line n8n-nodes-base/node-execute-block-wrong-error-thrown -- Pure validation is converted to NodeOperationError at the item boundary.
 									throw new CardError('A2UI universal-v2 must render non-empty Markdown content.');
+								}
 								autoFinalizeContent = map.content;
 								map.content = '';
 							}
